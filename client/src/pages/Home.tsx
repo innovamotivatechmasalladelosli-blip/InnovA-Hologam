@@ -526,7 +526,7 @@ export default function Home() {
     scene.add(particlesMesh);
 
     const loader = new w.THREE.GLTFLoader();
-    const modelUrl = '/manus-storage/machine_model_05319382.glb';
+    const modelUrl = '/machine_model.glb';
     
     const createFallbackModel = () => {
         const group = new THREE.Group();
