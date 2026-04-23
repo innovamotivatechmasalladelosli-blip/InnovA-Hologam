@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Info, Cpu, Droplets, Radio, Zap, Menu, X, Eye, EyeOff, Maximize, Layers, ChevronDown } from 'lucide-react';
 
 // ==========================================
-// DATOS TÉCNICOS DETALLADOS DEL SISTEMA INNOVA+
+// DATOS TÉCNICOS COMPLETOS Y DETALLADOS - INNOVA+
 // ==========================================
 const KEY_ELEMENTS = [
   { 
@@ -10,7 +10,7 @@ const KEY_ELEMENTS = [
     title: 'Holograma Volumétrico', 
     icon: Radio, 
     color: '#00ffcc',
-    pos: [0, 2, 0],
+    pos: [0, 2.5, 0], // Centro superior - núcleo de proyección
     desc: 'Núcleo del sistema que utiliza interferencia acústica para atrapar y proyectar partículas de aerosol en el espacio 3D, creando imágenes holográficas tangibles sin necesidad de gafas especiales.',
     stats: { 'Frecuencia': '40 kHz', 'Resolución': '< 1 mm' },
     fullSpecs: {
@@ -19,15 +19,36 @@ const KEY_ELEMENTS = [
       'Resolución Espacial': 'Sub-milimétrica (< 1 mm)',
       'Tamaño Máximo de Proyección': '30 cm³',
       'Tasa de Refresco': '120 Hz (> 60 fps para visión fluida)',
-      'Matriz de Transductores': 'Arreglo acústico de precisión',
+      'Matriz de Transductores': 'Arreglo acústico de precisión (64 transductores)',
       'Persistencia Retiniana': 'Sincronizada con láser RGB para fusión visual',
       'Campo de Visión': '360° en plano horizontal, 180° vertical'
+    },
+    materiales: {
+      'Transductores': 'Cerámica piezoeléctrica PZT-8 (piezo-cerámica de alta potencia)',
+      'Carcasa Acústica': 'Aluminio anodizado 6061-T6 (aislamiento acústico)',
+      'Aislamiento': 'Espuma de poliuretano de celda abierta (absorción acústica)',
+      'Conectores': 'Cobre bañado en oro (conductividad óptima)',
+      'Cables': 'Cobre multifilar apantallado (impedancia 50Ω)'
+    },
+    latencias: {
+      'Latencia de Procesamiento': '< 2 ms',
+      'Latencia de Actualización': '< 8.33 ms (120 Hz)',
+      'Latencia de Respuesta Acústica': '< 1 ms',
+      'Tiempo de Sincronización Láser': '< 0.5 ms'
+    },
+    consumoEnergetico: {
+      'Potencia Nominal': '25W',
+      'Potencia Pico': '40W',
+      'Voltaje de Operación': '12V DC',
+      'Corriente Nominal': '2.1A',
+      'Corriente Pico': '3.3A'
     },
     sensores: [
       'Sensor de posición de partículas (triangulación acústica)',
       'Detector de interferencia acústica en tiempo real',
       'Sensor de intensidad de proyección láser',
-      'Micrófono de retroalimentación acústica'
+      'Micrófono de retroalimentación acústica',
+      'Sensor de presión acústica'
     ],
     aplicaciones: [
       'Educación y museos (visualización de modelos 3D)',
@@ -43,13 +64,13 @@ const KEY_ELEMENTS = [
     title: 'Matriz Láser RGB', 
     icon: Zap, 
     color: '#ff0055',
-    pos: [0, 4.5, 0],
+    pos: [0, 4.2, 0], // Superior - sistema de iluminación
     desc: 'Sistema de iluminación de precisión con tres diodos láser independientes que proyectan luz sobre las partículas acústicamente atrapadas, generando colores a velocidad superior a la persistencia retiniana.',
     stats: { 'Potencia Total': '200 mW', 'Velocidad de Barrido': '120 kHz' },
     fullSpecs: {
-      'Diodo Láser Rojo': '50 mW @ 650 nm (espectro rojo)',
-      'Diodo Láser Verde': '100 mW @ 532 nm (espectro verde)',
-      'Diodo Láser Azul': '50 mW @ 405 nm (espectro azul)',
+      'Diodo Láser Rojo': '50 mW @ 650 nm (espectro rojo visible)',
+      'Diodo Láser Verde': '100 mW @ 532 nm (espectro verde visible)',
+      'Diodo Láser Azul': '50 mW @ 405 nm (espectro azul visible)',
       'Potencia Total Combinada': '200 mW',
       'Velocidad de Barrido': '120 kHz (120,000 puntos/segundo)',
       'Precisión de Posicionamiento': '± 0.1 mm',
@@ -59,16 +80,39 @@ const KEY_ELEMENTS = [
       'Óptica de Enfoque': 'Lentes asféricas de precisión',
       'Estabilidad Térmica': '± 0.5°C para mantener alineación'
     },
+    materiales: {
+      'Diodos Láser': 'Semiconductores GaAs (Arseniuro de Galio)',
+      'Lentes': 'Vidrio óptico BK7 (transmisión > 99%)',
+      'Espejos Dicroicos': 'Recubrimiento multicapa de dieléctrico',
+      'Disipador Térmico': 'Cobre con revestimiento de níquel',
+      'Carcasa': 'Aluminio de grado aeronáutico'
+    },
+    latencias: {
+      'Latencia de Encendido': '< 50 ns',
+      'Latencia de Apagado': '< 50 ns',
+      'Latencia de Cambio de Color': '< 1 μs',
+      'Latencia de Posicionamiento': '< 10 μs',
+      'Estabilidad de Frecuencia': '±1 ppm'
+    },
+    consumoEnergetico: {
+      'Potencia Rojo': '50W (máximo)',
+      'Potencia Verde': '100W (máximo)',
+      'Potencia Azul': '50W (máximo)',
+      'Potencia Total': '200W (máximo)',
+      'Voltaje de Operación': '12V DC',
+      'Corriente Nominal': '5A'
+    },
     sensores: [
       'Sensor de intensidad láser (fotodiodo)',
       'Fotodiodo de retroalimentación para cada color',
       'Detector de alineación láser',
       'Sensor de temperatura de diodos',
-      'Monitor de corriente de cada láser'
+      'Monitor de corriente de cada láser',
+      'Detector de potencia óptica'
     ],
     aplicaciones: [
       'Proyecciones de alta definición y color',
-      'Arte interactivo y instalaciones',
+      'Arte interactivo e instalaciones',
       'Visualización médica de alta precisión',
       'Diseño industrial y prototipado',
       'Entretenimiento y eventos',
@@ -80,11 +124,11 @@ const KEY_ELEMENTS = [
     title: 'Nebulizador Ultrasónico', 
     icon: Droplets, 
     color: '#00bbff',
-    pos: [0, -1.5, 2],
+    pos: [-2.5, -1.5, 0], // Lateral izquierdo - generador de partículas
     desc: 'Genera micropartículas de aerosol mediante vibración ultrasónica a 1.7 MHz, creando una bruma casi invisible que actúa como lienzo físico para la proyección holográfica.',
     stats: { 'Frecuencia': '1.7 MHz', 'Tasa de Generación': '150 ml/h' },
     fullSpecs: {
-      'Frecuencia Ultrasónica': '1.7 MHz',
+      'Frecuencia Ultrasónica': '1.7 MHz ± 50 kHz',
       'Tamaño de Partícula Generada': '2-5 μm (óptimo para visibilidad)',
       'Tasa de Generación': '150 ml/h',
       'Tipo de Fluido': 'Agua destilada o solución salina estéril',
@@ -96,12 +140,34 @@ const KEY_ELEMENTS = [
       'Temperatura de Operación': '15-35°C',
       'Presión Acústica': '1-2 bar en la cámara de nebulización'
     },
+    materiales: {
+      'Transductor': 'Cerámica piezoeléctrica PZT-5H',
+      'Cámara de Nebulización': 'Polipropileno médico (PP)',
+      'Boquilla': 'Acero inoxidable 316L (resistencia a corrosión)',
+      'Depósito': 'Polimetilmetacrilato (PMMA) transparente',
+      'Sellos': 'Silicona de grado médico (biocompatible)'
+    },
+    latencias: {
+      'Latencia de Inicio': '< 500 ms',
+      'Latencia de Estabilización': '< 2 segundos',
+      'Latencia de Parada': '< 1 segundo',
+      'Tiempo de Respuesta a Cambios': '< 100 ms',
+      'Estabilidad de Frecuencia': '±0.1%'
+    },
+    consumoEnergetico: {
+      'Potencia Nominal': '10W',
+      'Potencia Pico': '15W',
+      'Voltaje de Operación': '5V DC',
+      'Corriente Nominal': '2A',
+      'Corriente Pico': '3A'
+    },
     sensores: [
       'Sensor de nivel de agua (capacitivo)',
       'Sensor de temperatura del depósito',
       'Detector de flujo de aerosol',
       'Sensor de presión en cámara de nebulización',
-      'Detector de obstrucción de boquilla'
+      'Detector de obstrucción de boquilla',
+      'Sensor de humedad relativa'
     ],
     aplicaciones: [
       'Sistemas de visualización holográfica',
@@ -117,7 +183,7 @@ const KEY_ELEMENTS = [
     title: 'Procesador DSP (IA)', 
     icon: Cpu, 
     color: '#aa00ff',
-    pos: [0, -3.5, 0],
+    pos: [0, -2.5, 0], // Centro inferior - cerebro del sistema
     desc: 'Cerebro del sistema que ejecuta millones de ecuaciones de onda por segundo, controlando campos acústicos en tiempo real y compensando corrientes de aire mediante algoritmos de IA.',
     stats: { 'Poder de Cómputo': '4.5 TFLOPS', 'Latencia': '< 2 ms' },
     fullSpecs: {
@@ -133,12 +199,34 @@ const KEY_ELEMENTS = [
       'Sistema Operativo': 'Linux embebido con kernel en tiempo real (PREEMPT_RT)',
       'Consumo de Energía': '15W en operación normal, 5W en standby'
     },
+    materiales: {
+      'Procesador': 'Silicio de grado industrial (proceso 28nm)',
+      'Disipador Térmico': 'Cobre puro (conductividad térmica 400 W/mK)',
+      'Pasta Térmica': 'Compuesto de óxido de zinc (conductividad 3-5 W/mK)',
+      'PCB': 'FR-4 de 10 capas (impedancia controlada)',
+      'Capacitores': 'Cerámica de alto voltaje (X7R, 100V)'
+    },
+    latencias: {
+      'Latencia de Inicio': '< 5 segundos',
+      'Latencia de Procesamiento': '< 2 ms',
+      'Latencia de I/O': '< 1 ms',
+      'Latencia de Interrupción': '< 100 μs',
+      'Tiempo de Contexto': '< 50 μs'
+    },
+    consumoEnergetico: {
+      'Potencia Nominal': '15W',
+      'Potencia Pico': '25W',
+      'Voltaje de Operación': '3.3V DC',
+      'Corriente Nominal': '4.5A',
+      'Corriente Pico': '7.5A'
+    },
     sensores: [
       'Sensor de temperatura del procesador',
       'Monitor de voltaje de alimentación',
       'Detector de carga térmica',
       'Sensor de frecuencia de reloj',
-      'Monitor de consumo de energía en tiempo real'
+      'Monitor de consumo de energía en tiempo real',
+      'Detector de errores de memoria'
     ],
     aplicaciones: [
       'Procesamiento en tiempo real de señales acústicas',
@@ -154,12 +242,12 @@ const KEY_ELEMENTS = [
     title: 'Sistema de Agua - Ciclo Cerrado',
     icon: Droplets,
     color: '#00bbff',
-    pos: [-2, 0, 0],
+    pos: [-2.5, 0, 0], // Lateral izquierdo - circulación de agua
     desc: 'Sistema de circulación cerrada que recicla el agua, filtra impurezas y mantiene condiciones óptimas de temperatura y pureza para la nebulización continua.',
     stats: { 'Depósito': '500 ml', 'Filtración': 'Multi-etapa' },
     fullSpecs: {
       'Depósito Principal': '500 ml con tapa anticontaminación',
-      'Bomba de Agua': 'Bomba silenciosa de 12V DC',
+      'Bomba de Agua': 'Bomba silenciosa de 12V DC (sin escobillas)',
       'Sistema de Filtración': 'Carbón activado + Filtro de 0.22 μm',
       'Caudal de Circulación': '50-100 ml/min',
       'Sensor de Nivel Mínimo': 'Detiene operación si nivel < 50 ml',
@@ -169,12 +257,35 @@ const KEY_ELEMENTS = [
       'Válvula Antirretorno': 'Previene reflujo de agua',
       'Material de Tuberías': 'Silicona de grado médico (no tóxica)'
     },
+    materiales: {
+      'Depósito': 'Polipropileno (PP) transparente',
+      'Bomba': 'Cuerpo de aluminio, impulsor de cerámica',
+      'Filtro de Carbón': 'Carbón activado de cáscara de coco',
+      'Membrana': 'Polifluoruro de vinilideno (PVDF) 0.22 μm',
+      'Tuberías': 'Silicona de grado médico (dureza Shore A 40-60)',
+      'Conectores': 'Acero inoxidable 304'
+    },
+    latencias: {
+      'Latencia de Inicio de Bomba': '< 500 ms',
+      'Latencia de Flujo Estable': '< 2 segundos',
+      'Latencia de Parada': '< 1 segundo',
+      'Tiempo de Filtración': '< 5 minutos (para 500 ml)',
+      'Tiempo de Reciclaje': '< 3 minutos'
+    },
+    consumoEnergetico: {
+      'Potencia Nominal': '8W',
+      'Potencia Pico': '12W',
+      'Voltaje de Operación': '12V DC',
+      'Corriente Nominal': '0.67A',
+      'Corriente Pico': '1A'
+    },
     sensores: [
       'Sensor de nivel de agua (capacitivo)',
       'Sensor de temperatura del depósito',
       'Detector de flujo de agua',
       'Sensor de presión de bomba',
-      'Detector de obstrucción de filtro'
+      'Detector de obstrucción de filtro',
+      'Sensor de conductividad del agua'
     ],
     aplicaciones: [
       'Reciclaje de agua 100% automático',
@@ -189,7 +300,7 @@ const KEY_ELEMENTS = [
     title: 'Control y Electrónica',
     icon: Cpu,
     color: '#aa00ff',
-    pos: [2, 0, 0],
+    pos: [2.5, 0, 0], // Lateral derecho - distribución de energía
     desc: 'Módulos de control y distribución de energía que coordinan todos los componentes del sistema con precisión milisegundo.',
     stats: { 'Voltajes': '29V, 12V, 5V, 3.3V', 'Protección': 'Completa' },
     fullSpecs: {
@@ -204,12 +315,34 @@ const KEY_ELEMENTS = [
       'Protección Térmica': 'Disipadores de cobre, ventiladores controlados',
       'Aislamiento Galvánico': 'Protección contra ruido electromagnético'
     },
+    materiales: {
+      'Batería': 'Celdas LiPo de grado industrial (3.7V nominal)',
+      'PCB Principal': 'FR-4 de 8 capas (impedancia controlada)',
+      'Disipadores': 'Cobre puro con revestimiento de níquel',
+      'Capacitores': 'Electrolíticos de aluminio (105°C)',
+      'Inductores': 'Núcleo de ferrita (permeabilidad μ = 2000)'
+    },
+    latencias: {
+      'Latencia de Distribución': '< 100 μs',
+      'Latencia de Protección Térmica': '< 10 ms',
+      'Latencia de Detección de Falla': '< 5 ms',
+      'Tiempo de Conmutación': '< 1 μs',
+      'Tiempo de Respuesta BMS': '< 50 ms'
+    },
+    consumoEnergetico: {
+      'Consumo Total del Sistema': '73W (nominal)',
+      'Consumo Pico': '120W',
+      'Autonomía': '4 horas (operación continua)',
+      'Tiempo de Carga': '2-3 horas (cargador 20V 10A)',
+      'Eficiencia de Conversión': '> 92%'
+    },
     sensores: [
       'Monitor de voltaje de batería',
       'Sensor de temperatura de batería',
       'Detector de carga de batería',
       'Monitor de corriente total del sistema',
-      'Sensor de voltaje de cada rail de potencia'
+      'Sensor de voltaje de cada rail de potencia',
+      'Detector de sobrecorriente'
     ],
     aplicaciones: [
       'Distribución eficiente de energía',
@@ -549,7 +682,7 @@ export default function Home() {
       </div>
 
       <div className={`
-        fixed md:relative top-0 right-0 md:left-0 w-full md:w-[500px] h-[75vh] md:h-full mt-[25vh] md:mt-0
+        fixed md:relative top-0 right-0 md:left-0 w-full md:w-[520px] h-[75vh] md:h-full mt-[25vh] md:mt-0
         bg-gradient-to-b from-[#0a101a]/95 to-[#020305]/95 backdrop-blur-2xl border-l md:border-l-0 md:border-r border-[#1a2535] 
         z-30 flex flex-col shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]
         ${isMobileMenuOpen ? 'translate-y-0' : 'translate-y-full md:translate-y-0'}
@@ -593,21 +726,36 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Especificaciones Técnicas Expandibles */}
           <ExpandableSection 
             title="📋 Especificaciones Técnicas"
             items={activeElement.fullSpecs}
             color={activeElement.color}
           />
 
-          {/* Sensores */}
+          <ExpandableSection 
+            title="🔧 Materiales de Construcción"
+            items={activeElement.materiales}
+            color={activeElement.color}
+          />
+
+          <ExpandableSection 
+            title="⚡ Latencias y Tiempos de Respuesta"
+            items={activeElement.latencias}
+            color={activeElement.color}
+          />
+
+          <ExpandableSection 
+            title="🔋 Consumo Energético"
+            items={activeElement.consumoEnergetico}
+            color={activeElement.color}
+          />
+
           <ExpandableSection 
             title="🔍 Sensores Integrados"
             items={activeElement.sensores}
             color={activeElement.color}
           />
 
-          {/* Aplicaciones */}
           <ExpandableSection 
             title="🎯 Aplicaciones"
             items={activeElement.aplicaciones}
