@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Info, Cpu, Droplets, Radio, Zap, Menu, X, Eye, EyeOff, Maximize, Layers } from 'lucide-react';
+import { Info, Cpu, Droplets, Radio, Zap, Menu, X, Eye, EyeOff, Maximize, Layers, ChevronDown } from 'lucide-react';
 
 // ==========================================
-// DATOS DE EXPLICACIÓN Y ELEMENTOS CLAVE
+// DATOS TÉCNICOS COMPLETOS DEL SISTEMA
 // ==========================================
 const KEY_ELEMENTS = [
   { 
@@ -10,44 +10,138 @@ const KEY_ELEMENTS = [
     title: 'Holograma Volumétrico', 
     icon: Radio, 
     color: '#00ffcc',
-    pos: [0, 2, 0], // Coordenada 3D relativa
+    pos: [0, 2, 0],
     desc: 'Núcleo del sistema. Utiliza una red de interferencia acústica para atrapar partículas ligeras en el aire, creando formas 3D tangibles a simple vista sin necesidad de gafas especiales.',
-    stats: { 'Frecuencia': '40 kHz', 'Resolución': 'Sub-milimétrica' }
+    stats: { 'Frecuencia': '40 kHz', 'Resolución': 'Sub-milimétrica' },
+    fullSpecs: {
+      'Tecnología': 'Interferencia acústica volumétrica',
+      'Proyección': 'Luz láser RGB sincronizada',
+      'Frecuencia Ultrasónica': '40 kHz ± 2 kHz',
+      'Resolución Espacial': '< 1 mm',
+      'Tamaño Máximo': '30 cm³',
+      'Refresco': '120 Hz',
+      'Persistencia Retiniana': '> 60 fps para visión fluida'
+    },
+    sensores: ['Sensor de posición de partículas', 'Detector de interferencia acústica', 'Sensor de intensidad láser'],
+    aplicaciones: ['Educación y museos', 'Presentaciones corporativas', 'Entretenimiento y arte', 'Investigación científica']
   },
   { 
     id: 'laser', 
     title: 'Matriz Láser RGB', 
     icon: Zap, 
     color: '#ff0055',
-    pos: [0, 4.5, 0], 
+    pos: [0, 4.5, 0],
     desc: 'Sistema de iluminación de alta velocidad. Proyecta haces de luz láser sobre las partículas atrapadas acústicamente, dotándolas de color y textura a una velocidad superior a la persistencia retiniana.',
-    stats: { 'Tasa de Refresco': '120 Hz', 'Espectro': '16.7M Colores' }
+    stats: { 'Tasa de Refresco': '120 Hz', 'Espectro': '16.7M Colores' },
+    fullSpecs: {
+      'Tipo de Láser': 'Diodos láser RGB (Rojo, Verde, Azul)',
+      'Potencia Roja': '50 mW @ 650 nm',
+      'Potencia Verde': '100 mW @ 532 nm',
+      'Potencia Azul': '50 mW @ 405 nm',
+      'Velocidad de Barrido': '120 kHz',
+      'Precisión de Posición': '± 0.1 mm',
+      'Colores Disponibles': '16.7 millones (RGB 8-bit)',
+      'Consumo de Energía': '12V, 5A máximo'
+    },
+    sensores: ['Sensor de intensidad láser', 'Fotodiodo de retroalimentación', 'Detector de alineación'],
+    aplicaciones: ['Proyecciones de alta definición', 'Arte interactivo', 'Visualización médica', 'Diseño industrial']
   },
   { 
     id: 'aerosol', 
     title: 'Nebulizador Ultrasónico', 
     icon: Droplets, 
     color: '#00bbff',
-    pos: [0, -1.5, 2], 
+    pos: [0, -1.5, 2],
     desc: 'Generador de micropartículas. Utiliza vibraciones de alta frecuencia para crear una bruma o aerosol casi invisible que sirve como lienzo físico para la proyección holográfica.',
-    stats: { 'Tamaño Partícula': '2-5 μm', 'Capacidad': '150 ml/h' }
+    stats: { 'Tamaño Partícula': '2-5 μm', 'Capacidad': '150 ml/h' },
+    fullSpecs: {
+      'Frecuencia Ultrasónica': '1.7 MHz',
+      'Tamaño de Partícula': '2-5 μm (óptimo para visibilidad)',
+      'Tasa de Generación': '150 ml/h',
+      'Tipo de Fluido': 'Agua destilada o solución salina',
+      'Capacidad del Depósito': '500 ml',
+      'Tiempo de Operación': '3-4 horas continuas',
+      'Consumo de Energía': '5V, 2A',
+      'Material de Transductor': 'Cerámica piezoeléctrica'
+    },
+    sensores: ['Sensor de nivel de agua', 'Sensor de temperatura', 'Detector de flujo de aerosol'],
+    aplicaciones: ['Sistemas de visualización', 'Investigación atmosférica', 'Efectos especiales', 'Diagnóstico médico']
   },
   { 
     id: 'procesador', 
     title: 'Procesador DSP (IA)', 
     icon: Cpu, 
     color: '#aa00ff',
-    pos: [0, -3.5, 0], 
+    pos: [0, -3.5, 0],
     desc: 'El cerebro del dispositivo. Un Procesador Digital de Señales que calcula millones de ecuaciones de onda por segundo para ajustar los campos acústicos en tiempo real compensando corrientes de aire.',
-    stats: { 'Poder de Cómputo': '4.5 TFLOPS', 'Latencia': '< 2ms' }
+    stats: { 'Poder de Cómputo': '4.5 TFLOPS', 'Latencia': '< 2ms' },
+    fullSpecs: {
+      'Procesador Principal': 'ARM Cortex-A72 @ 2.4 GHz',
+      'Poder de Cómputo': '4.5 TFLOPS (operaciones de punto flotante)',
+      'Memoria RAM': '8 GB LPDDR4',
+      'Almacenamiento': '64 GB eMMC',
+      'Latencia de Procesamiento': '< 2 ms',
+      'Algoritmos': 'IA/ML para predicción de flujo de aire',
+      'Interfaz': 'Ethernet Gigabit, USB 3.0, SPI, I2C',
+      'Sistema Operativo': 'Linux embebido con kernel en tiempo real'
+    },
+    sensores: ['Sensor de temperatura del procesador', 'Monitor de voltaje', 'Detector de carga térmica'],
+    aplicaciones: ['Procesamiento en tiempo real', 'Análisis de datos', 'Control inteligente', 'Machine Learning']
   }
 ];
+
+// Componente para expandir/contraer secciones
+const ExpandableSection = ({ title, items, color }: any) => {
+  const [expanded, setExpanded] = useState(false);
+  
+  return (
+    <div className="border border-white/10 rounded-lg overflow-hidden bg-white/5">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between p-3 hover:bg-white/10 transition-colors"
+      >
+        <span className="text-xs font-bold uppercase tracking-wider" style={{ color }}>
+          {title}
+        </span>
+        <ChevronDown 
+          size={16} 
+          style={{ color, transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}
+        />
+      </button>
+      
+      {expanded && (
+        <div className="p-3 border-t border-white/10 bg-black/30 space-y-2">
+          {Array.isArray(items) ? (
+            items.map((item, idx) => (
+              <div key={idx} className="text-xs text-neutral-400">
+                {typeof item === 'string' ? (
+                  <span>• {item}</span>
+                ) : (
+                  <div>
+                    <span className="text-neutral-300 font-semibold">{item.label}:</span>
+                    <span className="text-neutral-400"> {item.value}</span>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            Object.entries(items).map(([key, value], idx) => (
+              <div key={idx} className="text-xs text-neutral-400">
+                <span className="text-neutral-300 font-semibold">{key}:</span>
+                <span> {String(value)}</span>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default function Home() {
   const mountRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<any>({ scene: null, camera: null, controls: null, renderer: null, gltfModel: null, points: [] });
   
-  // Estados de la Interfaz
   const [isLoaded, setIsLoaded] = useState(false);
   const [scriptsReady, setScriptsReady] = useState(false);
   const [showAnnotations, setShowAnnotations] = useState(true);
@@ -55,13 +149,11 @@ export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [loadingError, setLoadingError] = useState(false);
 
-  // Ref para mutaciones en el render loop sin recrear el useEffect
   const showAnnotationsRef = useRef(showAnnotations);
   useEffect(() => {
     showAnnotationsRef.current = showAnnotations;
   }, [showAnnotations]);
 
-  // 1. CARGA DINÁMICA DEL MOTOR 3D (Three.js) con validación estricta
   useEffect(() => {
     const loadScript = (src: string, checkFn?: () => boolean) => {
       return new Promise<void>((resolve, reject) => {
@@ -101,7 +193,6 @@ export default function Home() {
     initScripts();
   }, []);
 
-  // 2. INICIALIZACIÓN DEL ESCENARIO 3D Y RENDERIZADO
   useEffect(() => {
     if (!scriptsReady || !mountRef.current) return;
 
@@ -110,7 +201,6 @@ export default function Home() {
     const width = mountRef.current.clientWidth;
     const height = mountRef.current.clientHeight;
 
-    // --- ESCENA, CÁMARA Y RENDERIZADOR ---
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#05070a');
     scene.fog = new THREE.FogExp2('#05070a', 0.02);
@@ -128,7 +218,6 @@ export default function Home() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     mountRef.current.appendChild(renderer.domElement);
 
-    // --- CONTROLES DE ÓRBITA ---
     const controls = new w.THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
@@ -137,7 +226,6 @@ export default function Home() {
     controls.minDistance = 5;
     controls.maxDistance = 30;
 
-    // --- ILUMINACIÓN PROFESIONAL ---
     const ambientLight = new THREE.AmbientLight('#ffffff', 0.6);
     scene.add(ambientLight);
 
@@ -156,7 +244,6 @@ export default function Home() {
     cyanLight.position.set(5, -5, 5);
     scene.add(cyanLight);
 
-    // --- PARTÍCULAS HOLOGRÁFICAS (EFECTO VISUAL) ---
     const particlesGeo = new THREE.BufferGeometry();
     const particleCount = 1500;
     const posArray = new Float32Array(particleCount * 3);
@@ -174,11 +261,9 @@ export default function Home() {
     const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
     scene.add(particlesMesh);
 
-    // --- CARGADOR DEL MODELO 3D (.glb) ---
     const loader = new w.THREE.GLTFLoader();
     const modelUrl = '/manus-storage/machine_model_05319382.glb';
     
-    // Función de respaldo visual (Fallback) si falla la carga del archivo
     const createFallbackModel = () => {
         const group = new THREE.Group();
         
@@ -246,7 +331,6 @@ export default function Home() {
 
     engineRef.current = { scene, camera, controls, renderer };
 
-    // --- BUCLE DE RENDERIZADO Y ANOTACIONES 2D ---
     let animationFrameId: number;
     const animate = () => {
         animationFrameId = requestAnimationFrame(animate);
@@ -256,7 +340,6 @@ export default function Home() {
 
         controls.update();
 
-        // Calcular proyecciones 2D para las anotaciones HTML basado en el Ref actual
         if (showAnnotationsRef.current) {
             KEY_ELEMENTS.forEach((element) => {
                 const vec = new THREE.Vector3(element.pos[0], element.pos[1], element.pos[2]);
@@ -310,16 +393,11 @@ export default function Home() {
     };
   }, [scriptsReady]);
 
-  // Prevenir Errores de React instanciando el componente de icono activamente
   const ActiveIcon = activeElement.icon;
 
-  // ==========================================
-  // RENDERIZADO DE LA INTERFAZ DE USUARIO
-  // ==========================================
   return (
     <div className="relative w-full h-screen bg-[#020305] overflow-hidden font-sans text-neutral-200 select-none flex flex-col md:flex-row">
       
-      {/* PANTALLA DE CARGA */}
       {(!isLoaded || !scriptsReady) && (
         <div className="absolute inset-0 z-50 bg-[#05070a] flex flex-col items-center justify-center">
           <div className="w-16 h-16 border-4 border-[#1a2535] border-t-[#00ffcc] rounded-full animate-spin mb-4"></div>
@@ -329,7 +407,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* CABECERA MÓVIL */}
       <div className="md:hidden absolute top-0 left-0 w-full p-5 flex justify-between items-center z-40 pointer-events-none">
         <h1 className="text-2xl font-black text-white tracking-widest drop-shadow-lg">InnovA<span className="text-[#0055ff]">+</span></h1>
         <button 
@@ -340,27 +417,24 @@ export default function Home() {
         </button>
       </div>
 
-      {/* PANEL LATERAL DE EXPLICACIONES */}
       <div className={`
-        fixed md:relative top-0 right-0 md:left-0 w-full md:w-[400px] h-[75vh] md:h-full mt-[25vh] md:mt-0
+        fixed md:relative top-0 right-0 md:left-0 w-full md:w-[450px] h-[75vh] md:h-full mt-[25vh] md:mt-0
         bg-gradient-to-b from-[#0a101a]/95 to-[#020305]/95 backdrop-blur-2xl border-l md:border-l-0 md:border-r border-[#1a2535] 
         z-30 flex flex-col shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]
         ${isMobileMenuOpen ? 'translate-y-0' : 'translate-y-full md:translate-y-0'}
       `}>
         
-        {/* Cabecera del Panel */}
         <div className="p-8 border-b border-white/5 hidden md:block">
           <h1 className="text-4xl font-black text-white tracking-wider mb-1">InnovA<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0055ff] to-[#00ffcc]">+</span></h1>
-          <div className="flex items-center gap-2 mt-2">
+          <p className="text-[11px] text-neutral-400 uppercase tracking-[0.15em] font-semibold mt-2">Sistema Holográfico Acústico Avanzado</p>
+          <div className="flex items-center gap-2 mt-3">
             <span className="h-2 w-2 rounded-full bg-[#00ffcc] animate-pulse"></span>
             <p className="text-[10px] text-[#00ffcc] uppercase tracking-[0.2em] font-bold">Diagnóstico Activo</p>
           </div>
         </div>
 
-        {/* Contenido Desplazable */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 flex flex-col gap-8">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 flex flex-col gap-6">
           
-          {/* Tarjeta del Elemento Activo */}
           <div className="bg-[#111827]/60 border border-white/5 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
             <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: activeElement.color }}></div>
             <div className="absolute -right-10 -top-10 opacity-5 transform group-hover:scale-110 transition-transform duration-700">
@@ -378,7 +452,6 @@ export default function Home() {
               {activeElement.desc}
             </p>
 
-            {/* Estadísticas / Specs */}
             <div className="grid grid-cols-2 gap-3 border-t border-white/10 pt-4">
                {Object.entries(activeElement.stats).map(([key, value]) => (
                  <div key={key}>
@@ -389,7 +462,27 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Menú de Elementos */}
+          {/* Especificaciones Técnicas Expandibles */}
+          <ExpandableSection 
+            title="📋 Especificaciones Técnicas"
+            items={activeElement.fullSpecs}
+            color={activeElement.color}
+          />
+
+          {/* Sensores */}
+          <ExpandableSection 
+            title="🔍 Sensores Integrados"
+            items={activeElement.sensores}
+            color={activeElement.color}
+          />
+
+          {/* Aplicaciones */}
+          <ExpandableSection 
+            title="🎯 Aplicaciones"
+            items={activeElement.aplicaciones}
+            color={activeElement.color}
+          />
+
           <div>
             <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-4 flex items-center gap-2">
               <Layers size={14} /> Componentes Clave
@@ -421,7 +514,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Controles de Vista */}
         <div className="p-6 border-t border-white/5 bg-[#05070a]/50">
           <button 
             onClick={() => setShowAnnotations(!showAnnotations)}
@@ -438,13 +530,10 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ÁREA DEL LIENZO 3D (Three.js Render Target) */}
       <div className="flex-1 relative bg-black cursor-grab active:cursor-grabbing overflow-hidden">
         
-        {/* Contenedor del Canvas */}
         <div ref={mountRef} className="absolute inset-0 outline-none" />
 
-        {/* ANOTACIONES HTML SUPERPUESTAS */}
         {showAnnotations && KEY_ELEMENTS.map((el) => {
           const OverlayIcon = el.icon;
           return (
@@ -481,7 +570,6 @@ export default function Home() {
           );
         })}
 
-        {/* UI Flotante Superior Derecha */}
         <div className="absolute top-6 right-6 md:right-8 text-right pointer-events-none z-10 hidden md:block">
           <div className="flex items-center gap-3 text-[#00ffcc] bg-black/40 backdrop-blur px-4 py-2 rounded-full border border-white/10">
              <Maximize size={16} />
@@ -494,7 +582,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Viñeta para suavizar bordes del 3D */}
         <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.9)] z-10" />
       </div>
 
