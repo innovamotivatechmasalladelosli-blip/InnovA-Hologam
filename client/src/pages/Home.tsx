@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Info, Cpu, Droplets, Radio, Zap, Menu, X, Eye, EyeOff, Maximize, Layers, ChevronDown } from 'lucide-react';
+import { Info, Cpu, Droplets, Radio, Zap, Menu, X, Eye, EyeOff, Maximize, Layers, ChevronDown, Zap as XRayIcon } from 'lucide-react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { XRayEffect } from '../lib/XRayEffect';
 
 // ==========================================
 // DATOS TÉCNICOS COMPLETOS Y DETALLADOS - INNOVA+
@@ -412,6 +413,9 @@ export default function Home() {
   const [activeElement, setActiveElement] = useState(KEY_ELEMENTS[0]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [loadingError, setLoadingError] = useState(false);
+  const [isXRayMode, setIsXRayMode] = useState(false);
+  const [xrayLoaded, setXrayLoaded] = useState(false);
+  const xrayEffectRef = useRef<XRayEffect | null>(null);
 
   const showAnnotationsRef = useRef(showAnnotations);
   useEffect(() => {
@@ -486,6 +490,11 @@ export default function Home() {
 
     const loader = new GLTFLoader();
     const modelUrl = './machine_model.glb';
+    const internalModelUrl = './internal_model.glb';
+    
+    // Inicializar XRayEffect
+    const xrayEffect = new XRayEffect(scene);
+    xrayEffectRef.current = xrayEffect;
     
     const createFallbackModel = () => {
         const group = new THREE.Group();
@@ -549,6 +558,43 @@ export default function Home() {
 
             scene.add(model);
             engineRef.current.gltfModel = model;
+            
+            // Establecer modelo externo en XRayEffect
+            xrayEffect.setExternalModel(model);
+            
+            // Cargar modelo interno
+            loader.load(
+                internalModelUrl,
+                (internalGltf: any) => {
+                    const internalModel = internalGltf.scene;
+                    
+                    // Aplicar las mismas transformaciones al modelo interno
+                    const internalBox = new THREE.Box3().setFromObject(internalModel);
+                    const internalCenter = internalBox.getCenter(new THREE.Vector3());
+                    const internalSize = internalBox.getSize(new THREE.Vector3());
+                    const internalMaxDim = Math.max(internalSize.x, internalSize.y, internalSize.z);
+                    const internalScale = 8 / internalMaxDim;
+                    
+                    internalModel.scale.set(internalScale, internalScale, internalScale);
+                    internalModel.position.sub(internalCenter.multiplyScalar(internalScale));
+                    
+                    internalModel.traverse((child: any) => {
+                        if (child instanceof THREE.Mesh) {
+                            child.castShadow = true;
+                            child.receiveShadow = true;
+                        }
+                    });
+                    
+                    scene.add(internalModel);
+                    xrayEffect.setInternalModel(internalModel);
+                    setXrayLoaded(true);
+                },
+                undefined,
+                (error: any) => {
+                    console.warn("No se pudo cargar el modelo interno", error);
+                }
+            );
+            
             setIsLoaded(true);
         },
         undefined,
@@ -569,6 +615,9 @@ export default function Home() {
         particlesMesh.rotation.x += 0.0005;
 
         controls.update();
+        
+        // Actualizar XRayEffect
+        xrayEffect.update();
 
         if (showAnnotationsRef.current) {
             KEY_ELEMENTS.forEach((element) => {
@@ -617,6 +666,9 @@ export default function Home() {
     return () => {
         window.removeEventListener('resize', handleResize);
         cancelAnimationFrame(animationFrameId);
+        if (xrayEffectRef.current) {
+            xrayEffectRef.current.dispose();
+        }
         if (mountRef.current && renderer.domElement) {
             mountRef.current.removeChild(renderer.domElement);
         }
@@ -768,6 +820,23 @@ export default function Home() {
                 title="Alternar Anotaciones"
               >
                 {showAnnotations ? <Eye size={16} /> : <EyeOff size={16} />}
+              </button>
+              <button 
+                onClick={() => {
+                  if (xrayEffectRef.current) {
+                    xrayEffectRef.current.toggleXRayMode();
+                    setIsXRayMode(!isXRayMode);
+                  }
+                }}
+                disabled={!xrayLoaded}
+                className={`p-2 rounded-lg border transition-all ${
+                  isXRayMode 
+                    ? 'bg-[#ff0055]/10 border-[#ff0055]/30 text-[#ff0055]' 
+                    : 'bg-white/5 border-white/10 text-neutral-500 disabled:opacity-50'
+                }`}
+                title="Efecto Rayos X"
+              >
+                <Zap size={16} />
               </button>
               <button className="p-2 rounded-lg bg-white/5 border border-white/10 text-neutral-500 hover:text-white transition-all">
                 <Maximize size={16} />
