@@ -485,7 +485,7 @@ export default function Home() {
     scene.add(particlesMesh);
 
     const loader = new GLTFLoader();
-    const modelUrl = '/machine_model.glb';
+    const modelUrl = 'machine_model.glb';
     
     const createFallbackModel = () => {
         const group = new THREE.Group();
