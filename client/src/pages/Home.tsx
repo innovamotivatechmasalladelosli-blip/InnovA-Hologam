@@ -857,6 +857,40 @@ export default function Home() {
 
       <div className="flex-1 relative bg-[#05070a]">
         <div ref={mountRef} className="w-full h-full" />
+
+        {/* Botón Flotante de Rayos X */}
+        <div className="absolute top-8 right-8 z-20">
+          <button 
+            onClick={() => {
+              if (xrayEffectRef.current) {
+                xrayEffectRef.current.toggleXRayMode();
+                setIsXRayMode(!isXRayMode);
+              }
+            }}
+            disabled={!xrayLoaded}
+            className={`
+              group flex items-center gap-3 px-6 py-3 rounded-full border-2 transition-all duration-500 shadow-[0_0_20px_rgba(0,0,0,0.5)]
+              ${isXRayMode 
+                ? 'bg-[#ff0055] border-[#ff0055] text-white scale-105 shadow-[0_0_30px_rgba(255,0,85,0.4)]' 
+                : 'bg-[#0a101a]/80 backdrop-blur-xl border-white/20 text-white hover:border-[#ff0055] hover:text-[#ff0055]'}
+              disabled:opacity-50 disabled:cursor-not-allowed
+            `}
+          >
+            <div className={`p-1.5 rounded-full transition-colors ${isXRayMode ? 'bg-white/20' : 'bg-[#ff0055]/20'}`}>
+              <Zap size={20} fill={isXRayMode ? "currentColor" : "none"} className={isXRayMode ? "animate-pulse" : ""} />
+            </div>
+            <div className="flex flex-col items-start">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] leading-none mb-1">Modo Visual</span>
+              <span className="text-sm font-bold tracking-wide">{isXRayMode ? 'VISTA INTERNA' : 'VISTA EXTERNA'}</span>
+            </div>
+          </button>
+          
+          {!xrayLoaded && (
+            <div className="absolute -bottom-6 right-0 w-full text-center">
+              <span className="text-[8px] text-neutral-500 uppercase tracking-widest animate-pulse">Cargando Rayos X...</span>
+            </div>
+          )}
+        </div>
         
         {showAnnotations && KEY_ELEMENTS.map((el) => (
           <div
