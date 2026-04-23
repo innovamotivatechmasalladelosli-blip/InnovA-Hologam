@@ -155,10 +155,7 @@
     padding-right: 1rem;
   }
 
-  .flex {
-    min-height: 0;
-    min-width: 0;
-  }
+  /* .flex override removed to avoid global side effects */
 
   @media (min-width: 640px) {
     .container {

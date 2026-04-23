@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Info, Cpu, Droplets, Radio, Zap, Menu, X, Eye, EyeOff, Maximize, Layers, ChevronDown } from 'lucide-react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 // ==========================================
 // DATOS TÉCNICOS COMPLETOS Y DETALLADOS - INNOVA+
@@ -532,11 +532,17 @@ export default function Home() {
             model.position.sub(center.multiplyScalar(scale));
 
             model.traverse((child: any) => {
-                if (child.isMesh) {
+                if (child instanceof THREE.Mesh) {
                     child.castShadow = true;
                     child.receiveShadow = true;
                     if (child.material) {
-                        child.material.envMapIntensity = 1.5;
+                        if (Array.isArray(child.material)) {
+                            child.material.forEach(m => {
+                                if ('envMapIntensity' in m) (m as any).envMapIntensity = 1.5;
+                            });
+                        } else {
+                            if ('envMapIntensity' in child.material) (child.material as any).envMapIntensity = 1.5;
+                        }
                     }
                 }
             });
