@@ -13,7 +13,7 @@ const KEY_ELEMENTS = [
     title: 'Holograma Volumétrico', 
     icon: Radio, 
     color: '#00ffcc',
-    pos: [0, 2.5, 0], // Centro superior - núcleo de proyección
+    pos: [0, 2.5, 0],
     desc: 'Núcleo del sistema que utiliza interferencia acústica para atrapar y proyectar partículas de aerosol en el espacio 3D, creando imágenes holográficas tangibles sin necesidad de gafas especiales.',
     stats: { 'Frecuencia': '40 kHz', 'Resolución': '< 1 mm' },
     fullSpecs: {
@@ -67,7 +67,7 @@ const KEY_ELEMENTS = [
     title: 'Matriz Láser RGB', 
     icon: Zap, 
     color: '#ff0055',
-    pos: [0, 4.2, 0], // Superior - sistema de iluminación
+    pos: [0, 4.2, 0],
     desc: 'Sistema de iluminación de precisión con tres diodos láser independientes que proyectan luz sobre las partículas acústicamente atrapadas, generando colores a velocidad superior a la persistencia retiniana.',
     stats: { 'Potencia Total': '200 mW', 'Velocidad de Barrido': '120 kHz' },
     fullSpecs: {
@@ -118,7 +118,7 @@ const KEY_ELEMENTS = [
       'Arte interactivo e instalaciones',
       'Visualización médica de alta precisión',
       'Diseño industrial y prototipado',
-      'Entretenimiento y evento',
+      'Entretenimiento y eventos',
       'Publicidad y marketing interactivo'
     ]
   },
@@ -127,7 +127,7 @@ const KEY_ELEMENTS = [
     title: 'Nebulizador Ultrasónico', 
     icon: Droplets, 
     color: '#00bbff',
-    pos: [-2.5, -1.5, 0], // Lateral izquierdo - generador de partículas
+    pos: [-2.5, -1.5, 0],
     desc: 'Genera micropartículas de aerosol mediante vibración ultrasónica a 1.7 MHz, creando una bruma casi invisible que actúa como lienzo físico para la proyección holográfica.',
     stats: { 'Frecuencia': '1.7 MHz', 'Tasa de Generación': '150 ml/h' },
     fullSpecs: {
@@ -186,7 +186,7 @@ const KEY_ELEMENTS = [
     title: 'Procesador DSP (IA)', 
     icon: Cpu, 
     color: '#aa00ff',
-    pos: [0, -2.5, 0], // Centro inferior - cerebro del sistema
+    pos: [0, -2.5, 0],
     desc: 'Cerebro del sistema que ejecuta millones de ecuaciones de onda por segundo, controlando campos acústicos en tiempo real y compensando corrientes de aire mediante algoritmos de IA.',
     stats: { 'Poder de Cómputo': '4.5 TFLOPS', 'Latencia': '< 2 ms' },
     fullSpecs: {
@@ -310,6 +310,9 @@ export default function Home() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
     mountRef.current.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -320,21 +323,21 @@ export default function Home() {
     controls.minDistance = 5;
     controls.maxDistance = 30;
 
-    const ambientLight = new THREE.AmbientLight('#ffffff', 0.6);
+    const ambientLight = new THREE.AmbientLight('#ffffff', 0.8);
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight('#ffffff', 1.5);
+    const dirLight = new THREE.DirectionalLight('#ffffff', 2.0);
     dirLight.position.set(10, 20, 10);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
     scene.add(dirLight);
 
-    const blueLight = new THREE.PointLight('#0055ff', 2, 20);
+    const blueLight = new THREE.PointLight('#0055ff', 3, 20);
     blueLight.position.set(-5, 5, -5);
     scene.add(blueLight);
 
-    const cyanLight = new THREE.PointLight('#00ffcc', 1.5, 20);
+    const cyanLight = new THREE.PointLight('#00ffcc', 2.5, 20);
     cyanLight.position.set(5, -5, 5);
     scene.add(cyanLight);
 
@@ -360,7 +363,6 @@ export default function Home() {
     
     const createFallbackModel = () => {
         const group = new THREE.Group();
-        
         const baseGeo = new THREE.CylinderGeometry(3, 3, 1, 32);
         const baseMat = new THREE.MeshStandardMaterial({ color: '#1a1a1a', roughness: 0.2, metalness: 0.8 });
         const base = new THREE.Mesh(baseGeo, baseMat);
@@ -406,14 +408,10 @@ export default function Home() {
                 if (child instanceof THREE.Mesh) {
                     child.castShadow = true;
                     child.receiveShadow = true;
+                    // Asegurar que los materiales originales se mantengan y se vean bien
                     if (child.material) {
-                        if (Array.isArray(child.material)) {
-                            child.material.forEach(m => {
-                                if ('envMapIntensity' in m) (m as any).envMapIntensity = 1.5;
-                            });
-                        } else {
-                            if ('envMapIntensity' in child.material) (child.material as any).envMapIntensity = 1.5;
-                        }
+                        child.material.needsUpdate = true;
+                        if (child.material.map) child.material.map.needsUpdate = true;
                     }
                 }
             });
@@ -435,20 +433,16 @@ export default function Home() {
     let animationFrameId: number;
     const animate = () => {
         animationFrameId = requestAnimationFrame(animate);
-
         particlesMesh.rotation.y += 0.001;
         particlesMesh.rotation.x += 0.0005;
-
         controls.update();
         
         if (showAnnotationsRef.current) {
             KEY_ELEMENTS.forEach((element) => {
                 const vec = new THREE.Vector3(element.pos[0], element.pos[1], element.pos[2]);
                 vec.project(camera);
-
                 const x = (vec.x * 0.5 + 0.5) * renderer.domElement.clientWidth;
                 const y = (vec.y * -0.5 + 0.5) * renderer.domElement.clientHeight;
-
                 const domElement = document.getElementById(`annotation-${element.id}`);
                 if (domElement) {
                     if (vec.z > 1) {
@@ -470,7 +464,6 @@ export default function Home() {
                 }
             });
         }
-
         renderer.render(scene, camera);
     };
     animate();
