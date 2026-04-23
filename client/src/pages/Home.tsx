@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Info, Cpu, Droplets, Radio, Zap, Menu, X, Eye, EyeOff, Maximize, Layers, ChevronDown } from 'lucide-react';
 
 // ==========================================
-// DATOS TÉCNICOS COMPLETOS DEL SISTEMA
+// DATOS TÉCNICOS DETALLADOS DEL SISTEMA INNOVA+
 // ==========================================
 const KEY_ELEMENTS = [
   { 
@@ -11,19 +11,32 @@ const KEY_ELEMENTS = [
     icon: Radio, 
     color: '#00ffcc',
     pos: [0, 2, 0],
-    desc: 'Núcleo del sistema. Utiliza una red de interferencia acústica para atrapar partículas ligeras en el aire, creando formas 3D tangibles a simple vista sin necesidad de gafas especiales.',
-    stats: { 'Frecuencia': '40 kHz', 'Resolución': 'Sub-milimétrica' },
+    desc: 'Núcleo del sistema que utiliza interferencia acústica para atrapar y proyectar partículas de aerosol en el espacio 3D, creando imágenes holográficas tangibles sin necesidad de gafas especiales.',
+    stats: { 'Frecuencia': '40 kHz', 'Resolución': '< 1 mm' },
     fullSpecs: {
-      'Tecnología': 'Interferencia acústica volumétrica',
-      'Proyección': 'Luz láser RGB sincronizada',
+      'Tecnología Base': 'Red de interferencia acústica volumétrica',
       'Frecuencia Ultrasónica': '40 kHz ± 2 kHz',
-      'Resolución Espacial': '< 1 mm',
-      'Tamaño Máximo': '30 cm³',
-      'Refresco': '120 Hz',
-      'Persistencia Retiniana': '> 60 fps para visión fluida'
+      'Resolución Espacial': 'Sub-milimétrica (< 1 mm)',
+      'Tamaño Máximo de Proyección': '30 cm³',
+      'Tasa de Refresco': '120 Hz (> 60 fps para visión fluida)',
+      'Matriz de Transductores': 'Arreglo acústico de precisión',
+      'Persistencia Retiniana': 'Sincronizada con láser RGB para fusión visual',
+      'Campo de Visión': '360° en plano horizontal, 180° vertical'
     },
-    sensores: ['Sensor de posición de partículas', 'Detector de interferencia acústica', 'Sensor de intensidad láser'],
-    aplicaciones: ['Educación y museos', 'Presentaciones corporativas', 'Entretenimiento y arte', 'Investigación científica']
+    sensores: [
+      'Sensor de posición de partículas (triangulación acústica)',
+      'Detector de interferencia acústica en tiempo real',
+      'Sensor de intensidad de proyección láser',
+      'Micrófono de retroalimentación acústica'
+    ],
+    aplicaciones: [
+      'Educación y museos (visualización de modelos 3D)',
+      'Presentaciones corporativas interactivas',
+      'Entretenimiento y arte digital',
+      'Investigación científica y visualización de datos',
+      'Diagnóstico médico (visualización de imágenes)',
+      'Interfaces futuristas'
+    ]
   },
   { 
     id: 'laser', 
@@ -31,20 +44,36 @@ const KEY_ELEMENTS = [
     icon: Zap, 
     color: '#ff0055',
     pos: [0, 4.5, 0],
-    desc: 'Sistema de iluminación de alta velocidad. Proyecta haces de luz láser sobre las partículas atrapadas acústicamente, dotándolas de color y textura a una velocidad superior a la persistencia retiniana.',
-    stats: { 'Tasa de Refresco': '120 Hz', 'Espectro': '16.7M Colores' },
+    desc: 'Sistema de iluminación de precisión con tres diodos láser independientes que proyectan luz sobre las partículas acústicamente atrapadas, generando colores a velocidad superior a la persistencia retiniana.',
+    stats: { 'Potencia Total': '200 mW', 'Velocidad de Barrido': '120 kHz' },
     fullSpecs: {
-      'Tipo de Láser': 'Diodos láser RGB (Rojo, Verde, Azul)',
-      'Potencia Roja': '50 mW @ 650 nm',
-      'Potencia Verde': '100 mW @ 532 nm',
-      'Potencia Azul': '50 mW @ 405 nm',
-      'Velocidad de Barrido': '120 kHz',
-      'Precisión de Posición': '± 0.1 mm',
+      'Diodo Láser Rojo': '50 mW @ 650 nm (espectro rojo)',
+      'Diodo Láser Verde': '100 mW @ 532 nm (espectro verde)',
+      'Diodo Láser Azul': '50 mW @ 405 nm (espectro azul)',
+      'Potencia Total Combinada': '200 mW',
+      'Velocidad de Barrido': '120 kHz (120,000 puntos/segundo)',
+      'Precisión de Posicionamiento': '± 0.1 mm',
       'Colores Disponibles': '16.7 millones (RGB 8-bit)',
-      'Consumo de Energía': '12V, 5A máximo'
+      'Tiempo de Respuesta': '< 1 μs por cambio de color',
+      'Consumo de Energía': '12V, 5A máximo',
+      'Óptica de Enfoque': 'Lentes asféricas de precisión',
+      'Estabilidad Térmica': '± 0.5°C para mantener alineación'
     },
-    sensores: ['Sensor de intensidad láser', 'Fotodiodo de retroalimentación', 'Detector de alineación'],
-    aplicaciones: ['Proyecciones de alta definición', 'Arte interactivo', 'Visualización médica', 'Diseño industrial']
+    sensores: [
+      'Sensor de intensidad láser (fotodiodo)',
+      'Fotodiodo de retroalimentación para cada color',
+      'Detector de alineación láser',
+      'Sensor de temperatura de diodos',
+      'Monitor de corriente de cada láser'
+    ],
+    aplicaciones: [
+      'Proyecciones de alta definición y color',
+      'Arte interactivo y instalaciones',
+      'Visualización médica de alta precisión',
+      'Diseño industrial y prototipado',
+      'Entretenimiento y eventos',
+      'Publicidad y marketing interactivo'
+    ]
   },
   { 
     id: 'aerosol', 
@@ -52,20 +81,36 @@ const KEY_ELEMENTS = [
     icon: Droplets, 
     color: '#00bbff',
     pos: [0, -1.5, 2],
-    desc: 'Generador de micropartículas. Utiliza vibraciones de alta frecuencia para crear una bruma o aerosol casi invisible que sirve como lienzo físico para la proyección holográfica.',
-    stats: { 'Tamaño Partícula': '2-5 μm', 'Capacidad': '150 ml/h' },
+    desc: 'Genera micropartículas de aerosol mediante vibración ultrasónica a 1.7 MHz, creando una bruma casi invisible que actúa como lienzo físico para la proyección holográfica.',
+    stats: { 'Frecuencia': '1.7 MHz', 'Tasa de Generación': '150 ml/h' },
     fullSpecs: {
       'Frecuencia Ultrasónica': '1.7 MHz',
-      'Tamaño de Partícula': '2-5 μm (óptimo para visibilidad)',
+      'Tamaño de Partícula Generada': '2-5 μm (óptimo para visibilidad)',
       'Tasa de Generación': '150 ml/h',
-      'Tipo de Fluido': 'Agua destilada o solución salina',
+      'Tipo de Fluido': 'Agua destilada o solución salina estéril',
       'Capacidad del Depósito': '500 ml',
-      'Tiempo de Operación': '3-4 horas continuas',
+      'Tiempo de Operación Continua': '3-4 horas',
       'Consumo de Energía': '5V, 2A',
-      'Material de Transductor': 'Cerámica piezoeléctrica'
+      'Material del Transductor': 'Cerámica piezoeléctrica de precisión',
+      'Eficiencia de Nebulización': '> 90%',
+      'Temperatura de Operación': '15-35°C',
+      'Presión Acústica': '1-2 bar en la cámara de nebulización'
     },
-    sensores: ['Sensor de nivel de agua', 'Sensor de temperatura', 'Detector de flujo de aerosol'],
-    aplicaciones: ['Sistemas de visualización', 'Investigación atmosférica', 'Efectos especiales', 'Diagnóstico médico']
+    sensores: [
+      'Sensor de nivel de agua (capacitivo)',
+      'Sensor de temperatura del depósito',
+      'Detector de flujo de aerosol',
+      'Sensor de presión en cámara de nebulización',
+      'Detector de obstrucción de boquilla'
+    ],
+    aplicaciones: [
+      'Sistemas de visualización holográfica',
+      'Investigación atmosférica y meteorológica',
+      'Efectos especiales en cine y televisión',
+      'Diagnóstico médico (inhalación de medicinas)',
+      'Humidificación de ambientes controlados',
+      'Investigación de propagación de partículas'
+    ]
   },
   { 
     id: 'procesador', 
@@ -73,20 +118,106 @@ const KEY_ELEMENTS = [
     icon: Cpu, 
     color: '#aa00ff',
     pos: [0, -3.5, 0],
-    desc: 'El cerebro del dispositivo. Un Procesador Digital de Señales que calcula millones de ecuaciones de onda por segundo para ajustar los campos acústicos en tiempo real compensando corrientes de aire.',
-    stats: { 'Poder de Cómputo': '4.5 TFLOPS', 'Latencia': '< 2ms' },
+    desc: 'Cerebro del sistema que ejecuta millones de ecuaciones de onda por segundo, controlando campos acústicos en tiempo real y compensando corrientes de aire mediante algoritmos de IA.',
+    stats: { 'Poder de Cómputo': '4.5 TFLOPS', 'Latencia': '< 2 ms' },
     fullSpecs: {
       'Procesador Principal': 'ARM Cortex-A72 @ 2.4 GHz',
-      'Poder de Cómputo': '4.5 TFLOPS (operaciones de punto flotante)',
-      'Memoria RAM': '8 GB LPDDR4',
-      'Almacenamiento': '64 GB eMMC',
-      'Latencia de Procesamiento': '< 2 ms',
-      'Algoritmos': 'IA/ML para predicción de flujo de aire',
-      'Interfaz': 'Ethernet Gigabit, USB 3.0, SPI, I2C',
-      'Sistema Operativo': 'Linux embebido con kernel en tiempo real'
+      'Poder de Cómputo': '4.5 TFLOPS (operaciones de punto flotante/segundo)',
+      'Memoria RAM': '8 GB LPDDR4 (ancho de banda 51.2 GB/s)',
+      'Almacenamiento': '64 GB eMMC (velocidad 200 MB/s)',
+      'Latencia de Procesamiento': '< 2 ms (tiempo real)',
+      'Coprocessador DSP': 'Unidad especializada para procesamiento de señales',
+      'Acelerador de IA': 'TPU integrada para machine learning',
+      'Algoritmos': 'Predicción de flujo de aire, compensación acústica, control adaptativo',
+      'Interfaz de Red': 'Ethernet Gigabit, USB 3.0 Type-C, SPI, I2C, UART',
+      'Sistema Operativo': 'Linux embebido con kernel en tiempo real (PREEMPT_RT)',
+      'Consumo de Energía': '15W en operación normal, 5W en standby'
     },
-    sensores: ['Sensor de temperatura del procesador', 'Monitor de voltaje', 'Detector de carga térmica'],
-    aplicaciones: ['Procesamiento en tiempo real', 'Análisis de datos', 'Control inteligente', 'Machine Learning']
+    sensores: [
+      'Sensor de temperatura del procesador',
+      'Monitor de voltaje de alimentación',
+      'Detector de carga térmica',
+      'Sensor de frecuencia de reloj',
+      'Monitor de consumo de energía en tiempo real'
+    ],
+    aplicaciones: [
+      'Procesamiento en tiempo real de señales acústicas',
+      'Análisis de datos y machine learning',
+      'Control inteligente y adaptativo del sistema',
+      'Predicción y compensación de perturbaciones',
+      'Interfaz de usuario avanzada',
+      'Integración con sistemas IoT'
+    ]
+  },
+  {
+    id: 'agua',
+    title: 'Sistema de Agua - Ciclo Cerrado',
+    icon: Droplets,
+    color: '#00bbff',
+    pos: [-2, 0, 0],
+    desc: 'Sistema de circulación cerrada que recicla el agua, filtra impurezas y mantiene condiciones óptimas de temperatura y pureza para la nebulización continua.',
+    stats: { 'Depósito': '500 ml', 'Filtración': 'Multi-etapa' },
+    fullSpecs: {
+      'Depósito Principal': '500 ml con tapa anticontaminación',
+      'Bomba de Agua': 'Bomba silenciosa de 12V DC',
+      'Sistema de Filtración': 'Carbón activado + Filtro de 0.22 μm',
+      'Caudal de Circulación': '50-100 ml/min',
+      'Sensor de Nivel Mínimo': 'Detiene operación si nivel < 50 ml',
+      'Retorno de Agua Condensada': 'Sistema de drenaje automático',
+      'Depósito de Agua Condensada': '200 ml (se recicla al depósito principal)',
+      'Filtración Multi-Etapa': 'Carbón activado + Membrana de 0.22 μm + Filtro de sedimentos',
+      'Válvula Antirretorno': 'Previene reflujo de agua',
+      'Material de Tuberías': 'Silicona de grado médico (no tóxica)'
+    },
+    sensores: [
+      'Sensor de nivel de agua (capacitivo)',
+      'Sensor de temperatura del depósito',
+      'Detector de flujo de agua',
+      'Sensor de presión de bomba',
+      'Detector de obstrucción de filtro'
+    ],
+    aplicaciones: [
+      'Reciclaje de agua 100% automático',
+      'Mantenimiento de pureza del fluido',
+      'Operación continua sin recargas frecuentes',
+      'Reducción de costos de consumibles',
+      'Sostenibilidad ambiental'
+    ]
+  },
+  {
+    id: 'electronica',
+    title: 'Control y Electrónica',
+    icon: Cpu,
+    color: '#aa00ff',
+    pos: [2, 0, 0],
+    desc: 'Módulos de control y distribución de energía que coordinan todos los componentes del sistema con precisión milisegundo.',
+    stats: { 'Voltajes': '29V, 12V, 5V, 3.3V', 'Protección': 'Completa' },
+    fullSpecs: {
+      'Placa Principal (MCU)': 'Microcontrolador ARM Cortex-M4 @ 168 MHz',
+      'Drivers de Láser': 'Drivers PWM de 1 kHz para cada color RGB',
+      'Convertidores DC-DC': 'Múltiples convertidores para 29V → 12V, 5V, 3.3V',
+      'Batería': 'Litio-Polímero 29V, 10Ah (290Wh)',
+      'BMS (Battery Management System)': 'Protección de sobrecarga, descarga, temperatura',
+      'Cargador': 'Cargador rápido 20V, 10A (carga completa en 2-3 horas)',
+      'Puerto USB-C': 'Carga rápida y transferencia de datos',
+      'Distribución de Energía': 'Riel de potencia con fusibles inteligentes',
+      'Protección Térmica': 'Disipadores de cobre, ventiladores controlados',
+      'Aislamiento Galvánico': 'Protección contra ruido electromagnético'
+    },
+    sensores: [
+      'Monitor de voltaje de batería',
+      'Sensor de temperatura de batería',
+      'Detector de carga de batería',
+      'Monitor de corriente total del sistema',
+      'Sensor de voltaje de cada rail de potencia'
+    ],
+    aplicaciones: [
+      'Distribución eficiente de energía',
+      'Protección de componentes sensibles',
+      'Operación autónoma con batería',
+      'Carga rápida y segura',
+      'Monitoreo de salud del sistema'
+    ]
   }
 ];
 
@@ -110,7 +241,7 @@ const ExpandableSection = ({ title, items, color }: any) => {
       </button>
       
       {expanded && (
-        <div className="p-3 border-t border-white/10 bg-black/30 space-y-2">
+        <div className="p-3 border-t border-white/10 bg-black/30 space-y-2 max-h-64 overflow-y-auto">
           {Array.isArray(items) ? (
             items.map((item, idx) => (
               <div key={idx} className="text-xs text-neutral-400">
@@ -418,7 +549,7 @@ export default function Home() {
       </div>
 
       <div className={`
-        fixed md:relative top-0 right-0 md:left-0 w-full md:w-[450px] h-[75vh] md:h-full mt-[25vh] md:mt-0
+        fixed md:relative top-0 right-0 md:left-0 w-full md:w-[500px] h-[75vh] md:h-full mt-[25vh] md:mt-0
         bg-gradient-to-b from-[#0a101a]/95 to-[#020305]/95 backdrop-blur-2xl border-l md:border-l-0 md:border-r border-[#1a2535] 
         z-30 flex flex-col shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]
         ${isMobileMenuOpen ? 'translate-y-0' : 'translate-y-full md:translate-y-0'}
@@ -485,7 +616,7 @@ export default function Home() {
 
           <div>
             <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-              <Layers size={14} /> Componentes Clave
+              <Layers size={14} /> Componentes del Sistema
             </h3>
             <div className="flex flex-col gap-2">
               {KEY_ELEMENTS.map((el) => {
