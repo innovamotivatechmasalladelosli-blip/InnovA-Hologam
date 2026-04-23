@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Info, Cpu, Droplets, Radio, Zap, Menu, X, Eye, EyeOff, Maximize, Layers, ChevronDown } from 'lucide-react';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 // ==========================================
 // DATOS TÉCNICOS COMPLETOS Y DETALLADOS - INNOVA+
@@ -242,12 +245,10 @@ const KEY_ELEMENTS = [
     title: 'Sistema de Agua - Ciclo Cerrado',
     icon: Droplets,
     color: '#00bbff',
-    pos: [-2.5, 0, 0], // Lateral izquierdo - circulación de agua
-    desc: 'Sistema de circulación cerrada que recicla el agua, filtra impurezas y mantiene condiciones óptimas de temperatura y pureza para la nebulización continua.',
-    stats: { 'Depósito': '500 ml', 'Filtración': 'Multi-etapa' },
+    pos: [-2.5, 0, 0], // Lateral izquierdo
+    desc: 'Sistema de gestión de fluidos que garantiza la pureza del agua y el reciclaje continuo para la generación de aerosol.',
+    stats: { 'Capacidad': '500 ml', 'Filtración': '0.22 μm' },
     fullSpecs: {
-      'Depósito Principal': '500 ml con tapa anticontaminación',
-      'Bomba de Agua': 'Bomba silenciosa de 12V DC (sin escobillas)',
       'Sistema de Filtración': 'Carbón activado + Filtro de 0.22 μm',
       'Caudal de Circulación': '50-100 ml/min',
       'Sensor de Nivel Mínimo': 'Detiene operación si nivel < 50 ml',
@@ -407,7 +408,6 @@ export default function Home() {
   const engineRef = useRef<any>({ scene: null, camera: null, controls: null, renderer: null, gltfModel: null, points: [] });
   
   const [isLoaded, setIsLoaded] = useState(false);
-  const [scriptsReady, setScriptsReady] = useState(false);
   const [showAnnotations, setShowAnnotations] = useState(true);
   const [activeElement, setActiveElement] = useState(KEY_ELEMENTS[0]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -419,49 +419,8 @@ export default function Home() {
   }, [showAnnotations]);
 
   useEffect(() => {
-    const loadScript = (src: string, checkFn?: () => boolean) => {
-      return new Promise<void>((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.crossOrigin = "anonymous";
-        script.onload = () => {
-          if (checkFn && !checkFn()) {
-            reject(new Error(`Script cargado pero falló la validación: ${src}`));
-          } else {
-            resolve();
-          }
-        };
-        script.onerror = () => reject(new Error(`Error de red al cargar: ${src}`));
-        document.body.appendChild(script);
-      });
-    };
+    if (!mountRef.current) return;
 
-    const initScripts = async () => {
-      try {
-        const w = window as any;
-        if (!w.THREE) {
-          await loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js', () => w.THREE);
-        }
-        if (!w.THREE.OrbitControls) {
-          await loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js', () => w.THREE.OrbitControls);
-        }
-        if (!w.THREE.GLTFLoader) {
-          await loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js', () => w.THREE.GLTFLoader);
-        }
-        setScriptsReady(true);
-      } catch (err) {
-        console.error("Error cargando Three.js:", err);
-        setLoadingError(true);
-      }
-    };
-    initScripts();
-  }, []);
-
-  useEffect(() => {
-    if (!scriptsReady || !mountRef.current) return;
-
-    const w = window as any;
-    const { THREE } = w;
     const width = mountRef.current.clientWidth;
     const height = mountRef.current.clientHeight;
 
@@ -475,14 +434,14 @@ export default function Home() {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     mountRef.current.appendChild(renderer.domElement);
 
-    const controls = new w.THREE.OrbitControls(camera, renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.autoRotate = true;
@@ -525,8 +484,8 @@ export default function Home() {
     const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
     scene.add(particlesMesh);
 
-    const loader = new w.THREE.GLTFLoader();
-    const modelUrl = './machine_model.glb';
+    const loader = new GLTFLoader();
+    const modelUrl = '/machine_model.glb';
     
     const createFallbackModel = () => {
         const group = new THREE.Group();
@@ -589,6 +548,7 @@ export default function Home() {
         undefined,
         (error: any) => {
             console.warn("No se pudo cargar el GLB externo, generando modelo avanzado procedimental...", error);
+            setLoadingError(true);
             createFallbackModel();
         }
     );
@@ -639,8 +599,9 @@ export default function Home() {
     animate();
 
     const handleResize = () => {
-        const w = mountRef.current?.clientWidth || width;
-        const h = mountRef.current?.clientHeight || height;
+        if (!mountRef.current) return;
+        const w = mountRef.current.clientWidth;
+        const h = mountRef.current.clientHeight;
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         renderer.setSize(w, h);
@@ -655,19 +616,19 @@ export default function Home() {
         }
         renderer.dispose();
     };
-  }, [scriptsReady]);
+  }, []);
 
   const ActiveIcon = activeElement.icon;
 
   return (
     <div className="relative w-full h-screen bg-[#020305] overflow-hidden font-sans text-neutral-200 select-none flex flex-col md:flex-row">
       
-      {(!isLoaded || !scriptsReady) && (
+      {!isLoaded && (
         <div className="absolute inset-0 z-50 bg-[#05070a] flex flex-col items-center justify-center">
           <div className="w-16 h-16 border-4 border-[#1a2535] border-t-[#00ffcc] rounded-full animate-spin mb-4"></div>
           <h2 className="text-xl font-bold tracking-widest text-white">INICIALIZANDO MOTOR 3D</h2>
           <p className="text-[#00bbff] text-sm mt-2 font-mono uppercase">Cargando Modelo y Shaders...</p>
-          {loadingError && <p className="text-red-400 mt-4 text-xs max-w-sm text-center">Aviso: Modo Offline activo. Generando modelo de respaldo interno.</p>}
+          {loadingError && <p className="text-red-400 mt-4 text-xs max-w-sm text-center">Aviso: Error al cargar el modelo. Usando respaldo procedimental.</p>}
         </div>
       )}
 
@@ -774,18 +735,16 @@ export default function Home() {
                     key={el.id}
                     onClick={() => { setActiveElement(el); setIsMobileMenuOpen(false); }}
                     className={`
-                      w-full flex items-center gap-4 p-3 rounded-xl transition-all duration-300 border text-left
+                      w-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-300
                       ${activeElement.id === el.id 
-                        ? 'bg-white/10 border-white/20 shadow-lg' 
-                        : 'bg-transparent border-transparent hover:bg-white/5 text-neutral-400'}
+                        ? 'bg-white/10 border-white/20 shadow-lg translate-x-1' 
+                        : 'bg-transparent border-transparent hover:bg-white/5 text-neutral-500 hover:text-neutral-300'}
                     `}
                   >
-                    <div style={{ color: activeElement.id === el.id ? el.color : '#666' }}>
-                      <ElementIcon size={20} />
+                    <div className="p-2 rounded-lg bg-black/20" style={{ color: activeElement.id === el.id ? el.color : 'inherit' }}>
+                      <ElementIcon size={18} />
                     </div>
-                    <span className={`text-sm font-semibold ${activeElement.id === el.id ? 'text-white' : ''}`}>
-                      {el.title}
-                    </span>
+                    <span className="text-sm font-medium">{el.title}</span>
                   </button>
                 );
               })}
@@ -793,82 +752,87 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="p-6 border-t border-white/5 bg-[#05070a]/50">
-          <button 
-            onClick={() => setShowAnnotations(!showAnnotations)}
-            className={`
-              w-full py-4 px-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all border flex justify-center gap-3 items-center
-              ${showAnnotations 
-                ? 'bg-[#00ffcc]/10 border-[#00ffcc]/30 text-[#00ffcc] shadow-[0_0_20px_rgba(0,255,204,0.15)]' 
-                : 'bg-white/5 border-white/10 hover:bg-white/10 text-white'}
-            `}
-          >
-            {showAnnotations ? <EyeOff size={18} /> : <Eye size={18} />}
-            {showAnnotations ? 'Ocultar Etiquetas 3D' : 'Mostrar Etiquetas 3D'}
-          </button>
+        <div className="p-6 border-t border-white/5 bg-black/20">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-bold">Visualización</span>
+            <div className="flex gap-2">
+              <button 
+                onClick={() => setShowAnnotations(!showAnnotations)}
+                className={`p-2 rounded-lg border transition-all ${showAnnotations ? 'bg-[#00ffcc]/10 border-[#00ffcc]/30 text-[#00ffcc]' : 'bg-white/5 border-white/10 text-neutral-500'}`}
+                title="Alternar Anotaciones"
+              >
+                {showAnnotations ? <Eye size={16} /> : <EyeOff size={16} />}
+              </button>
+              <button className="p-2 rounded-lg bg-white/5 border border-white/10 text-neutral-500 hover:text-white transition-all">
+                <Maximize size={16} />
+              </button>
+            </div>
+          </div>
+          <div className="bg-black/40 rounded-lg p-3 border border-white/5">
+            <div className="flex justify-between text-[9px] uppercase tracking-tighter text-neutral-600 mb-1">
+              <span>Carga de GPU</span>
+              <span>34%</span>
+            </div>
+            <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-[#0055ff] to-[#00ffcc] w-[34%]"></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="flex-1 relative bg-black cursor-grab active:cursor-grabbing overflow-hidden">
+      <div className="flex-1 relative bg-[#05070a]">
+        <div ref={mountRef} className="w-full h-full" />
         
-        <div ref={mountRef} className="absolute inset-0 outline-none" />
-
-        {showAnnotations && KEY_ELEMENTS.map((el) => {
-          const OverlayIcon = el.icon;
-          return (
-            <div 
-              key={`anno-${el.id}`}
-              id={`annotation-${el.id}`}
-              onClick={() => setActiveElement(el)}
-              className={`
-                absolute top-0 left-0 transition-opacity duration-200 cursor-pointer group z-20
-                ${activeElement.id === el.id ? 'z-30' : 'opacity-70 hover:opacity-100'}
-              `}
-              style={{ 
-                willChange: 'transform', 
-                transform: 'translate(-50%, -50%) translate(-9999px, -9999px)' 
-              }}
-            >
-              <div className="relative flex items-center justify-center">
-                <div 
-                  className={`w-4 h-4 rounded-full border-2 transition-transform duration-300 ${activeElement.id === el.id ? 'scale-125' : ''}`}
-                  style={{ backgroundColor: '#05070a', borderColor: el.color, boxShadow: `0 0 10px ${el.color}` }}
-                />
-                {activeElement.id === el.id && (
-                  <div className="absolute w-8 h-8 rounded-full animate-ping opacity-40" style={{ backgroundColor: el.color }} />
-                )}
-                
-                <div className="absolute left-6 top-1/2 -translate-y-1/2 bg-[#05070a]/90 backdrop-blur-md border border-white/20 p-2 pr-4 rounded-lg flex items-center gap-3 whitespace-nowrap pointer-events-none transform origin-left transition-all duration-300 group-hover:scale-105">
-                  <div style={{ color: el.color }}><OverlayIcon size={16} /></div>
-                  <span className={`text-xs font-bold uppercase tracking-wider ${activeElement.id === el.id ? 'text-white' : 'text-neutral-300'}`}>
-                    {el.title}
-                  </span>
-                </div>
+        {showAnnotations && KEY_ELEMENTS.map((el) => (
+          <div
+            key={el.id}
+            id={`annotation-${el.id}`}
+            className="absolute top-0 left-0 pointer-events-none transition-opacity duration-300"
+            style={{ opacity: 0 }}
+          >
+            <div className="relative">
+              <div 
+                className="w-4 h-4 rounded-full border-2 animate-ping absolute -inset-0"
+                style={{ borderColor: el.color }}
+              ></div>
+              <div 
+                className="w-4 h-4 rounded-full border-2 relative z-10 bg-[#05070a]"
+                style={{ borderColor: el.color }}
+              ></div>
+              
+              <div className="absolute left-6 top-1/2 -translate-y-1/2 bg-[#0a101a]/90 backdrop-blur-md border border-white/10 p-2 rounded-lg whitespace-nowrap shadow-2xl">
+                <p className="text-[10px] font-bold text-white uppercase tracking-wider">{el.title}</p>
               </div>
             </div>
-          );
-        })}
-
-        <div className="absolute top-6 right-6 md:right-8 text-right pointer-events-none z-10 hidden md:block">
-          <div className="flex items-center gap-3 text-[#00ffcc] bg-black/40 backdrop-blur px-4 py-2 rounded-full border border-white/10">
-             <Maximize size={16} />
-             <span className="text-[10px] uppercase tracking-widest font-bold">Interactúa con el Modelo</span>
           </div>
-          <div className="mt-4 text-[10px] text-neutral-500 uppercase tracking-widest flex flex-col gap-1">
-            <span>Click Izq + Arrastrar: <strong className="text-white">Orbitar</strong></span>
-            <span>Rueda Ratón: <strong className="text-white">Zoom</strong></span>
-            <span>Click Der + Arrastrar: <strong className="text-white">Panorámica</strong></span>
+        ))}
+
+        <div className="absolute bottom-8 right-8 flex flex-col items-end gap-2 pointer-events-none">
+          <div className="bg-black/60 backdrop-blur-md border border-white/10 p-4 rounded-2xl shadow-2xl">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+              <span className="text-[10px] font-bold text-white uppercase tracking-[0.2em]">Live Stream</span>
+            </div>
+            <p className="text-[9px] text-neutral-400 font-mono">COORD: 19.4326° N, 99.1332° W</p>
+            <p className="text-[9px] text-neutral-400 font-mono">TEMP: 24.5°C | HUM: 42%</p>
           </div>
         </div>
-
-        <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.9)] z-10" />
       </div>
 
-      <style dangerouslySetInnerHTML={{__html: `
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+      <style dangerouslySetInnerHTML={{ __html: `
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
       `}} />
     </div>
   );
