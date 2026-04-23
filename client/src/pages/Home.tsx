@@ -4,6 +4,47 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
+// Shader para efecto de rayos X
+const xrayShader = {
+  vertex: `
+    varying vec3 vNormal;
+    varying vec3 vPosition;
+    
+    void main() {
+      vNormal = normalize(normalMatrix * normal);
+      vPosition = position;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  fragment: `
+    uniform float uTransition;
+    varying vec3 vNormal;
+    varying vec3 vPosition;
+    
+    void main() {
+      // Efecto de rayos X: mostrar wireframe y brillo interno
+      float edge = abs(dot(vNormal, vec3(0.0, 0.0, 1.0)));
+      float wireframe = step(0.95, edge);
+      
+      // Gradiente de transición
+      vec3 xrayColor = mix(
+        vec3(0.1, 0.5, 1.0),  // Azul para rayos X
+        vec3(1.0, 1.0, 1.0),  // Blanco brillante
+        uTransition
+      );
+      
+      // Combinar wireframe con color de transición
+      vec3 finalColor = mix(xrayColor * 0.3, xrayColor, wireframe);
+      
+      // Aumentar brillo durante la transición
+      float brightness = 0.5 + uTransition * 0.5;
+      finalColor *= brightness;
+      
+      gl_FragColor = vec4(finalColor, 0.8 + uTransition * 0.2);
+    }
+  `
+};
+
 // ==========================================
 // DATOS TÉCNICOS COMPLETOS Y DETALLADOS - INNOVA+
 // ==========================================
@@ -290,6 +331,10 @@ export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showAnnotations, setShowAnnotations] = useState(true);
   const showAnnotationsRef = useRef(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionProgress, setTransitionProgress] = useState(0);
+  const model2Ref = useRef<THREE.Group | null>(null);
+  const transitionStartTimeRef = useRef(0);
 
   useEffect(() => {
     showAnnotationsRef.current = showAnnotations;
@@ -390,45 +435,83 @@ export default function Home() {
         setIsLoaded(true);
     };
 
-    loader.load(
-        modelUrl,
-        (gltf: any) => {
-            const model = gltf.scene;
-            
-            const box = new THREE.Box3().setFromObject(model);
-            const center = box.getCenter(new THREE.Vector3());
-            const size = box.getSize(new THREE.Vector3());
-            const maxDim = Math.max(size.x, size.y, size.z);
-            const scale = 8 / maxDim;
-            
-            model.scale.set(scale, scale, scale);
-            model.position.sub(center.multiplyScalar(scale));
+    // Función para cargar y preparar un modelo
+    const loadAndPrepareModel = (url: string, callback: (model: THREE.Group) => void) => {
+        loader.load(
+            url,
+            (gltf: any) => {
+                const model = gltf.scene;
+                
+                const box = new THREE.Box3().setFromObject(model);
+                const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const scale = 8 / maxDim;
+                
+                model.scale.set(scale, scale, scale);
+                model.position.sub(center.multiplyScalar(scale));
 
-            model.traverse((child: any) => {
-                if (child instanceof THREE.Mesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                    // Asegurar que los materiales originales se mantengan y se vean bien
-                    if (child.material) {
-                        child.material.needsUpdate = true;
-                        if (child.material.map) child.material.map.needsUpdate = true;
+                model.traverse((child: any) => {
+                    if (child instanceof THREE.Mesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                        if (child.material) {
+                            child.material.needsUpdate = true;
+                            if (child.material.map) child.material.map.needsUpdate = true;
+                        }
                     }
-                }
-            });
+                });
 
-            scene.add(model);
-            engineRef.current.gltfModel = model;
-            setIsLoaded(true);
-        },
-        undefined,
-        (error: any) => {
-            console.warn("No se pudo cargar el GLB externo, generando modelo avanzado procedimental...", error);
-            setLoadingError(true);
-            createFallbackModel();
-        }
-    );
+                callback(model);
+            },
+            undefined,
+            (error: any) => {
+                console.warn("Error cargando modelo:", error);
+            }
+        );
+    };
+
+    // Cargar modelo 1 (exterior completo)
+    loadAndPrepareModel(modelUrl, (model) => {
+        scene.add(model);
+        engineRef.current.gltfModel = model;
+        setIsLoaded(true);
+    });
+
+    // Cargar modelo 2 (interior con rayos X)
+    loadAndPrepareModel('./interior_model.glb', (model) => {
+        model.visible = false;
+        scene.add(model);
+        model2Ref.current = model;
+    });
 
     engineRef.current = { scene, camera, controls, renderer };
+
+    // Función para aplicar efecto de rayos X
+    const applyXrayEffect = (model: THREE.Group, intensity: number) => {
+        model.traverse((child: any) => {
+            if (child instanceof THREE.Mesh) {
+                const material = child.material as any;
+                
+                // Crear o actualizar material con efecto de rayos X
+                if (!child.userData.originalMaterial) {
+                    child.userData.originalMaterial = material.clone();
+                }
+                
+                const xrayMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTransition: { value: intensity }
+                    },
+                    vertexShader: xrayShader.vertex,
+                    fragmentShader: xrayShader.fragment,
+                    transparent: true,
+                    wireframe: intensity > 0.3
+                });
+
+                child.material = xrayMaterial;
+            }
+        });
+    };
 
     let animationFrameId: number;
     const animate = () => {
@@ -436,6 +519,29 @@ export default function Home() {
         particlesMesh.rotation.y += 0.001;
         particlesMesh.rotation.x += 0.0005;
         controls.update();
+        
+        // Manejar transición de modelos
+        if (isTransitioning && engineRef.current.gltfModel && model2Ref.current) {
+            const elapsed = Date.now() - transitionStartTimeRef.current;
+            const transitionDuration = 2000; // 2 segundos
+            const progress = Math.min(elapsed / transitionDuration, 1);
+            setTransitionProgress(progress);
+
+            // Fade out modelo 1, fade in modelo 2
+            engineRef.current.gltfModel.traverse((child: any) => {
+                if (child instanceof THREE.Mesh && child.material.opacity !== undefined) {
+                    child.material.opacity = 1 - progress;
+                }
+            });
+
+            model2Ref.current.visible = true;
+            applyXrayEffect(model2Ref.current, progress);
+
+            if (progress === 1) {
+                setIsTransitioning(false);
+                engineRef.current.gltfModel.visible = false;
+            }
+        }
         
         if (showAnnotationsRef.current) {
             KEY_ELEMENTS.forEach((element) => {
@@ -626,6 +732,21 @@ export default function Home() {
                 title="Alternar Anotaciones"
               >
                 {showAnnotations ? <Eye size={16} /> : <EyeOff size={16} />}
+              </button>
+              <button 
+                onClick={() => {
+                  setIsTransitioning(true);
+                  transitionStartTimeRef.current = Date.now();
+                }}
+                disabled={isTransitioning}
+                className={`p-2 rounded-lg border transition-all ${
+                  isTransitioning 
+                    ? 'bg-[#0055ff]/20 border-[#0055ff]/50 text-[#0055ff] opacity-50 cursor-not-allowed' 
+                    : 'bg-white/5 border-white/10 text-neutral-500 hover:text-white hover:bg-[#0055ff]/10 hover:border-[#0055ff]/30'
+                }`}
+                title="Activar Rayos X"
+              >
+                <Radio size={16} />
               </button>
               <button className="p-2 rounded-lg bg-white/5 border border-white/10 text-neutral-500 hover:text-white transition-all">
                 <Maximize size={16} />
