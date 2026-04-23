@@ -2,6 +2,12 @@
 
 Visualizador interactivo 3D del sistema holográfico volumétrico InnovA+. Una aplicación web moderna que permite explorar en detalle cada componente del sistema de proyección holográfica acústica, con especificaciones técnicas completas, materiales de construcción, latencias y consumo energético.
 
+## 🌐 Ver en Vivo
+
+**👉 [Visualizador 3D InnovA+ - Acceso Directo](https://innovamotivatechmasalladelosli-blip.github.io/InnovA-Hologam/)**
+
+Abre este enlace para ver el modelo 3D interactivo completamente funcional en tu navegador.
+
 ## 🎯 Características Principales
 
 - **Visualización 3D Interactiva**: Modelo 3D del dispositivo InnovA+ con rotación, zoom y panorámica
@@ -30,7 +36,7 @@ Visualizador interactivo 3D del sistema holográfico volumétrico InnovA+. Una a
 - Node.js 18+ 
 - pnpm 10+
 
-### Instalación
+### Instalación Local
 
 ```bash
 # Clonar el repositorio
@@ -46,25 +52,40 @@ pnpm dev
 
 El servidor estará disponible en `http://localhost:3000`
 
+### Construcción para Producción
+
+```bash
+# Compilar
+pnpm build
+
+# Previsualizar
+pnpm preview
+```
+
 ## 📁 Estructura del Proyecto
 
 ```
 InnovA-Hologam/
+├── docs/                        # Archivos compilados para GitHub Pages
+│   ├── index.html              # Página principal compilada
+│   ├── machine_model.glb       # Modelo 3D
+│   └── assets/                 # CSS y JavaScript compilados
 ├── client/
 │   ├── src/
 │   │   ├── pages/
-│   │   │   └── Home.tsx          # Componente principal con visualizador
-│   │   ├── components/           # Componentes reutilizables
-│   │   ├── App.tsx              # Enrutamiento principal
-│   │   ├── main.tsx             # Punto de entrada
-│   │   └── index.css            # Estilos globales
-│   ├── index.html               # Template HTML
-│   └── public/                  # Archivos estáticos
+│   │   │   └── Home.tsx        # Componente principal con visualizador
+│   │   ├── components/         # Componentes reutilizables
+│   │   ├── App.tsx            # Enrutamiento principal
+│   │   ├── main.tsx           # Punto de entrada
+│   │   └── index.css          # Estilos globales
+│   ├── index.html             # Template HTML
+│   └── public/                # Archivos estáticos
+│       └── machine_model.glb  # Modelo 3D del dispositivo
 ├── server/
-│   └── index.ts                 # Servidor Express (producción)
-├── package.json                 # Dependencias del proyecto
-├── tsconfig.json               # Configuración TypeScript
-└── README.md                   # Este archivo
+│   └── index.ts               # Servidor Express (producción)
+├── package.json               # Dependencias del proyecto
+├── tsconfig.json             # Configuración TypeScript
+└── README.md                 # Este archivo
 ```
 
 ## 🛠️ Tecnologías Utilizadas
@@ -76,6 +97,7 @@ InnovA-Hologam/
 - **Iconos**: Lucide React
 - **Build**: Vite
 - **Servidor**: Express.js (producción)
+- **Hosting**: GitHub Pages
 
 ## 📊 Especificaciones Técnicas del Sistema
 
@@ -200,25 +222,20 @@ Para agregar un nuevo componente al sistema:
 
 ## 🌐 Despliegue
 
-### Manus Hosting
-El proyecto está configurado para despliegue automático en Manus:
+### GitHub Pages (Actualmente Activo)
+El proyecto está desplegado automáticamente en GitHub Pages:
+- **URL**: https://innovamotivatechmasalladelosli-blip.github.io/InnovA-Hologam/
+- **Archivos**: Carpeta `docs/` en el repositorio
+- **Actualización**: Automática con cada push a `main`
 
-```bash
-# Guardar checkpoint
-pnpm run build
-
-# Publicar (desde UI de Manus)
-# Click en "Publish" en el Management UI
-```
-
-### Despliegue Manual
+### Despliegue Manual en Otros Servidores
 
 ```bash
 # Compilar
 pnpm build
 
-# Servir desde dist/
-pnpm preview
+# Los archivos compilados están en dist/public/
+# Copiar a tu servidor web
 ```
 
 ## 📄 Licencia
@@ -291,3 +308,4 @@ Para reportar problemas o sugerencias, abre un issue en el repositorio.
 
 **Última actualización**: Abril 2026
 **Versión**: 1.0.0
+**Estado**: ✅ En vivo en GitHub Pages
