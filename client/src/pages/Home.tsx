@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Info, Cpu, Droplets, Radio, Zap, Menu, X, Eye, EyeOff, Maximize, Layers, ChevronDown, Zap as XRayIcon } from 'lucide-react';
+import { Info, Cpu, Droplets, Radio, Zap, Menu, X, Eye, EyeOff, Maximize, Layers, ChevronDown } from 'lucide-react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { XRayEffect } from '../lib/XRayEffect';
 
 // ==========================================
 // DATOS TÉCNICOS COMPLETOS Y DETALLADOS - INNOVA+
@@ -119,7 +118,7 @@ const KEY_ELEMENTS = [
       'Arte interactivo e instalaciones',
       'Visualización médica de alta precisión',
       'Diseño industrial y prototipado',
-      'Entretenimiento y eventos',
+      'Entretenimiento y evento',
       'Publicidad y marketing interactivo'
     ]
   },
@@ -237,164 +236,42 @@ const KEY_ELEMENTS = [
       'Análisis de datos y machine learning',
       'Control inteligente y adaptativo del sistema',
       'Predicción y compensación de perturbaciones',
-      'Interfaz de usuario avanzada',
-      'Integración con sistemas IoT'
-    ]
-  },
-  {
-    id: 'agua',
-    title: 'Sistema de Agua - Ciclo Cerrado',
-    icon: Droplets,
-    color: '#00bbff',
-    pos: [-2.5, 0, 0], // Lateral izquierdo
-    desc: 'Sistema de gestión de fluidos que garantiza la pureza del agua y el reciclaje continuo para la generación de aerosol.',
-    stats: { 'Capacidad': '500 ml', 'Filtración': '0.22 μm' },
-    fullSpecs: {
-      'Sistema de Filtración': 'Carbón activado + Filtro de 0.22 μm',
-      'Caudal de Circulación': '50-100 ml/min',
-      'Sensor de Nivel Mínimo': 'Detiene operación si nivel < 50 ml',
-      'Retorno de Agua Condensada': 'Sistema de drenaje automático',
-      'Depósito de Agua Condensada': '200 ml (se recicla al depósito principal)',
-      'Filtración Multi-Etapa': 'Carbón activado + Membrana de 0.22 μm + Filtro de sedimentos',
-      'Válvula Antirretorno': 'Previene reflujo de agua',
-      'Material de Tuberías': 'Silicona de grado médico (no tóxica)'
-    },
-    materiales: {
-      'Depósito': 'Polipropileno (PP) transparente',
-      'Bomba': 'Cuerpo de aluminio, impulsor de cerámica',
-      'Filtro de Carbón': 'Carbón activado de cáscara de coco',
-      'Membrana': 'Polifluoruro de vinilideno (PVDF) 0.22 μm',
-      'Tuberías': 'Silicona de grado médico (dureza Shore A 40-60)',
-      'Conectores': 'Acero inoxidable 304'
-    },
-    latencias: {
-      'Latencia de Inicio de Bomba': '< 500 ms',
-      'Latencia de Flujo Estable': '< 2 segundos',
-      'Latencia de Parada': '< 1 segundo',
-      'Tiempo de Filtración': '< 5 minutos (para 500 ml)',
-      'Tiempo de Reciclaje': '< 3 minutos'
-    },
-    consumoEnergetico: {
-      'Potencia Nominal': '8W',
-      'Potencia Pico': '12W',
-      'Voltaje de Operación': '12V DC',
-      'Corriente Nominal': '0.67A',
-      'Corriente Pico': '1A'
-    },
-    sensores: [
-      'Sensor de nivel de agua (capacitivo)',
-      'Sensor de temperatura del depósito',
-      'Detector de flujo de agua',
-      'Sensor de presión de bomba',
-      'Detector de obstrucción de filtro',
-      'Sensor de conductividad del agua'
-    ],
-    aplicaciones: [
-      'Reciclaje de agua 100% automático',
-      'Mantenimiento de pureza del fluido',
-      'Operación continua sin recargas frecuentes',
-      'Reducción de costos de consumibles',
-      'Sostenibilidad ambiental'
-    ]
-  },
-  {
-    id: 'electronica',
-    title: 'Control y Electrónica',
-    icon: Cpu,
-    color: '#aa00ff',
-    pos: [2.5, 0, 0], // Lateral derecho - distribución de energía
-    desc: 'Módulos de control y distribución de energía que coordinan todos los componentes del sistema con precisión milisegundo.',
-    stats: { 'Voltajes': '29V, 12V, 5V, 3.3V', 'Protección': 'Completa' },
-    fullSpecs: {
-      'Placa Principal (MCU)': 'Microcontrolador ARM Cortex-M4 @ 168 MHz',
-      'Drivers de Láser': 'Drivers PWM de 1 kHz para cada color RGB',
-      'Convertidores DC-DC': 'Múltiples convertidores para 29V → 12V, 5V, 3.3V',
-      'Batería': 'Litio-Polímero 29V, 10Ah (290Wh)',
-      'BMS (Battery Management System)': 'Protección de sobrecarga, descarga, temperatura',
-      'Cargador': 'Cargador rápido 20V, 10A (carga completa en 2-3 horas)',
-      'Puerto USB-C': 'Carga rápida y transferencia de datos',
-      'Distribución de Energía': 'Riel de potencia con fusibles inteligentes',
-      'Protección Térmica': 'Disipadores de cobre, ventiladores controlados',
-      'Aislamiento Galvánico': 'Protección contra ruido electromagnético'
-    },
-    materiales: {
-      'Batería': 'Celdas LiPo de grado industrial (3.7V nominal)',
-      'PCB Principal': 'FR-4 de 8 capas (impedancia controlada)',
-      'Disipadores': 'Cobre puro con revestimiento de níquel',
-      'Capacitores': 'Electrolíticos de aluminio (105°C)',
-      'Inductores': 'Núcleo de ferrita (permeabilidad μ = 2000)'
-    },
-    latencias: {
-      'Latencia de Distribución': '< 100 μs',
-      'Latencia de Protección Térmica': '< 10 ms',
-      'Latencia de Detección de Falla': '< 5 ms',
-      'Tiempo de Conmutación': '< 1 μs',
-      'Tiempo de Respuesta BMS': '< 50 ms'
-    },
-    consumoEnergetico: {
-      'Consumo Total del Sistema': '73W (nominal)',
-      'Consumo Pico': '120W',
-      'Autonomía': '4 horas (operación continua)',
-      'Tiempo de Carga': '2-3 horas (cargador 20V 10A)',
-      'Eficiencia de Conversión': '> 92%'
-    },
-    sensores: [
-      'Monitor de voltaje de batería',
-      'Sensor de temperatura de batería',
-      'Detector de carga de batería',
-      'Monitor de corriente total del sistema',
-      'Sensor de voltaje de cada rail de potencia',
-      'Detector de sobrecorriente'
-    ],
-    aplicaciones: [
-      'Distribución eficiente de energía',
-      'Protección de componentes sensibles',
-      'Operación autónoma con batería',
-      'Carga rápida y segura',
-      'Monitoreo de salud del sistema'
+      'Interfaz de usuario avanzada'
     ]
   }
 ];
 
-// Componente para expandir/contraer secciones
-const ExpandableSection = ({ title, items, color }: any) => {
-  const [expanded, setExpanded] = useState(false);
+const ExpandableSection = ({ title, items, color }: { title: string, items: any, color: string }) => {
+  const [isOpen, setIsOpen] = useState(false);
   
   return (
-    <div className="border border-white/10 rounded-lg overflow-hidden bg-white/5">
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-3 hover:bg-white/10 transition-colors"
+    <div className="mb-4 border-b border-white/5 pb-4">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between text-left group"
       >
-        <span className="text-xs font-bold uppercase tracking-wider" style={{ color }}>
+        <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] group-hover:text-neutral-300 transition-colors">
           {title}
-        </span>
-        <ChevronDown 
-          size={16} 
-          style={{ color, transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}
-        />
+        </h3>
+        <ChevronDown size={14} className={`text-neutral-600 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       
-      {expanded && (
-        <div className="p-3 border-t border-white/10 bg-black/30 space-y-2 max-h-64 overflow-y-auto">
+      {isOpen && (
+        <div className="mt-4 grid grid-cols-1 gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
           {Array.isArray(items) ? (
-            items.map((item, idx) => (
-              <div key={idx} className="text-xs text-neutral-400">
-                {typeof item === 'string' ? (
-                  <span>• {item}</span>
-                ) : (
-                  <div>
-                    <span className="text-neutral-300 font-semibold">{item.label}:</span>
-                    <span className="text-neutral-400"> {item.value}</span>
-                  </div>
-                )}
-              </div>
-            ))
+            <ul className="space-y-2">
+              {items.map((item: string, idx: number) => (
+                <li key={idx} className="flex items-start gap-3 text-xs text-neutral-400">
+                  <div className="w-1 h-1 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: color }}></div>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           ) : (
-            Object.entries(items).map(([key, value], idx) => (
-              <div key={idx} className="text-xs text-neutral-400">
-                <span className="text-neutral-300 font-semibold">{key}:</span>
-                <span> {String(value)}</span>
+            Object.entries(items).map(([key, value]: [string, any]) => (
+              <div key={key} className="flex flex-col">
+                <span className="text-[9px] text-neutral-600 uppercase font-bold mb-1">{key}</span>
+                <span className="text-xs text-neutral-300 font-medium">{value}</span>
               </div>
             ))
           )}
@@ -406,18 +283,14 @@ const ExpandableSection = ({ title, items, color }: any) => {
 
 export default function Home() {
   const mountRef = useRef<HTMLDivElement>(null);
-  const engineRef = useRef<any>({ scene: null, camera: null, controls: null, renderer: null, gltfModel: null, points: [] });
-  
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [showAnnotations, setShowAnnotations] = useState(true);
+  const engineRef = useRef<any>({});
   const [activeElement, setActiveElement] = useState(KEY_ELEMENTS[0]);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [loadingError, setLoadingError] = useState(false);
-  const [isXRayMode, setIsXRayMode] = useState(false);
-  const [xrayLoaded, setXrayLoaded] = useState(false);
-  const xrayEffectRef = useRef<XRayEffect | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showAnnotations, setShowAnnotations] = useState(true);
+  const showAnnotationsRef = useRef(true);
 
-  const showAnnotationsRef = useRef(showAnnotations);
   useEffect(() => {
     showAnnotationsRef.current = showAnnotations;
   }, [showAnnotations]);
@@ -425,22 +298,16 @@ export default function Home() {
   useEffect(() => {
     if (!mountRef.current) return;
 
-    const width = mountRef.current.clientWidth;
-    const height = mountRef.current.clientHeight;
-
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#05070a');
-    scene.fog = new THREE.FogExp2('#05070a', 0.02);
+    scene.fog = new THREE.FogExp2('#05070a', 0.05);
 
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(45, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
     camera.position.set(12, 8, 12);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
+    renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     mountRef.current.appendChild(renderer.domElement);
@@ -490,11 +357,6 @@ export default function Home() {
 
     const loader = new GLTFLoader();
     const modelUrl = './machine_model.glb';
-    const internalModelUrl = './internal_model.glb';
-    
-    // Inicializar XRayEffect
-    const xrayEffect = new XRayEffect(scene);
-    xrayEffectRef.current = xrayEffect;
     
     const createFallbackModel = () => {
         const group = new THREE.Group();
@@ -558,43 +420,6 @@ export default function Home() {
 
             scene.add(model);
             engineRef.current.gltfModel = model;
-            
-            // Establecer modelo externo en XRayEffect
-            xrayEffect.setExternalModel(model);
-            
-            // Cargar modelo interno
-            loader.load(
-                internalModelUrl,
-                (internalGltf: any) => {
-                    const internalModel = internalGltf.scene;
-                    
-                    // Aplicar las mismas transformaciones al modelo interno
-                    const internalBox = new THREE.Box3().setFromObject(internalModel);
-                    const internalCenter = internalBox.getCenter(new THREE.Vector3());
-                    const internalSize = internalBox.getSize(new THREE.Vector3());
-                    const internalMaxDim = Math.max(internalSize.x, internalSize.y, internalSize.z);
-                    const internalScale = 8 / internalMaxDim;
-                    
-                    internalModel.scale.set(internalScale, internalScale, internalScale);
-                    internalModel.position.sub(internalCenter.multiplyScalar(internalScale));
-                    
-                    internalModel.traverse((child: any) => {
-                        if (child instanceof THREE.Mesh) {
-                            child.castShadow = true;
-                            child.receiveShadow = true;
-                        }
-                    });
-                    
-                    scene.add(internalModel);
-                    xrayEffect.setInternalModel(internalModel);
-                    setXrayLoaded(true);
-                },
-                undefined,
-                (error: any) => {
-                    console.warn("No se pudo cargar el modelo interno", error);
-                }
-            );
-            
             setIsLoaded(true);
         },
         undefined,
@@ -616,9 +441,6 @@ export default function Home() {
 
         controls.update();
         
-        // Actualizar XRayEffect
-        xrayEffect.update();
-
         if (showAnnotationsRef.current) {
             KEY_ELEMENTS.forEach((element) => {
                 const vec = new THREE.Vector3(element.pos[0], element.pos[1], element.pos[2]);
@@ -666,9 +488,6 @@ export default function Home() {
     return () => {
         window.removeEventListener('resize', handleResize);
         cancelAnimationFrame(animationFrameId);
-        if (xrayEffectRef.current) {
-            xrayEffectRef.current.dispose();
-        }
         if (mountRef.current && renderer.domElement) {
             mountRef.current.removeChild(renderer.domElement);
         }
@@ -706,47 +525,41 @@ export default function Home() {
         z-30 flex flex-col shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]
         ${isMobileMenuOpen ? 'translate-y-0' : 'translate-y-full md:translate-y-0'}
       `}>
-        
-        <div className="p-8 border-b border-white/5 hidden md:block">
-          <h1 className="text-4xl font-black text-white tracking-wider mb-1">InnovA<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0055ff] to-[#00ffcc]">+</span></h1>
-          <p className="text-[11px] text-neutral-400 uppercase tracking-[0.15em] font-semibold mt-2">Sistema Holográfico Acústico Avanzado</p>
-          <div className="flex items-center gap-2 mt-3">
-            <span className="h-2 w-2 rounded-full bg-[#00ffcc] animate-pulse"></span>
-            <p className="text-[10px] text-[#00ffcc] uppercase tracking-[0.2em] font-bold">Diagnóstico Activo</p>
+        <div className="hidden md:flex p-8 items-center justify-between border-b border-white/5">
+          <h1 className="text-3xl font-black text-white tracking-tighter">InnovA<span className="text-[#0055ff]">+</span></h1>
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#00ffcc]/10 border border-[#00ffcc]/20">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#00ffcc] animate-pulse"></div>
+            <span className="text-[10px] font-bold text-[#00ffcc] uppercase tracking-widest">Sistema Activo</span>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 flex flex-col gap-6">
-          
-          <div className="bg-[#111827]/60 border border-white/5 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: activeElement.color }}></div>
-            <div className="absolute -right-10 -top-10 opacity-5 transform group-hover:scale-110 transition-transform duration-700">
-               <ActiveIcon size={120} />
-            </div>
-            
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 rounded-xl bg-white/5" style={{ color: activeElement.color }}>
-                <ActiveIcon size={28} />
+        <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white">
+                <ActiveIcon size={24} style={{ color: activeElement.color }} />
               </div>
-              <h2 className="text-xl font-bold text-white leading-tight">{activeElement.title}</h2>
+              <div>
+                <h2 className="text-xl font-bold text-white tracking-tight">{activeElement.title}</h2>
+                <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-[0.2em]">Componente Crítico</p>
+              </div>
             </div>
-            
-            <p className="text-sm text-neutral-400 leading-relaxed mb-6 font-light">
+            <p className="text-sm text-neutral-400 leading-relaxed mb-6">
               {activeElement.desc}
             </p>
-
-            <div className="grid grid-cols-2 gap-3 border-t border-white/10 pt-4">
-               {Object.entries(activeElement.stats).map(([key, value]) => (
-                 <div key={key}>
-                   <p className="text-[10px] uppercase tracking-wider text-neutral-500 mb-1">{key}</p>
-                   <p className="text-sm font-semibold text-white">{value}</p>
-                 </div>
-               ))}
+            
+            <div className="grid grid-cols-2 gap-4">
+              {Object.entries(activeElement.stats).map(([key, value]) => (
+                <div key={key} className="bg-white/5 border border-white/5 p-3 rounded-xl">
+                  <span className="block text-[9px] text-neutral-500 uppercase font-bold mb-1">{key}</span>
+                  <span className="text-sm font-mono text-white font-bold">{value}</span>
+                </div>
+              ))}
             </div>
           </div>
 
           <ExpandableSection 
-            title="📋 Especificaciones Técnicas"
+            title="📊 Especificaciones Técnicas"
             items={activeElement.fullSpecs}
             color={activeElement.color}
           />
@@ -821,23 +634,6 @@ export default function Home() {
               >
                 {showAnnotations ? <Eye size={16} /> : <EyeOff size={16} />}
               </button>
-              <button 
-                onClick={() => {
-                  if (xrayEffectRef.current) {
-                    xrayEffectRef.current.toggleXRayMode();
-                    setIsXRayMode(!isXRayMode);
-                  }
-                }}
-                disabled={!xrayLoaded}
-                className={`p-2 rounded-lg border transition-all ${
-                  isXRayMode 
-                    ? 'bg-[#ff0055]/10 border-[#ff0055]/30 text-[#ff0055]' 
-                    : 'bg-white/5 border-white/10 text-neutral-500 disabled:opacity-50'
-                }`}
-                title="Efecto Rayos X"
-              >
-                <Zap size={16} />
-              </button>
               <button className="p-2 rounded-lg bg-white/5 border border-white/10 text-neutral-500 hover:text-white transition-all">
                 <Maximize size={16} />
               </button>
@@ -857,40 +653,6 @@ export default function Home() {
 
       <div className="flex-1 relative bg-[#05070a]">
         <div ref={mountRef} className="w-full h-full" />
-
-        {/* Botón Flotante de Rayos X */}
-        <div className="absolute top-8 right-8 z-20">
-          <button 
-            onClick={() => {
-              if (xrayEffectRef.current) {
-                xrayEffectRef.current.toggleXRayMode();
-                setIsXRayMode(!isXRayMode);
-              }
-            }}
-            disabled={!xrayLoaded}
-            className={`
-              group flex items-center gap-3 px-6 py-3 rounded-full border-2 transition-all duration-500 shadow-[0_0_20px_rgba(0,0,0,0.5)]
-              ${isXRayMode 
-                ? 'bg-[#ff0055] border-[#ff0055] text-white scale-105 shadow-[0_0_30px_rgba(255,0,85,0.4)]' 
-                : 'bg-[#0a101a]/80 backdrop-blur-xl border-white/20 text-white hover:border-[#ff0055] hover:text-[#ff0055]'}
-              disabled:opacity-50 disabled:cursor-not-allowed
-            `}
-          >
-            <div className={`p-1.5 rounded-full transition-colors ${isXRayMode ? 'bg-white/20' : 'bg-[#ff0055]/20'}`}>
-              <Zap size={20} fill={isXRayMode ? "currentColor" : "none"} className={isXRayMode ? "animate-pulse" : ""} />
-            </div>
-            <div className="flex flex-col items-start">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] leading-none mb-1">Modo Visual</span>
-              <span className="text-sm font-bold tracking-wide">{isXRayMode ? 'VISTA INTERNA' : 'VISTA EXTERNA'}</span>
-            </div>
-          </button>
-          
-          {!xrayLoaded && (
-            <div className="absolute -bottom-6 right-0 w-full text-center">
-              <span className="text-[8px] text-neutral-500 uppercase tracking-widest animate-pulse">Cargando Rayos X...</span>
-            </div>
-          )}
-        </div>
         
         {showAnnotations && KEY_ELEMENTS.map((el) => (
           <div
