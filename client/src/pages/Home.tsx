@@ -335,9 +335,7 @@ export default function Home() {
   const [transitionProgress, setTransitionProgress] = useState(0);
   const [currentModelIndex, setCurrentModelIndex] = useState(0);
   const model2Ref = useRef<THREE.Group | null>(null);
-  const model3Ref = useRef<THREE.Group | null>(null);
   const transitionStartTimeRef = useRef(0);
-  const modelsRef = useRef<THREE.Group[]>([]);
 
   useEffect(() => {
     showAnnotationsRef.current = showAnnotations;
@@ -481,18 +479,11 @@ export default function Home() {
         setIsLoaded(true);
     });
 
-    // Cargar modelo 2 (interior con rayos X)
-    loadAndPrepareModel('./interior_model.glb', (model) => {
-        model.visible = false;
-        scene.add(model);
-        model2Ref.current = model;
-    });
-
-    // Cargar modelo 3 (nuevo modelo del usuario)
+    // Cargar modelo 2 (interior detallado del usuario)
     loadAndPrepareModel('./new_interior_model.glb', (model) => {
         model.visible = false;
         scene.add(model);
-        model3Ref.current = model;
+        model2Ref.current = model;
     });
 
     engineRef.current = { scene, camera, controls, renderer };
@@ -537,30 +528,29 @@ export default function Home() {
             const progress = Math.min(elapsed / transitionDuration, 1);
             setTransitionProgress(progress);
 
-            // Obtener los modelos actuales y siguientes
-            const models = [engineRef.current.gltfModel, model2Ref.current, model3Ref.current].filter(Boolean);
-            const currentModel = models[currentModelIndex - 1];
+            const models = [engineRef.current.gltfModel, model2Ref.current].filter(Boolean);
+            const currentModel = models[1 - currentModelIndex];
             const nextModel = models[currentModelIndex];
 
             if (currentModel && nextModel) {
                 // Fade out modelo actual
                 currentModel.traverse((child: any) => {
-                    if (child instanceof THREE.Mesh && child.material.opacity !== undefined) {
+                    if (child instanceof THREE.Mesh && child.material) {
+                        child.material.transparent = true;
                         child.material.opacity = 1 - progress;
                     }
                 });
 
-                // Fade in y aplicar efecto al modelo siguiente
+                // Fade in modelo siguiente
                 nextModel.visible = true;
                 nextModel.traverse((child: any) => {
-                    if (child instanceof THREE.Mesh) {
-                        if (child.material.opacity !== undefined) {
-                            child.material.opacity = progress;
-                        }
+                    if (child instanceof THREE.Mesh && child.material) {
+                        child.material.transparent = true;
+                        child.material.opacity = progress;
                     }
                 });
 
-                // Aplicar efecto de rayos X solo al segundo modelo
+                // Aplicar efecto de rayos X si vamos al modelo interior
                 if (currentModelIndex === 1) {
                     applyXrayEffect(nextModel, progress);
                 }
@@ -568,10 +558,8 @@ export default function Home() {
 
             if (progress === 1) {
                 setIsTransitioning(false);
-                // Ocultar todos excepto el actual
                 if (engineRef.current.gltfModel) engineRef.current.gltfModel.visible = (currentModelIndex === 0);
                 if (model2Ref.current) model2Ref.current.visible = (currentModelIndex === 1);
-                if (model3Ref.current) model3Ref.current.visible = (currentModelIndex === 2);
             }
         }
         
@@ -767,39 +755,19 @@ export default function Home() {
               </button>
               <button 
                 onClick={() => {
-                  if (currentModelIndex > 0) {
-                    setIsTransitioning(true);
-                    transitionStartTimeRef.current = Date.now();
-                    setCurrentModelIndex(currentModelIndex - 1);
-                  }
+                  setIsTransitioning(true);
+                  transitionStartTimeRef.current = Date.now();
+                  setCurrentModelIndex(currentModelIndex === 0 ? 1 : 0);
                 }}
-                disabled={isTransitioning || currentModelIndex === 0}
+                disabled={isTransitioning}
                 className={`p-2 rounded-lg border transition-all ${
-                  isTransitioning || currentModelIndex === 0
-                    ? 'bg-white/5 border-white/10 text-neutral-600 opacity-30 cursor-not-allowed' 
-                    : 'bg-white/5 border-white/10 text-neutral-500 hover:text-white hover:bg-[#ff6b00]/10 hover:border-[#ff6b00]/30'
-                }`}
-                title="Modelo Anterior"
-              >
-                <ChevronDown size={16} className="rotate-90" />
-              </button>
-              <button 
-                onClick={() => {
-                  if (currentModelIndex < 2) {
-                    setIsTransitioning(true);
-                    transitionStartTimeRef.current = Date.now();
-                    setCurrentModelIndex(currentModelIndex + 1);
-                  }
-                }}
-                disabled={isTransitioning || currentModelIndex === 2}
-                className={`p-2 rounded-lg border transition-all ${
-                  isTransitioning || currentModelIndex === 2
-                    ? 'bg-white/5 border-white/10 text-neutral-600 opacity-30 cursor-not-allowed' 
+                  isTransitioning 
+                    ? 'bg-[#0055ff]/20 border-[#0055ff]/50 text-[#0055ff] opacity-50 cursor-not-allowed' 
                     : 'bg-white/5 border-white/10 text-neutral-500 hover:text-white hover:bg-[#0055ff]/10 hover:border-[#0055ff]/30'
                 }`}
-                title="Modelo Siguiente"
+                title={currentModelIndex === 0 ? "Ver Interior (Rayos X)" : "Ver Exterior"}
               >
-                <ChevronDown size={16} className="-rotate-90" />
+                <Radio size={16} className={currentModelIndex === 1 ? "text-[#00ffcc]" : ""} />
               </button>
               <button className="p-2 rounded-lg bg-white/5 border border-white/10 text-neutral-500 hover:text-white transition-all">
                 <Maximize size={16} />
