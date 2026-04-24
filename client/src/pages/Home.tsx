@@ -4,47 +4,6 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
-// Shader para efecto de rayos X
-const xrayShader = {
-  vertex: `
-    varying vec3 vNormal;
-    varying vec3 vPosition;
-    
-    void main() {
-      vNormal = normalize(normalMatrix * normal);
-      vPosition = position;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `,
-  fragment: `
-    uniform float uTransition;
-    varying vec3 vNormal;
-    varying vec3 vPosition;
-    
-    void main() {
-      // Efecto de rayos X: mostrar wireframe y brillo interno
-      float edge = abs(dot(vNormal, vec3(0.0, 0.0, 1.0)));
-      float wireframe = step(0.95, edge);
-      
-      // Gradiente de transición
-      vec3 xrayColor = mix(
-        vec3(0.1, 0.5, 1.0),  // Azul para rayos X
-        vec3(1.0, 1.0, 1.0),  // Blanco brillante
-        uTransition
-      );
-      
-      // Combinar wireframe con color de transición
-      vec3 finalColor = mix(xrayColor * 0.3, xrayColor, wireframe);
-      
-      // Aumentar brillo durante la transición
-      float brightness = 0.5 + uTransition * 0.5;
-      finalColor *= brightness;
-      
-      gl_FragColor = vec4(finalColor, 0.8 + uTransition * 0.2);
-    }
-  `
-};
-
 // ==========================================
 // DATOS TÉCNICOS COMPLETOS Y DETALLADOS - INNOVA+
 // ==========================================
@@ -324,303 +283,151 @@ const ExpandableSection = ({ title, items, color }: { title: string, items: any,
 
 export default function Home() {
   const mountRef = useRef<HTMLDivElement>(null);
-  const engineRef = useRef<any>({});
   const [activeElement, setActiveElement] = useState(KEY_ELEMENTS[0]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadingError, setLoadingError] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showAnnotations, setShowAnnotations] = useState(true);
-  const showAnnotationsRef = useRef(true);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionProgress, setTransitionProgress] = useState(0);
-  const [currentModelIndex, setCurrentModelIndex] = useState(0);
-  const model2Ref = useRef<THREE.Group | null>(null);
-  const transitionStartTimeRef = useRef(0);
+  const [currentModelIndex, setCurrentModelIndex] = useState(0); // 0: Exterior, 1: Interior
 
-  useEffect(() => {
-    showAnnotationsRef.current = showAnnotations;
-  }, [showAnnotations]);
+  // Referencias de Three.js
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const controlsRef = useRef<OrbitControls | null>(null);
+  const model1Ref = useRef<THREE.Group | null>(null);
+  const model2Ref = useRef<THREE.Group | null>(null);
+  const particlesRef = useRef<THREE.Points | null>(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
 
+    // 1. ESCENA
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#05070a');
     scene.fog = new THREE.FogExp2('#05070a', 0.05);
+    sceneRef.current = scene;
 
+    // 2. CÁMARA
     const camera = new THREE.PerspectiveCamera(45, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
     camera.position.set(12, 8, 12);
+    cameraRef.current = camera;
 
+    // 3. RENDERER
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
     mountRef.current.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
 
+    // 4. CONTROLES
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
     controls.autoRotate = true;
     controls.autoRotateSpeed = 0.5;
-    controls.minDistance = 5;
-    controls.maxDistance = 30;
+    controlsRef.current = controls;
 
-    const ambientLight = new THREE.AmbientLight('#ffffff', 0.8);
-    scene.add(ambientLight);
-
+    // 5. LUCES
+    scene.add(new THREE.AmbientLight('#ffffff', 1.0));
     const dirLight = new THREE.DirectionalLight('#ffffff', 2.0);
     dirLight.position.set(10, 20, 10);
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 2048;
-    dirLight.shadow.mapSize.height = 2048;
     scene.add(dirLight);
 
-    const blueLight = new THREE.PointLight('#0055ff', 3, 20);
-    blueLight.position.set(-5, 5, -5);
-    scene.add(blueLight);
-
-    const cyanLight = new THREE.PointLight('#00ffcc', 2.5, 20);
-    cyanLight.position.set(5, -5, 5);
-    scene.add(cyanLight);
-
+    // 6. PARTÍCULAS
     const particlesGeo = new THREE.BufferGeometry();
-    const particleCount = 1500;
-    const posArray = new Float32Array(particleCount * 3);
-    for(let i = 0; i < particleCount * 3; i++) {
-        posArray[i] = (Math.random() - 0.5) * 6;
-    }
+    const posArray = new Float32Array(1500 * 3);
+    for(let i = 0; i < 1500 * 3; i++) posArray[i] = (Math.random() - 0.5) * 10;
     particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    const particlesMat = new THREE.PointsMaterial({
-        size: 0.05,
-        color: '#00ffcc',
-        transparent: true,
-        opacity: 0.6,
-        blending: THREE.AdditiveBlending
-    });
-    const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
+    const particlesMesh = new THREE.Points(particlesGeo, new THREE.PointsMaterial({ size: 0.05, color: '#00ffcc', transparent: true, opacity: 0.6 }));
     scene.add(particlesMesh);
+    particlesRef.current = particlesMesh;
 
+    // 7. CARGA DE MODELOS
     const loader = new GLTFLoader();
-    const modelUrl = './machine_model.glb';
     
-    const createFallbackModel = () => {
-        const group = new THREE.Group();
-        const baseGeo = new THREE.CylinderGeometry(3, 3, 1, 32);
-        const baseMat = new THREE.MeshStandardMaterial({ color: '#1a1a1a', roughness: 0.2, metalness: 0.8 });
-        const base = new THREE.Mesh(baseGeo, baseMat);
-        base.position.y = -3;
-        base.receiveShadow = true;
-        group.add(base);
-
-        const glassGeo = new THREE.CylinderGeometry(2.8, 2.8, 7, 32);
-        const glassMat = new THREE.MeshPhysicalMaterial({ 
-            color: '#ffffff', transmission: 0.9, opacity: 1, transparent: true, roughness: 0.1, ior: 1.5
-        });
-        const glass = new THREE.Mesh(glassGeo, glassMat);
-        glass.position.y = 1;
-        group.add(glass);
-
-        const topGeo = new THREE.TorusGeometry(2.8, 0.2, 16, 100);
-        const topMat = new THREE.MeshStandardMaterial({ color: '#0055ff', emissive: '#001144', metalness: 1 });
-        const top = new THREE.Mesh(topGeo, topMat);
-        top.position.y = 4.5;
-        top.rotation.x = Math.PI / 2;
-        group.add(top);
-
-        scene.add(group);
-        engineRef.current.gltfModel = group;
-        setIsLoaded(true);
-    };
-
-    // Función para cargar y preparar un modelo
-    const loadAndPrepareModel = (url: string, callback: (model: THREE.Group) => void) => {
-        loader.load(
-            url,
-            (gltf: any) => {
-                const model = gltf.scene;
-                
-                const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3());
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const scale = 8 / maxDim;
-                
-                model.scale.set(scale, scale, scale);
-                model.position.sub(center.multiplyScalar(scale));
-
-                model.traverse((child: any) => {
-                    if (child instanceof THREE.Mesh) {
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-                        if (child.material) {
-                            child.material.needsUpdate = true;
-                            if (child.material.map) child.material.map.needsUpdate = true;
-                        }
-                    }
-                });
-
-                callback(model);
-            },
-            undefined,
-            (error: any) => {
-                console.warn("Error cargando modelo:", error);
-            }
-        );
-    };
-
-    // Cargar modelo 1 (exterior completo)
-    loadAndPrepareModel(modelUrl, (model) => {
-        scene.add(model);
-        engineRef.current.gltfModel = model;
-        setIsLoaded(true);
+    // Modelo 1: Exterior
+    loader.load('./machine_model.glb', (gltf) => {
+      const model = gltf.scene;
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const scale = 8 / Math.max(size.x, size.y, size.z);
+      model.scale.set(scale, scale, scale);
+      model.position.sub(center.multiplyScalar(scale));
+      
+      model1Ref.current = model;
+      scene.add(model);
+      setIsLoaded(true);
     });
 
-    // Cargar modelo 2 (interior detallado del usuario)
-    loadAndPrepareModel('./new_interior_model.glb', (model) => {
-        model.visible = false;
-        scene.add(model);
-        model2Ref.current = model;
-        console.log("Modelo 2 cargado:", model);
+    // Modelo 2: Interior (El nuevo que pasaste)
+    loader.load('./new_interior_model.glb', (gltf) => {
+      const model = gltf.scene;
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const scale = 8 / Math.max(size.x, size.y, size.z);
+      model.scale.set(scale, scale, scale);
+      model.position.sub(center.multiplyScalar(scale));
+      
+      model.visible = false; // Oculto al inicio
+      model2Ref.current = model;
+      scene.add(model);
     });
 
-    engineRef.current = { scene, camera, controls, renderer };
-
-    // Función para aplicar efecto de rayos X
-    const applyXrayEffect = (model: THREE.Group, intensity: number) => {
-        model.traverse((child: any) => {
-            if (child instanceof THREE.Mesh) {
-                const material = child.material as any;
-                
-                // Crear o actualizar material con efecto de rayos X
-                if (!child.userData.originalMaterial) {
-                    child.userData.originalMaterial = material.clone();
-                }
-                
-                const xrayMaterial = new THREE.ShaderMaterial({
-                    uniforms: {
-                        uTransition: { value: intensity }
-                    },
-                    vertexShader: xrayShader.vertex,
-                    fragmentShader: xrayShader.fragment,
-                    transparent: true,
-                    wireframe: intensity > 0.3
-                });
-
-                child.material = xrayMaterial;
-            }
-        });
-    };
-
+    // 8. ANIMACIÓN
     let animationFrameId: number;
     const animate = () => {
-        animationFrameId = requestAnimationFrame(animate);
-        particlesMesh.rotation.y += 0.001;
-        particlesMesh.rotation.x += 0.0005;
-        controls.update();
-        
-        // Manejar transición de modelos
-        if (isTransitioning && engineRef.current.gltfModel && model2Ref.current) {
-            const elapsed = Date.now() - transitionStartTimeRef.current;
-            const transitionDuration = 2000; // 2 segundos
-            const progress = Math.min(elapsed / transitionDuration, 1);
-            setTransitionProgress(progress);
+      animationFrameId = requestAnimationFrame(animate);
+      if (particlesRef.current) particlesRef.current.rotation.y += 0.001;
+      if (controlsRef.current) controlsRef.current.update();
 
-            if (currentModelIndex === 1) {
-                // Transición al modelo interior
-                engineRef.current.gltfModel.traverse((child: any) => {
-                    if (child instanceof THREE.Mesh && child.material) {
-                        child.material.transparent = true;
-                        child.material.opacity = 1 - progress;
-                    }
-                });
+      // Actualizar anotaciones
+      if (showAnnotations && cameraRef.current && rendererRef.current) {
+        KEY_ELEMENTS.forEach((el) => {
+          const vec = new THREE.Vector3(el.pos[0], el.pos[1], el.pos[2]);
+          vec.project(cameraRef.current!);
+          const x = (vec.x * 0.5 + 0.5) * rendererRef.current!.domElement.clientWidth;
+          const y = (vec.y * -0.5 + 0.5) * rendererRef.current!.domElement.clientHeight;
+          const dom = document.getElementById(`annotation-${el.id}`);
+          if (dom) {
+            dom.style.display = vec.z > 1 ? 'none' : 'block';
+            dom.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+            dom.style.opacity = '1';
+          }
+        });
+      }
 
-                model2Ref.current.visible = true;
-                model2Ref.current.traverse((child: any) => {
-                    if (child instanceof THREE.Mesh && child.material) {
-                        child.material.transparent = true;
-                        child.material.opacity = progress;
-                    }
-                });
-
-                applyXrayEffect(model2Ref.current, progress);
-            } else {
-                // Transición al modelo exterior
-                model2Ref.current.traverse((child: any) => {
-                    if (child instanceof THREE.Mesh && child.material) {
-                        child.material.transparent = true;
-                        child.material.opacity = 1 - progress;
-                    }
-                });
-
-                engineRef.current.gltfModel.traverse((child: any) => {
-                    if (child instanceof THREE.Mesh && child.material) {
-                        child.material.transparent = true;
-                        child.material.opacity = progress;
-                    }
-                });
-            }
-
-            if (progress === 1) {
-                setIsTransitioning(false);
-                engineRef.current.gltfModel.visible = (currentModelIndex === 0);
-                model2Ref.current.visible = (currentModelIndex === 1);
-            }
-        }
-        
-        if (showAnnotationsRef.current) {
-            KEY_ELEMENTS.forEach((element) => {
-                const vec = new THREE.Vector3(element.pos[0], element.pos[1], element.pos[2]);
-                vec.project(camera);
-                const x = (vec.x * 0.5 + 0.5) * renderer.domElement.clientWidth;
-                const y = (vec.y * -0.5 + 0.5) * renderer.domElement.clientHeight;
-                const domElement = document.getElementById(`annotation-${element.id}`);
-                if (domElement) {
-                    if (vec.z > 1) {
-                        domElement.style.opacity = '0';
-                        domElement.style.pointerEvents = 'none';
-                    } else {
-                        domElement.style.opacity = '1';
-                        domElement.style.pointerEvents = 'auto';
-                        domElement.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
-                    }
-                }
-            });
-        } else {
-            KEY_ELEMENTS.forEach((element) => {
-                const domElement = document.getElementById(`annotation-${element.id}`);
-                if (domElement) {
-                    domElement.style.opacity = '0';
-                    domElement.style.pointerEvents = 'none';
-                }
-            });
-        }
-        renderer.render(scene, camera);
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
     };
     animate();
 
+    // 9. RESIZE
     const handleResize = () => {
-        if (!mountRef.current) return;
-        const w = mountRef.current.clientWidth;
-        const h = mountRef.current.clientHeight;
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-        renderer.setSize(w, h);
+      if (!mountRef.current || !cameraRef.current || !rendererRef.current) return;
+      cameraRef.current.aspect = mountRef.current.clientWidth / mountRef.current.clientHeight;
+      cameraRef.current.updateProjectionMatrix();
+      rendererRef.current.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
     };
     window.addEventListener('resize', handleResize);
 
     return () => {
-        window.removeEventListener('resize', handleResize);
-        cancelAnimationFrame(animationFrameId);
-        if (mountRef.current && renderer.domElement) {
-            mountRef.current.removeChild(renderer.domElement);
-        }
-        renderer.dispose();
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
+      if (mountRef.current && renderer.domElement) mountRef.current.removeChild(renderer.domElement);
+      renderer.dispose();
     };
-  }, [isTransitioning, currentModelIndex]);
+  }, []);
+
+  // Efecto para cambiar visibilidad de modelos
+  useEffect(() => {
+    if (model1Ref.current) model1Ref.current.visible = (currentModelIndex === 0);
+    if (model2Ref.current) model2Ref.current.visible = (currentModelIndex === 1);
+  }, [currentModelIndex]);
 
   const ActiveIcon = activeElement.icon;
 
@@ -630,34 +437,19 @@ export default function Home() {
       {!isLoaded && (
         <div className="absolute inset-0 z-50 bg-[#05070a] flex flex-col items-center justify-center">
           <div className="w-16 h-16 border-4 border-[#1a2535] border-t-[#00ffcc] rounded-full animate-spin mb-4"></div>
-          <h2 className="text-xl font-bold tracking-widest text-white">INICIALIZANDO MOTOR 3D</h2>
-          <p className="text-[#00bbff] text-sm mt-2 font-mono uppercase">Cargando Modelos y Shaders...</p>
-          {loadingError && <p className="text-red-400 mt-4 text-xs max-w-sm text-center">Aviso: Error al cargar el modelo. Usando respaldo procedimental.</p>}
+          <h2 className="text-xl font-bold tracking-widest text-white">CARGANDO SISTEMA</h2>
         </div>
       )}
 
-      <div className="md:hidden absolute top-0 left-0 w-full p-5 flex justify-between items-center z-40 pointer-events-none">
-        <h1 className="text-2xl font-black text-white tracking-widest drop-shadow-lg">InnovA<span className="text-[#0055ff]">+</span></h1>
-        <button 
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="pointer-events-auto p-2 bg-[#0a101a]/80 backdrop-blur border border-white/10 rounded-lg text-white"
-        >
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-
+      {/* Sidebar */}
       <div className={`
         fixed md:relative top-0 right-0 md:left-0 w-full md:w-[520px] h-[75vh] md:h-full mt-[25vh] md:mt-0
         bg-gradient-to-b from-[#0a101a]/95 to-[#020305]/95 backdrop-blur-2xl border-l md:border-l-0 md:border-r border-[#1a2535] 
-        z-30 flex flex-col shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]
+        z-30 flex flex-col shadow-2xl transition-transform duration-500
         ${isMobileMenuOpen ? 'translate-y-0' : 'translate-y-full md:translate-y-0'}
       `}>
         <div className="hidden md:flex p-8 items-center justify-between border-b border-white/5">
           <h1 className="text-3xl font-black text-white tracking-tighter">InnovA<span className="text-[#0055ff]">+</span></h1>
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#00ffcc]/10 border border-[#00ffcc]/20">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#00ffcc] animate-pulse"></div>
-            <span className="text-[10px] font-bold text-[#00ffcc] uppercase tracking-widest">Sistema Activo</span>
-          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
@@ -666,134 +458,59 @@ export default function Home() {
               <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white">
                 <ActiveIcon size={24} style={{ color: activeElement.color }} />
               </div>
-              <div>
-                <h2 className="text-xl font-bold text-white tracking-tight">{activeElement.title}</h2>
-                <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-[0.2em]">Componente Crítico</p>
-              </div>
+              <h2 className="text-xl font-bold text-white tracking-tight">{activeElement.title}</h2>
             </div>
-            <p className="text-sm text-neutral-400 leading-relaxed mb-6">
-              {activeElement.desc}
-            </p>
-            
-            <div className="grid grid-cols-2 gap-4">
-              {Object.entries(activeElement.stats).map(([key, value]) => (
-                <div key={key} className="bg-white/5 border border-white/5 p-3 rounded-xl">
-                  <span className="block text-[9px] text-neutral-500 uppercase font-bold mb-1">{key}</span>
-                  <span className="text-sm font-mono text-white font-bold">{value}</span>
-                </div>
-              ))}
-            </div>
+            <p className="text-sm text-neutral-400 leading-relaxed mb-6">{activeElement.desc}</p>
           </div>
 
-          <ExpandableSection 
-            title="📊 Especificaciones Técnicas"
-            items={activeElement.fullSpecs}
-            color={activeElement.color}
-          />
+          <ExpandableSection title="📊 Especificaciones" items={activeElement.fullSpecs} color={activeElement.color} />
+          <ExpandableSection title="🎯 Aplicaciones" items={activeElement.aplicaciones} color={activeElement.color} />
 
-          <ExpandableSection 
-            title="🔧 Materiales de Construcción"
-            items={activeElement.materiales}
-            color={activeElement.color}
-          />
-
-          <ExpandableSection 
-            title="⚡ Latencias y Tiempos de Respuesta"
-            items={activeElement.latencias}
-            color={activeElement.color}
-          />
-
-          <ExpandableSection 
-            title="🔋 Consumo Energético"
-            items={activeElement.consumoEnergetico}
-            color={activeElement.color}
-          />
-
-          <ExpandableSection 
-            title="🔍 Sensores Integrados"
-            items={activeElement.sensores}
-            color={activeElement.color}
-          />
-
-          <ExpandableSection 
-            title="🎯 Aplicaciones"
-            items={activeElement.aplicaciones}
-            color={activeElement.color}
-          />
-
-          <div>
-            <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-              <Layers size={14} /> Componentes del Sistema
-            </h3>
+          <div className="mt-8">
+            <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-4">Componentes</h3>
             <div className="flex flex-col gap-2">
-              {KEY_ELEMENTS.map((el) => {
-                const ElementIcon = el.icon;
-                return (
-                  <button
-                    key={el.id}
-                    onClick={() => { setActiveElement(el); setIsMobileMenuOpen(false); }}
-                    className={`
-                      w-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-300
-                      ${activeElement.id === el.id 
-                        ? 'bg-white/10 border-white/20 shadow-lg translate-x-1' 
-                        : 'bg-transparent border-transparent hover:bg-white/5 text-neutral-500 hover:text-neutral-300'}
-                    `}
-                  >
-                    <div className="p-2 rounded-lg bg-black/20" style={{ color: activeElement.id === el.id ? el.color : 'inherit' }}>
-                      <ElementIcon size={18} />
-                    </div>
-                    <span className="text-sm font-medium">{el.title}</span>
-                  </button>
-                );
-              })}
+              {KEY_ELEMENTS.map((el) => (
+                <button
+                  key={el.id}
+                  onClick={() => setActiveElement(el)}
+                  className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all ${activeElement.id === el.id ? 'bg-white/10 border-white/20' : 'bg-transparent border-transparent hover:bg-white/5'}`}
+                >
+                  <el.icon size={18} style={{ color: activeElement.id === el.id ? el.color : 'inherit' }} />
+                  <span className="text-sm font-medium">{el.title}</span>
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
+        {/* Footer Controls */}
         <div className="p-6 border-t border-white/5 bg-black/20">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-bold">Visualización</span>
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Visualización</span>
             <div className="flex gap-2">
               <button 
                 onClick={() => setShowAnnotations(!showAnnotations)}
                 className={`p-2 rounded-lg border transition-all ${showAnnotations ? 'bg-[#00ffcc]/10 border-[#00ffcc]/30 text-[#00ffcc]' : 'bg-white/5 border-white/10 text-neutral-500'}`}
-                title="Alternar Anotaciones"
+                title="Anotaciones"
               >
                 {showAnnotations ? <Eye size={16} /> : <EyeOff size={16} />}
               </button>
               <button 
-                onClick={() => {
-                  setIsTransitioning(true);
-                  transitionStartTimeRef.current = Date.now();
-                  setCurrentModelIndex(currentModelIndex === 0 ? 1 : 0);
-                }}
-                disabled={isTransitioning}
-                className={`p-2 rounded-lg border transition-all ${
-                  isTransitioning 
-                    ? 'bg-[#0055ff]/20 border-[#0055ff]/50 text-[#0055ff] opacity-50 cursor-not-allowed' 
-                    : 'bg-white/5 border-white/10 text-neutral-500 hover:text-white hover:bg-[#0055ff]/10 hover:border-[#0055ff]/30'
-                }`}
-                title={currentModelIndex === 0 ? "Ver Interior (Rayos X)" : "Ver Exterior"}
+                onClick={() => setCurrentModelIndex(currentModelIndex === 0 ? 1 : 0)}
+                className={`p-2 rounded-lg border transition-all ${currentModelIndex === 1 ? 'bg-[#0055ff]/20 border-[#0055ff]/50 text-[#0055ff]' : 'bg-white/5 border-white/10 text-neutral-500'}`}
+                title={currentModelIndex === 0 ? "Ver Interior" : "Ver Exterior"}
               >
                 <Radio size={16} />
               </button>
-              <button className="p-2 rounded-lg bg-white/5 border border-white/10 text-neutral-500 hover:text-white transition-all">
+              <button className="p-2 rounded-lg bg-white/5 border border-white/10 text-neutral-500 hover:text-white">
                 <Maximize size={16} />
               </button>
-            </div>
-          </div>
-          <div className="bg-black/40 rounded-lg p-3 border border-white/5">
-            <div className="flex justify-between text-[9px] uppercase tracking-tighter text-neutral-600 mb-1">
-              <span>Carga de GPU</span>
-              <span>34%</span>
-            </div>
-            <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-[#0055ff] to-[#00ffcc] w-[34%]"></div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* 3D Canvas Area */}
       <div className="flex-1 relative bg-[#05070a]">
         <div ref={mountRef} className="w-full h-full" />
         
@@ -805,48 +522,19 @@ export default function Home() {
             style={{ opacity: 0 }}
           >
             <div className="relative">
-              <div 
-                className="w-4 h-4 rounded-full border-2 animate-ping absolute -inset-0"
-                style={{ borderColor: el.color }}
-              ></div>
-              <div 
-                className="w-4 h-4 rounded-full border-2 relative z-10 bg-[#05070a]"
-                style={{ borderColor: el.color }}
-              ></div>
-              
+              <div className="w-4 h-4 rounded-full border-2 animate-ping absolute -inset-0" style={{ borderColor: el.color }}></div>
+              <div className="w-4 h-4 rounded-full border-2 relative z-10 bg-[#05070a]" style={{ borderColor: el.color }}></div>
               <div className="absolute left-6 top-1/2 -translate-y-1/2 bg-[#0a101a]/90 backdrop-blur-md border border-white/10 p-2 rounded-lg whitespace-nowrap shadow-2xl">
                 <p className="text-[10px] font-bold text-white uppercase tracking-wider">{el.title}</p>
               </div>
             </div>
           </div>
         ))}
-
-        <div className="absolute bottom-8 right-8 flex flex-col items-end gap-2 pointer-events-none">
-          <div className="bg-black/60 backdrop-blur-md border border-white/10 p-4 rounded-2xl shadow-2xl">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-              <span className="text-[10px] font-bold text-white uppercase tracking-[0.2em]">Live Stream</span>
-            </div>
-            <p className="text-[9px] text-neutral-400 font-mono">COORD: 19.4326° N, 99.1332° W</p>
-            <p className="text-[9px] text-neutral-400 font-mono">TEMP: 24.5°C | HUM: 42%</p>
-          </div>
-        </div>
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.2);
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
       `}} />
     </div>
   );
