@@ -179,22 +179,35 @@ const createTextLabel = (text: string, color: string) => {
 };
 
 
-const createSimpleAnnotations = (scene: THREE.Scene, modelIndex: number) => {
-  // Limpiar anotaciones previas
-  scene.children = scene.children.filter(child => !(child as any).isAnnotation);
-  
-  const points = modelIndex === 0 ? COMPONENTS.exterior.features : COMPONENTS.interior.features;
+
+const createElegantAnnotations = (group: THREE.Group, modelIndex: number) => {
+  group.clear();
+  const points = modelIndex === 0 ? ANNOTATION_POINTS.exterior : ANNOTATION_POINTS.interior;
   
   points.forEach(point => {
-    // CUBO ROJO GIGANTE (imposible de perder)
-    const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.9 });
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.set(point.pos[0], point.pos[1], point.pos[2]);
-    (cube as any).isAnnotation = true;
-    scene.add(cube);
+    // Esfera central
+    const geo = new THREE.SphereGeometry(0.12, 16, 16);
+    const mat = new THREE.MeshBasicMaterial({ color: point.color });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(point.pos[0], point.pos[1], point.pos[2]);
+    
+    // Halo brillante
+    const haloGeo = new THREE.SphereGeometry(0.2, 16, 16);
+    const haloMat = new THREE.MeshBasicMaterial({ color: point.color, transparent: true, opacity: 0.3 });
+    const halo = new THREE.Mesh(haloGeo, haloMat);
+    mesh.add(halo);
+    
+    // Etiqueta de texto
+    const label = createTextLabel(point.title, point.color);
+    if (label) {
+      label.position.set(0, 0.5, 0);
+      mesh.add(label);
+    }
+    
+    group.add(mesh);
   });
 };
+
 
 
 export default function Home() {
@@ -203,11 +216,7 @@ export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Diagnóstico: Alerta de confirmación de versión
-  React.useEffect(() => {
-    setTimeout(() => {
-      alert('✓ VERSIÓN ACTUALIZADA CARGADA\n\nSi ves este mensaje, el código nuevo se está ejecutando.\n\nLos puntos de información deberían estar visibles en el modelo 3D.\n\nSi no ves puntos, intenta:\n1. Recarga completa (Ctrl+F5 o Cmd+Shift+R)\n2. Limpia el caché del navegador\n3. Abre en modo incógnito');
-    }, 1000);
-  }, []);
+  
 
   const [showAnnotations, setShowAnnotations] = useState(true);
   const [currentModelIndex, setCurrentModelIndex] = useState(0);
@@ -222,6 +231,106 @@ export default function Home() {
   const model2Ref = useRef<THREE.Group | null>(null);
   const holoRef = useRef<THREE.Group | null>(null);
   const annotationsGroupRef = useRef<THREE.Group>(new THREE.Group());
+
+
+  useEffect(() => {
+    if (!mountRef.current) return;
+
+    // Escena
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#05070a');
+    sceneRef.current = scene;
+
+    // Cámara
+    const camera = new THREE.PerspectiveCamera(45, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
+    camera.position.set(15, 10, 15);
+    cameraRef.current = camera;
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    mountRef.current.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
+
+    // Controles
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controlsRef.current = controls;
+
+    // Luces
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    dirLight.position.set(10, 20, 10);
+    scene.add(dirLight);
+
+    // Holograma y Anotaciones
+    const holo = createHologramProjection(scene);
+    holoRef.current = holo;
+    scene.add(annotationsGroupRef.current);
+
+    // Cargar modelos
+    const loader = new GLTFLoader();
+    
+    // IMPORTANTE: Rutas relativas para GitHub Pages
+    const baseUrl = import.meta.env.BASE_URL || '/InnovA-Hologam/';
+    
+    loader.load(`${baseUrl}machine_model.glb`, (gltf) => {
+      const model = gltf.scene;
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const scale = 9 / Math.max(size.x, size.y, size.z);
+      model.scale.set(scale, scale, scale);
+      model.position.sub(center.multiplyScalar(scale));
+      model1Ref.current = model;
+      scene.add(model);
+      setIsLoaded(true);
+    });
+
+    loader.load(`${baseUrl}new_interior_model.glb`, (gltf) => {
+      const model = gltf.scene;
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const scale = 9 / Math.max(size.x, size.y, size.z);
+      model.scale.set(scale, scale, scale);
+      model.position.sub(center.multiplyScalar(scale));
+      model.visible = false;
+      model2Ref.current = model;
+      scene.add(model);
+    });
+
+    // Animación
+    let animationFrameId: number;
+    const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
+      if (controlsRef.current) controlsRef.current.update();
+      if (holoRef.current) holoRef.current.rotation.y += 0.003;
+
+      if (annotationsGroupRef.current) {
+        annotationsGroupRef.current.visible = showAnnotations;
+      }
+
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
+    };
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      if (mountRef.current && renderer.domElement.parentNode === mountRef.current) {
+        mountRef.current.removeChild(renderer.domElement);
+      }
+      renderer.dispose();
+    };
+  }, []);
+
 
     useEffect(() => {
     if (model1Ref.current) model1Ref.current.visible = currentModelIndex === 0;
@@ -364,7 +473,7 @@ export default function Home() {
       </div>
 
       {/* 3D Canvas */}
-      <div className="flex-1 relative bg-[#001a4d]">
+      <div className="flex-1 relative bg-[#020408]">
         <div ref={mountRef} className="w-full h-full" />
 
         {showAnnotations &&
