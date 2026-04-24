@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Menu, X, Eye, EyeOff, Maximize, ChevronDown, RefreshCw, BookOpen } from 'lucide-react';
+import { Menu, X, Eye, EyeOff, Maximize, ChevronDown, RefreshCw, BookOpen, Zap } from 'lucide-react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -18,8 +18,8 @@ const COMPONENTS = {
       { id: 2, name: "Emisores Ultrasónicos Superiores", pos: [2.5, 3.8, 0], desc: "Matriz de transductores a 40kHz. Genera ondas estacionarias para posicionar partículas (voxels)." },
       { id: 3, name: "Cámara de Proyección", pos: [0, 2.5, 0], desc: "Volumen transparente donde se forman las imágenes holográficas. Zona de operación principal." },
       { id: 4, name: "Ventilación y Flujo de Aire", pos: [-3, 2, 0], desc: "Sistema de circulación controlada. Estabiliza partículas y mantiene uniformidad de la niebla." },
-      { id: 5, name: "Sensores Ambientales", pos: [0, 1.5, -3.5], desc: "Temperatura, humedad, presión. Monitoreo continuo del ambiente para ajuste automático." },
-      { id: 6, name: "Zona de Formación de Niebla", pos: [-2.5, -1, 0], desc: "Cámara inferior donde se generan microgotas ultrasónicas (1-10 micras)." }
+      { id: 5, name: "Sensores Ambientales", pos: [0, 1.8, -4], desc: "Temperatura, humedad, presión. Monitoreo continuo del ambiente para ajuste automático." },
+      { id: 6, name: "Zona de Formación de Niebla", pos: [-2.8, -1.5, 0], desc: "Cámara inferior donde se generan microgotas ultrasónicas (1-10 micras)." }
     ]
   },
   interior: {
@@ -27,24 +27,24 @@ const COMPONENTS = {
     subtitle: "Sistema de 4 Bloques Funcionales",
     desc: "Ingeniería de precisión con ciclo cerrado de agua, manipulación acústica de partículas, control en tiempo real y distribución de energía regulada.",
     features: [
-      { id: 7, name: "Depósito de Agua", pos: [-3, -3.5, 0], desc: "Tanque de gran capacidad con materiales anti-corrosión. Almacena agua destilada para evitar residuos." },
-      { id: 8, name: "Bomba de Agua Silenciosa", pos: [-2, -3, 0], desc: "Microbomba DC de presión controlada. Impulsa flujo constante hacia nebulizadores." },
-      { id: 9, name: "Filtro Multi-etapa", pos: [-1, -2.8, 0], desc: "Carbón activado + microfiltro + UV opcional. Purifica agua antes de nebulización." },
-      { id: 10, name: "Nebulizadores Ultrasónicos Inferiores", pos: [0, -2.5, 0], desc: "Transductores a 1.7MHz. Rompen agua en microgotas de 1-10 micras." },
-      { id: 11, name: "Cámara de Mezcla y Estabilización", pos: [1, -2, 0], desc: "Uniformiza la niebla antes de ascender. Garantiza densidad homogénea de partículas." },
-      { id: 12, name: "Retorno de Agua Condensada", pos: [2, -1.5, 0], desc: "Drenaje de vapor condensado. Cierra el ciclo retornando al depósito." },
-      { id: 13, name: "Detector de Nivel Mínimo", pos: [2.5, -1, 0], desc: "Sensor capacitivo. Alerta cuando el agua está por debajo del umbral de operación." },
-      { id: 14, name: "Válvula Antirretorno", pos: [3, -0.5, 0], desc: "Impide reflujo de agua hacia la bomba. Mantiene presión y eficiencia del sistema." },
-      { id: 15, name: "Placa Principal (MCU)", pos: [0, 0.5, 3], desc: "Controlador central ARM Cortex-A72. Ejecuta algoritmos de control en tiempo real (<2ms)." },
-      { id: 16, name: "Controladores Específicos", pos: [1, 1, 3], desc: "Drivers para ultrasonido, láser, bomba y ventiladores. Sincronización de fase y frecuencia." },
-      { id: 17, name: "Módulo de Comunicación", pos: [2, 1.5, 3], desc: "Wi-Fi / Bluetooth. Interfaz remota y monitoreo desde dispositivos externos." },
-      { id: 18, name: "Sensores de Precisión y Posición", pos: [0, 2, 3], desc: "Detectores ópticos de partículas. Retroalimentación para ajuste dinámico de campos acústicos." },
-      { id: 19, name: "Drivers Láser y Ultrasonido", pos: [1, 2.5, 3], desc: "Amplificadores de potencia. Generan voltajes específicos para cada componente." },
-      { id: 20, name: "Sistema de Gestión de Energía (BMS)", pos: [-1, 1, 3], desc: "Protección, balanceo de celdas y regulación. Distribuye energía de forma segura." },
-      { id: 21, name: "Convertidor DC-DC", pos: [-2, 1.5, 3], desc: "Transforma 24V en 12V, 5V y 3.3V. Alimenta subsistemas específicos." },
-      { id: 22, name: "Batería de Alto Rendimiento", pos: [-3, 2, 3], desc: "Li-ion 24V con capacidad extendida. Proporciona ~4-6 horas de operación continua." },
-      { id: 23, name: "Puerto USB-C PD", pos: [-3.5, 2.5, 3], desc: "Carga rápida Power Delivery. Recarga completa en ~90 minutos." },
-      { id: 24, name: "Distribución de Energía (Power Rail)", pos: [-2.5, 3, 3], desc: "Matriz de distribución regulada. Garantiza voltajes estables a todos los subsistemas." }
+      { id: 7, name: "Depósito de Agua", pos: [-3.5, -3.8, 0], desc: "Tanque de gran capacidad con materiales anti-corrosión. Almacena agua destilada para evitar residuos." },
+      { id: 8, name: "Bomba de Agua Silenciosa", pos: [-2.2, -3.2, 0], desc: "Microbomba DC de presión controlada. Impulsa flujo constante hacia nebulizadores." },
+      { id: 9, name: "Filtro Multi-etapa", pos: [-1, -3, 0], desc: "Carbón activado + microfiltro + UV opcional. Purifica agua antes de nebulización." },
+      { id: 10, name: "Nebulizadores Ultrasónicos", pos: [0.2, -2.8, 0], desc: "Transductores a 1.7MHz. Rompen agua en microgotas de 1-10 micras." },
+      { id: 11, name: "Cámara de Mezcla", pos: [1.5, -2.2, 0], desc: "Uniformiza la niebla antes de ascender. Garantiza densidad homogénea de partículas." },
+      { id: 12, name: "Retorno de Agua Condensada", pos: [2.5, -1.8, 0], desc: "Drenaje de vapor condensado. Cierra el ciclo retornando al depósito." },
+      { id: 13, name: "Detector de Nivel Mínimo", pos: [3.2, -1.2, 0], desc: "Sensor capacitivo. Alerta cuando el agua está por debajo del umbral de operación." },
+      { id: 14, name: "Válvula Antirretorno", pos: [3.8, -0.2, 0], desc: "Impide reflujo de agua hacia la bomba. Mantiene presión y eficiencia del sistema." },
+      { id: 15, name: "Placa Principal (MCU)", pos: [0.2, 0.8, 3.5], desc: "Controlador central ARM Cortex-A72. Ejecuta algoritmos de control en tiempo real (<2ms)." },
+      { id: 16, name: "Controladores Específicos", pos: [1.5, 1.3, 3.5], desc: "Drivers para ultrasonido, láser, bomba y ventiladores. Sincronización de fase y frecuencia." },
+      { id: 17, name: "Módulo de Comunicación", pos: [2.8, 1.8, 3.5], desc: "Wi-Fi / Bluetooth. Interfaz remota y monitoreo desde dispositivos externos." },
+      { id: 18, name: "Sensores de Precisión", pos: [0.2, 2.3, 3.5], desc: "Detectores ópticos de partículas. Retroalimentación para ajuste dinámico de campos acústicos." },
+      { id: 19, name: "Drivers Láser y Ultrasonido", pos: [1.5, 2.8, 3.5], desc: "Amplificadores de potencia. Generan voltajes específicos para cada componente." },
+      { id: 20, name: "Sistema de Gestión (BMS)", pos: [-1.2, 1.3, 3.5], desc: "Protección, balanceo de celdas y regulación. Distribuye energía de forma segura." },
+      { id: 21, name: "Convertidor DC-DC", pos: [-2.2, 1.8, 3.5], desc: "Transforma 24V en 12V, 5V y 3.3V. Alimenta subsistemas específicos." },
+      { id: 22, name: "Batería de Alto Rendimiento", pos: [-3.2, 2.3, 3.5], desc: "Li-ion 24V con capacidad extendida. Proporciona ~4-6 horas de operación continua." },
+      { id: 23, name: "Puerto USB-C PD", pos: [-3.8, 2.8, 3.5], desc: "Carga rápida Power Delivery. Recarga completa en ~90 minutos." },
+      { id: 24, name: "Distribución de Energía", pos: [-2.8, 3.3, 3.5], desc: "Matriz de distribución regulada. Garantiza voltajes estables a todos los subsistemas." }
     ]
   }
 };
@@ -129,28 +129,17 @@ const ANNOTATION_POINTS = {
   ]
 };
 
-const KEY_ELEMENTS = [
-  { id: 'laser', title: 'Matriz Láser', pos: [3.5, 4.8, -1.5], color: '#ff0055' },
-  { id: 'ultrasonic', title: 'Ultrasonido', pos: [2.8, 4.2, 1], color: '#00ffcc' },
-  { id: 'chamber', title: 'Cámara', pos: [0, 3, 0], color: '#0055ff' },
-  { id: 'ventilation', title: 'Ventilación', pos: [-3.5, 2.5, 0], color: '#ffaa00' }
-];
-
-// Crear hologramas reales (proyecciones de luz)
 const createHologramProjection = (scene: THREE.Scene) => {
   const holoGroup = new THREE.Group();
 
-  // Anillo de luz (sin geometría sólida, solo luz)
   const ringLight = new THREE.PointLight(0x0055ff, 100);
   ringLight.position.set(0, 5.5, 0);
   holoGroup.add(ringLight);
 
-  // Luz cian flotante
   const cyanLight = new THREE.PointLight(0x00ffcc, 80);
   cyanLight.position.set(0, 6, 0);
   holoGroup.add(cyanLight);
 
-  // Luz secundaria para efecto volumétrico
   const volumeLight = new THREE.PointLight(0xff00ff, 40);
   volumeLight.position.set(2, 5.5, 2);
   holoGroup.add(volumeLight);
@@ -166,6 +155,7 @@ export default function Home() {
   const [showAnnotations, setShowAnnotations] = useState(true);
   const [currentModelIndex, setCurrentModelIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<'overview' | 'manual'>('overview');
+  const [isMobile, setIsMobile] = useState(false);
 
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -174,6 +164,13 @@ export default function Home() {
   const model1Ref = useRef<THREE.Group | null>(null);
   const model2Ref = useRef<THREE.Group | null>(null);
   const holoRef = useRef<THREE.Group | null>(null);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 1024);
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -212,7 +209,6 @@ export default function Home() {
     controls.enablePan = true;
     controlsRef.current = controls;
 
-    // Iluminación premium
     const ambientLight = new THREE.AmbientLight('#ffffff', 1.4);
     scene.add(ambientLight);
 
@@ -232,7 +228,6 @@ export default function Home() {
     pointLight2.position.set(15, 12, -10);
     scene.add(pointLight2);
 
-    // Crear hologramas
     const holo = createHologramProjection(scene);
     holoRef.current = holo;
 
@@ -287,7 +282,6 @@ export default function Home() {
       animationFrameId = requestAnimationFrame(animate);
       if (controlsRef.current) controlsRef.current.update();
 
-      // Animar hologramas (solo rotación del grupo de luces)
       if (holoRef.current) {
         holoRef.current.rotation.y += 0.003;
       }
@@ -417,43 +411,45 @@ export default function Home() {
           )}
         </div>
 
-        {/* Footer Controls */}
-        <div className="p-4 sm:p-6 bg-white/5 border-t border-white/10">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex flex-col">
-              <span className="text-[7px] sm:text-[8px] uppercase tracking-widest text-neutral-600 font-black">Modo de Vista</span>
-              <span className="text-xs sm:text-sm font-bold text-white">{currentModelIndex === 0 ? "EXTERIOR" : "INTERIOR"}</span>
+        {/* Footer Controls - Solo en Desktop */}
+        {!isMobile && (
+          <div className="p-4 sm:p-6 bg-white/5 border-t border-white/10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col">
+                <span className="text-[7px] sm:text-[8px] uppercase tracking-widest text-neutral-600 font-black">Modo de Vista</span>
+                <span className="text-xs sm:text-sm font-bold text-white">{currentModelIndex === 0 ? "EXTERIOR" : "INTERIOR"}</span>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowAnnotations(!showAnnotations)}
+                className={`flex-1 p-2 sm:p-3 rounded-lg border-2 transition-all font-bold text-[8px] sm:text-xs uppercase tracking-widest flex flex-col items-center justify-center ${showAnnotations ? 'bg-[#00ffcc] border-[#00ffcc] text-black' : 'bg-white/5 border-white/10 text-neutral-400'}`}
+              >
+                {showAnnotations ? <Eye size={14} /> : <EyeOff size={14} />}
+                <span className="hidden sm:inline">Anotaciones</span>
+              </button>
+              <button
+                onClick={() => setCurrentModelIndex(currentModelIndex === 0 ? 1 : 0)}
+                className={`flex-1 p-2 sm:p-3 rounded-lg border-2 transition-all font-bold text-[8px] sm:text-xs uppercase tracking-widest flex flex-col items-center justify-center ${currentModelIndex === 1 ? 'bg-[#0055ff] border-[#0055ff] text-white' : 'bg-white/5 border-white/10 text-neutral-400'}`}
+              >
+                <RefreshCw size={14} />
+                <span className="hidden sm:inline">{currentModelIndex === 0 ? "Interior" : "Exterior"}</span>
+              </button>
+              <button
+                onClick={() => {
+                  if (controlsRef.current) {
+                    controlsRef.current.reset();
+                    cameraRef.current?.position.set(15, 10, 15);
+                  }
+                }}
+                className="flex-1 p-2 sm:p-3 rounded-lg bg-white/5 border-2 border-white/10 text-neutral-400 hover:border-white/30 hover:text-white transition-all font-bold text-[8px] sm:text-xs uppercase tracking-widest flex flex-col items-center justify-center"
+              >
+                <Maximize size={14} />
+                <span className="hidden sm:inline">Reset</span>
+              </button>
             </div>
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowAnnotations(!showAnnotations)}
-              className={`flex-1 p-2 sm:p-3 rounded-lg border-2 transition-all font-bold text-[8px] sm:text-xs uppercase tracking-widest flex flex-col items-center justify-center ${showAnnotations ? 'bg-[#00ffcc] border-[#00ffcc] text-black' : 'bg-white/5 border-white/10 text-neutral-400'}`}
-            >
-              {showAnnotations ? <Eye size={14} /> : <EyeOff size={14} />}
-              <span className="hidden sm:inline">Anotaciones</span>
-            </button>
-            <button
-              onClick={() => setCurrentModelIndex(currentModelIndex === 0 ? 1 : 0)}
-              className={`flex-1 p-2 sm:p-3 rounded-lg border-2 transition-all font-bold text-[8px] sm:text-xs uppercase tracking-widest flex flex-col items-center justify-center ${currentModelIndex === 1 ? 'bg-[#0055ff] border-[#0055ff] text-white' : 'bg-white/5 border-white/10 text-neutral-400'}`}
-            >
-              <RefreshCw size={14} />
-              <span className="hidden sm:inline">{currentModelIndex === 0 ? "Interior" : "Exterior"}</span>
-            </button>
-            <button
-              onClick={() => {
-                if (controlsRef.current) {
-                  controlsRef.current.reset();
-                  cameraRef.current?.position.set(15, 10, 15);
-                }
-              }}
-              className="flex-1 p-2 sm:p-3 rounded-lg bg-white/5 border-2 border-white/10 text-neutral-400 hover:border-white/30 hover:text-white transition-all font-bold text-[8px] sm:text-xs uppercase tracking-widest flex flex-col items-center justify-center"
-            >
-              <Maximize size={14} />
-              <span className="hidden sm:inline">Reset</span>
-            </button>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* 3D Canvas */}
@@ -464,7 +460,7 @@ export default function Home() {
           (currentModelIndex === 0 ? ANNOTATION_POINTS.exterior : ANNOTATION_POINTS.interior).map((el) => (
             <div key={el.id} id={`annotation-${el.id}`} className="absolute top-0 left-0 pointer-events-none transition-opacity duration-300" style={{ opacity: 0 }}>
               <div className="relative">
-                <div className="w-3 h-3 rounded-full border-2 animate-ping absolute -inset-0" style={{ borderColor: el.color }}></div>
+                <div className="w-3 h-3 rounded-full border-2 animate-pulse absolute -inset-0" style={{ borderColor: el.color, boxShadow: `0 0 10px ${el.color}` }}></div>
                 <div className="w-3 h-3 rounded-full border-2 relative z-10 bg-[#020408]" style={{ borderColor: el.color }}></div>
                 <div className="absolute left-5 top-1/2 -translate-y-1/2 bg-black/80 backdrop-blur-md border border-white/10 px-2 py-1 rounded text-[8px] font-bold text-white uppercase tracking-tighter whitespace-nowrap">{el.title}</div>
               </div>
@@ -475,6 +471,37 @@ export default function Home() {
         <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden absolute top-4 left-4 z-20 p-2 bg-black/40 border border-white/10 rounded-lg text-white">
           <Menu size={24} />
         </button>
+
+        {/* Controles Flotantes en Móvil/Tableta */}
+        {isMobile && (
+          <div className="absolute bottom-4 left-4 right-4 z-20 flex gap-2">
+            <button
+              onClick={() => setShowAnnotations(!showAnnotations)}
+              className={`flex-1 p-3 rounded-lg border-2 transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 ${showAnnotations ? 'bg-[#00ffcc] border-[#00ffcc] text-black' : 'bg-white/5 border-white/10 text-neutral-400'}`}
+            >
+              {showAnnotations ? <Eye size={16} /> : <EyeOff size={16} />}
+              Puntos
+            </button>
+            <button
+              onClick={() => setCurrentModelIndex(currentModelIndex === 0 ? 1 : 0)}
+              className={`flex-1 p-3 rounded-lg border-2 transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 ${currentModelIndex === 1 ? 'bg-[#0055ff] border-[#0055ff] text-white' : 'bg-white/5 border-white/10 text-neutral-400'}`}
+            >
+              <Zap size={16} />
+              {currentModelIndex === 0 ? "Interior" : "Exterior"}
+            </button>
+            <button
+              onClick={() => {
+                if (controlsRef.current) {
+                  controlsRef.current.reset();
+                  cameraRef.current?.position.set(15, 10, 15);
+                }
+              }}
+              className="p-3 rounded-lg bg-white/5 border-2 border-white/10 text-neutral-400 hover:border-white/30 hover:text-white transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center"
+            >
+              <Maximize size={16} />
+            </button>
+          </div>
+        )}
       </div>
 
       <style dangerouslySetInnerHTML={{
