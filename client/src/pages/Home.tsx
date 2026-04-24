@@ -148,6 +148,36 @@ const createHologramProjection = (scene: THREE.Scene) => {
   return holoGroup;
 };
 
+
+const createTextLabel = (text: string, color: string) => {
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  if (!context) return null;
+  
+  canvas.width = 512;
+  canvas.height = 128;
+  
+  context.fillStyle = 'rgba(0, 0, 0, 0.8)';
+  context.roundRect(0, 0, 512, 128, 20);
+  context.fill();
+  
+  context.strokeStyle = color;
+  context.lineWidth = 4;
+  context.stroke();
+  
+  context.font = 'bold 40px Arial';
+  context.fillStyle = 'white';
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  context.fillText(text, 256, 64);
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
+  const sprite = new THREE.Sprite(spriteMaterial);
+  sprite.scale.set(4, 1, 1);
+  return sprite;
+};
+
 export default function Home() {
   const mountRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -164,190 +194,25 @@ export default function Home() {
   const model1Ref = useRef<THREE.Group | null>(null);
   const model2Ref = useRef<THREE.Group | null>(null);
   const holoRef = useRef<THREE.Group | null>(null);
+  const annotationsGroupRef = useRef<THREE.Group>(new THREE.Group());
 
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 1024);
-    const handleResize = () => setIsMobile(window.innerWidth < 1024);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (!mountRef.current) return;
-
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#020408');
-    scene.fog = new THREE.Fog('#020408', 100, 500);
-    sceneRef.current = scene;
-
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      mountRef.current.clientWidth / mountRef.current.clientHeight,
-      0.1,
-      1000
-    );
-    camera.position.set(15, 10, 15);
-    cameraRef.current = camera;
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
-    mountRef.current.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
-
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.5;
-    controls.enableZoom = true;
-    controls.enablePan = true;
-    controlsRef.current = controls;
-
-    const ambientLight = new THREE.AmbientLight('#ffffff', 1.4);
-    scene.add(ambientLight);
-
-    const spotLight = new THREE.SpotLight('#ffffff', 150);
-    spotLight.position.set(20, 30, 20);
-    spotLight.castShadow = true;
-    spotLight.shadow.mapSize.width = 2048;
-    spotLight.shadow.mapSize.height = 2048;
-    spotLight.shadow.camera.far = 100;
-    scene.add(spotLight);
-
-    const pointLight1 = new THREE.PointLight('#00ffcc', 60);
-    pointLight1.position.set(-15, 12, 10);
-    scene.add(pointLight1);
-
-    const pointLight2 = new THREE.PointLight('#0055ff', 50);
-    pointLight2.position.set(15, 12, -10);
-    scene.add(pointLight2);
-
-    const holo = createHologramProjection(scene);
-    holoRef.current = holo;
-
-    const loader = new GLTFLoader();
-
-    loader.load('./machine_model.glb', (gltf) => {
-      const model = gltf.scene;
-      model.traverse((child: any) => {
-        if (child.isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-          if (child.material) {
-            child.material.side = THREE.FrontSide;
-          }
-        }
-      });
-      const box = new THREE.Box3().setFromObject(model);
-      const center = box.getCenter(new THREE.Vector3());
-      const size = box.getSize(new THREE.Vector3());
-      const scale = 9 / Math.max(size.x, size.y, size.z);
-      model.scale.set(scale, scale, scale);
-      model.position.sub(center.multiplyScalar(scale));
-      model1Ref.current = model;
-      scene.add(model);
-      setIsLoaded(true);
-    });
-
-    loader.load('./new_interior_model.glb', (gltf) => {
-      const model = gltf.scene;
-      model.traverse((child: any) => {
-        if (child.isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-          if (child.material) {
-            child.material.side = THREE.FrontSide;
-          }
-        }
-      });
-      const box = new THREE.Box3().setFromObject(model);
-      const center = box.getCenter(new THREE.Vector3());
-      const size = box.getSize(new THREE.Vector3());
-      const scale = 9 / Math.max(size.x, size.y, size.z);
-      model.scale.set(scale, scale, scale);
-      model.position.sub(center.multiplyScalar(scale));
-      model.visible = false;
-      model2Ref.current = model;
-      scene.add(model);
-    });
-
-    let animationFrameId: number;
-    const animate = () => {
-      animationFrameId = requestAnimationFrame(animate);
-      if (controlsRef.current) controlsRef.current.update();
-
-      if (holoRef.current) {
-        holoRef.current.rotation.y += 0.003;
-      }
-
-            // Limpieza total y forzada de todas las anotaciones posibles
-      const allIds = [...ANNOTATION_POINTS.exterior, ...ANNOTATION_POINTS.interior].map(a => a.id);
-      allIds.forEach(id => {
-        const dom = document.getElementById(`annotation-${id}`);
-        if (dom) {
-          dom.style.display = 'none';
-          dom.style.visibility = 'hidden';
-          dom.style.opacity = '0';
-        }
-      });
-
-      if (showAnnotations && cameraRef.current && rendererRef.current) {
-        const currentAnnotations = currentModelIndex === 0 ? ANNOTATION_POINTS.exterior : ANNOTATION_POINTS.interior;
-        
-        currentAnnotations.forEach((el) => {
-          const vec = new THREE.Vector3(el.pos[0], el.pos[1], el.pos[2]);
-          vec.project(cameraRef.current!);
-          
-          const x = (vec.x * 0.5 + 0.5) * rendererRef.current!.domElement.clientWidth;
-          const y = (vec.y * -0.5 + 0.5) * rendererRef.current!.domElement.clientHeight;
-          
-          const dom = document.getElementById(`annotation-${el.id}`);
-          if (dom) {
-            // Mostrar si está en el frustum de la cámara (z entre -1 y 1)
-            if (vec.z > -1 && vec.z < 1) {
-              dom.style.display = 'block';
-              dom.style.visibility = 'visible';
-              dom.style.opacity = '1';
-              dom.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
-              dom.style.zIndex = '9999';
-            }
-          }
-        });
-      }
-
-      if (rendererRef.current && sceneRef.current && cameraRef.current) {
-        rendererRef.current.render(sceneRef.current, cameraRef.current);
-      }
-    };
-    animate();
-
-    const handleResize = () => {
-      if (!mountRef.current || !cameraRef.current || !rendererRef.current) return;
-      cameraRef.current.aspect = mountRef.current.clientWidth / mountRef.current.clientHeight;
-      cameraRef.current.updateProjectionMatrix();
-      rendererRef.current.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationFrameId);
-      if (mountRef.current && renderer.domElement.parentElement === mountRef.current) {
-        mountRef.current.removeChild(renderer.domElement);
-      }
-      renderer.dispose();
-    };
-  }, []);
-
-  useEffect(() => {
+    useEffect(() => {
     if (model1Ref.current) model1Ref.current.visible = currentModelIndex === 0;
     if (model2Ref.current) model2Ref.current.visible = currentModelIndex === 1;
+    
+    // Recrear anotaciones 3D para el nuevo modelo
+    const group = annotationsGroupRef.current;
+    group.clear();
+    const points = currentModelIndex === 0 ? ANNOTATION_POINTS.exterior : ANNOTATION_POINTS.interior;
+    points.forEach(point => {
+      const geo = new THREE.SphereGeometry(0.15, 16, 16);
+      const mat = new THREE.MeshBasicMaterial({ color: point.color, transparent: true, opacity: 0.8 });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(point.pos[0], point.pos[1], point.pos[2]);
+      const label = createTextLabel(point.title, point.color);
+      if (label) { label.position.set(0, 0.6, 0); mesh.add(label); }
+      group.add(mesh);
+    });
   }, [currentModelIndex]);
 
   const data = currentModelIndex === 0 ? COMPONENTS.exterior : COMPONENTS.interior;
