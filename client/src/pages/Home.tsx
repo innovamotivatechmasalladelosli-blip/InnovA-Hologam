@@ -100,32 +100,32 @@ const MANUAL_TECNICO = {
 
 const ANNOTATION_POINTS = {
   exterior: [
-    { id: 1, title: 'Matriz Láser RGB', pos: [0, 4.2, 0], color: '#ff0055' },
-    { id: 2, title: 'Emisores Ultrasónicos Superiores', pos: [0, 4.5, 0.5], color: '#00ffcc' },
-    { id: 3, title: 'Cámara de Proyección', pos: [0, 1, 0], color: '#0055ff' },
-    { id: 4, title: 'Ventilación y Flujo de Aire', pos: [-2.5, 0, 0], color: '#ffaa00' },
-    { id: 5, title: 'Sensores Ambientales', pos: [0, -3.5, 2.5], color: '#00ff88' },
-    { id: 6, title: 'Zona de Formación de Niebla', pos: [0, -4, 0], color: '#ff88ff' }
+    { id: 1, title: '1. Matriz Láser RGB', pos: [0, 4.5, 0], color: '#ff0055' },
+    { id: 2, title: '2. Emisores Ultrasónicos Superiores', pos: [0, 4.2, 1.5], color: '#00ffcc' },
+    { id: 3, title: '3. Cámara de Proyección', pos: [0, 1.5, 0], color: '#0055ff' },
+    { id: 4, title: '4. Ventilación y Flujo de Aire', pos: [-3, 2.5, 0], color: '#ffaa00' },
+    { id: 5, title: '5. Sensores Ambientales', pos: [0, -2.5, 3], color: '#00ff88' },
+    { id: 6, title: '6. Zona de Formación de Niebla', pos: [0, -4.2, 0], color: '#ff88ff' }
   ],
   interior: [
-    { id: 7, title: 'Depósito de Agua', pos: [-2.5, -4, 0], color: '#0088ff' },
-    { id: 8, title: 'Bomba de Agua Silenciosa', pos: [-1.5, -3.5, 0], color: '#00ffaa' },
-    { id: 9, title: 'Filtro Multi-etapa', pos: [0, -3.5, 0], color: '#ffff00' },
-    { id: 10, title: 'Nebulizadores Ultrasónicos', pos: [1.5, -3.5, 0], color: '#ff00ff' },
-    { id: 11, title: 'Cámara de Mezcla', pos: [2.5, -3, 0], color: '#00ffff' },
-    { id: 12, title: 'Retorno de Agua Condensada', pos: [3, -2.5, 0], color: '#88ff00' },
-    { id: 13, title: 'Detector de Nivel Mínimo', pos: [3.5, -2, 0], color: '#ff6600' },
-    { id: 14, title: 'Válvula Antirretorno', pos: [3.8, -1.5, 0], color: '#00ff00' },
-    { id: 15, title: 'Placa Principal (MCU)', pos: [0, 0.5, 1.5], color: '#ff0088' },
-    { id: 16, title: 'Controladores Específicos', pos: [1, 1, 1.5], color: '#0055ff' },
-    { id: 17, title: 'Módulo de Comunicación', pos: [2, 1.5, 1.5], color: '#00ffcc' },
-    { id: 18, title: 'Sensores de Precisión', pos: [0, 2, 1.5], color: '#ffaa00' },
-    { id: 19, title: 'Drivers Láser y Ultrasonido', pos: [1, 2.5, 1.5], color: '#ff00ff' },
-    { id: 20, title: 'Sistema de Gestión (BMS)', pos: [-1, 1, 1.5], color: '#00ff88' },
-    { id: 21, title: 'Convertidor DC-DC', pos: [-2, 1.5, 1.5], color: '#ff8800' },
-    { id: 22, title: 'Batería de Alto Rendimiento', pos: [-3, 2, 1.5], color: '#88ff00' },
-    { id: 23, title: 'Puerto USB-C PD', pos: [-3.8, 2.5, 1.5], color: '#ff0055' },
-    { id: 24, title: 'Distribución de Energía', pos: [-2, 3, 1.5], color: '#00ffff' }
+    { id: 7, title: '7. Depósito de Agua', pos: [-3, -4, 0], color: '#0088ff' },
+    { id: 8, title: '8. Bomba de Agua Silenciosa', pos: [-2, -3.5, 0], color: '#00ffaa' },
+    { id: 9, title: '9. Filtro Multi-etapa', pos: [-0.5, -3.5, 0], color: '#ffff00' },
+    { id: 10, title: '10. Nebulizadores Ultrasónicos', pos: [1, -3.5, 0], color: '#ff00ff' },
+    { id: 11, title: '11. Cámara de Mezcla', pos: [2.5, -3, 0], color: '#00ffff' },
+    { id: 12, title: '12. Retorno de Agua Condensada', pos: [3, -2, 0], color: '#88ff00' },
+    { id: 13, title: '13. Detector de Nivel Mínimo', pos: [3.5, -1, 0], color: '#ff6600' },
+    { id: 14, title: '14. Válvula Antirretorno', pos: [3.8, 0, 0], color: '#00ff00' },
+    { id: 15, title: '15. Placa Principal (MCU)', pos: [0, 0.5, 2], color: '#ff0088' },
+    { id: 16, title: '16. Controladores Específicos', pos: [1.5, 1, 2], color: '#0055ff' },
+    { id: 17, title: '17. Módulo de Comunicación', pos: [3, 1.5, 2], color: '#00ffcc' },
+    { id: 18, title: '18. Sensores de Precisión', pos: [0, 2, 2], color: '#ffaa00' },
+    { id: 19, title: '19. Drivers Láser y Ultrasonido', pos: [1.5, 2.5, 2], color: '#ff00ff' },
+    { id: 20, title: '20. Sistema de Gestión (BMS)', pos: [-1.5, 1, 2], color: '#00ff88' },
+    { id: 21, title: '21. Convertidor DC-DC', pos: [-3, 1.5, 2], color: '#ff8800' },
+    { id: 22, title: '22. Batería de Alto Rendimiento', pos: [-3.5, 2.5, 2], color: '#88ff00' },
+    { id: 23, title: '23. Puerto USB-C PD', pos: [-3.8, 3.5, 2], color: '#ff0055' },
+    { id: 24, title: '24. Distribución de Energía', pos: [-2, 4, 2], color: '#00ffff' }
   ]
 };
 
@@ -286,12 +286,13 @@ export default function Home() {
         holoRef.current.rotation.y += 0.003;
       }
 
-      // Limpieza total de anotaciones antes de decidir cuáles mostrar
-      const allPossibleIds = [...ANNOTATION_POINTS.exterior, ...ANNOTATION_POINTS.interior].map(a => a.id);
-      allPossibleIds.forEach(id => {
+            // Limpieza total y forzada de todas las anotaciones posibles
+      const allIds = [...ANNOTATION_POINTS.exterior, ...ANNOTATION_POINTS.interior].map(a => a.id);
+      allIds.forEach(id => {
         const dom = document.getElementById(`annotation-${id}`);
         if (dom) {
           dom.style.display = 'none';
+          dom.style.visibility = 'hidden';
           dom.style.opacity = '0';
         }
       });
@@ -301,8 +302,6 @@ export default function Home() {
         
         currentAnnotations.forEach((el) => {
           const vec = new THREE.Vector3(el.pos[0], el.pos[1], el.pos[2]);
-          
-          // Importante: Los puntos deben estar en el mismo espacio que el modelo escalado
           vec.project(cameraRef.current!);
           
           const x = (vec.x * 0.5 + 0.5) * rendererRef.current!.domElement.clientWidth;
@@ -310,14 +309,13 @@ export default function Home() {
           
           const dom = document.getElementById(`annotation-${el.id}`);
           if (dom) {
-            // Verificamos si el punto está frente a la cámara (vec.z entre 0 y 1 en clip space)
-            if (vec.z >= -1 && vec.z <= 1) {
+            // Mostrar si está en el frustum de la cámara (z entre -1 y 1)
+            if (vec.z > -1 && vec.z < 1) {
               dom.style.display = 'block';
-              dom.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+              dom.style.visibility = 'visible';
               dom.style.opacity = '1';
-              dom.style.zIndex = '100';
-            } else {
-              dom.style.display = 'none';
+              dom.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+              dom.style.zIndex = '9999';
             }
           }
         });
@@ -479,7 +477,7 @@ export default function Home() {
 
         {showAnnotations &&
           (currentModelIndex === 0 ? ANNOTATION_POINTS.exterior : ANNOTATION_POINTS.interior).map((el) => (
-            <div key={el.id} id={`annotation-${el.id}`} className="absolute top-0 left-0 pointer-events-none transition-all duration-300 z-50">
+            <div key={el.id} id={`annotation-${el.id}`} className="fixed inset-0 pointer-events-none z-[9999] annotation-layer">
               <div className="relative">
                 <div className="w-3 h-3 rounded-full border-2 animate-pulse absolute -inset-0" style={{ borderColor: el.color, boxShadow: `0 0 10px ${el.color}` }}></div>
                 <div className="w-3 h-3 rounded-full border-2 relative z-10 bg-[#020408]" style={{ borderColor: el.color }}></div>
@@ -501,7 +499,7 @@ export default function Home() {
               className={`flex-1 p-3 rounded-lg border-2 transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 ${showAnnotations ? 'bg-[#00ffcc] border-[#00ffcc] text-black' : 'bg-white/5 border-white/10 text-neutral-400'}`}
             >
               {showAnnotations ? <Eye size={16} /> : <EyeOff size={16} />}
-              Puntos
+              Puntos INFO
             </button>
             <button
               onClick={() => setCurrentModelIndex(currentModelIndex === 0 ? 1 : 0)}
