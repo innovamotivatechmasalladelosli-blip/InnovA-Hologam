@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Menu, X, Eye, EyeOff, Maximize, ChevronDown, RefreshCw, Battery, Wind, BookOpen } from 'lucide-react';
+import { Menu, X, Eye, EyeOff, Maximize, ChevronDown, RefreshCw, BookOpen } from 'lucide-react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 // ==========================================
-// COMPONENTES TÉCNICOS (SIN ENERGÍA)
+// COMPONENTES TÉCNICOS COMPLETOS
 // ==========================================
 
 const COMPONENTS = {
@@ -24,8 +24,8 @@ const COMPONENTS = {
   },
   interior: {
     title: "Arquitectura Interna",
-    subtitle: "Sistema de 3 Bloques Funcionales",
-    desc: "Ingeniería de precisión con ciclo cerrado de agua, manipulación acústica de partículas y control en tiempo real.",
+    subtitle: "Sistema de 4 Bloques Funcionales",
+    desc: "Ingeniería de precisión con ciclo cerrado de agua, manipulación acústica de partículas, control en tiempo real y distribución de energía regulada.",
     features: [
       { id: 7, name: "Depósito de Agua", pos: [-3, -3.5, 0], desc: "Tanque de gran capacidad con materiales anti-corrosión. Almacena agua destilada para evitar residuos." },
       { id: 8, name: "Bomba de Agua Silenciosa", pos: [-2, -3, 0], desc: "Microbomba DC de presión controlada. Impulsa flujo constante hacia nebulizadores." },
@@ -38,7 +38,13 @@ const COMPONENTS = {
       { id: 15, name: "Placa Principal (MCU)", pos: [0, 0.5, 3], desc: "Controlador central ARM Cortex-A72. Ejecuta algoritmos de control en tiempo real (<2ms)." },
       { id: 16, name: "Controladores Específicos", pos: [1, 1, 3], desc: "Drivers para ultrasonido, láser, bomba y ventiladores. Sincronización de fase y frecuencia." },
       { id: 17, name: "Módulo de Comunicación", pos: [2, 1.5, 3], desc: "Wi-Fi / Bluetooth. Interfaz remota y monitoreo desde dispositivos externos." },
-      { id: 18, name: "Sensores de Precisión y Posición", pos: [0, 2, 3], desc: "Detectores ópticos de partículas. Retroalimentación para ajuste dinámico de campos acústicos." }
+      { id: 18, name: "Sensores de Precisión y Posición", pos: [0, 2, 3], desc: "Detectores ópticos de partículas. Retroalimentación para ajuste dinámico de campos acústicos." },
+      { id: 19, name: "Drivers Láser y Ultrasonido", pos: [1, 2.5, 3], desc: "Amplificadores de potencia. Generan voltajes específicos para cada componente." },
+      { id: 20, name: "Sistema de Gestión de Energía (BMS)", pos: [-1, 1, 3], desc: "Protección, balanceo de celdas y regulación. Distribuye energía de forma segura." },
+      { id: 21, name: "Convertidor DC-DC", pos: [-2, 1.5, 3], desc: "Transforma 24V en 12V, 5V y 3.3V. Alimenta subsistemas específicos." },
+      { id: 22, name: "Batería de Alto Rendimiento", pos: [-3, 2, 3], desc: "Li-ion 24V con capacidad extendida. Proporciona ~4-6 horas de operación continua." },
+      { id: 23, name: "Puerto USB-C PD", pos: [-3.5, 2.5, 3], desc: "Carga rápida Power Delivery. Recarga completa en ~90 minutos." },
+      { id: 24, name: "Distribución de Energía (Power Rail)", pos: [-2.5, 3, 3], desc: "Matriz de distribución regulada. Garantiza voltajes estables a todos los subsistemas." }
     ]
   }
 };
@@ -77,6 +83,10 @@ const MANUAL_TECNICO = {
         content: "El controlador central (MCU ARM Cortex-A72) ejecuta algoritmos de control en tiempo real con latencia <2ms. Recibe datos de sensores (temperatura, humedad, nivel de agua, flujo, calidad del aire, vibración) y ajusta continuamente: intensidad del ultrasonido, potencia del láser, flujo de agua, velocidad de ventiladores. Este loop de control se repite muchas veces por segundo, permitiendo compensar perturbaciones como corrientes de aire o cambios de temperatura. El módulo de comunicación (Wi-Fi/Bluetooth) permite monitoreo remoto e interfaz intuitiva."
       },
       {
+        heading: "Bloque 4: Sistema de Energía (Distribución Regulada)",
+        content: "Una batería Li-ion de 24V proporciona la energía principal. El BMS (Battery Management System) protege las celdas, balancea voltajes y monitorea salud. Convertidores DC-DC transforman 24V en 12V (bomba/ventiladores), 5V (lógica), 3.3V (sensores) y voltajes específicos para ultrasonido y láser. Un puerto USB-C con Power Delivery permite carga rápida. La distribución de energía (Power Rail) garantiza voltajes estables a todos los subsistemas, evitando fluctuaciones que afecten la precisión."
+      },
+      {
         heading: "Análisis de Latencia",
         content: "Control electrónico (MCU + sensores): ~10-30ms. Física (formación de niebla + movimiento de partículas): ~50-150ms. Latencia total estimada: 80-200ms. Esto significa que puedes animar objetos y reaccionar a eventos, pero no es instantáneo como una pantalla tradicional. Aún así, es suficiente para animaciones fluidas simples y visualización de datos estáticos o lentamente variables."
       },
@@ -95,40 +105,45 @@ const KEY_ELEMENTS = [
   { id: 'ventilation', title: 'Ventilación', pos: [-3, 2, 0], color: '#ffaa00' }
 ];
 
-// Hologramas flotantes
-const createHologramParticles = (scene: THREE.Scene) => {
-  const particlesGeometry = new THREE.BufferGeometry();
-  const particleCount = 1500;
-  const positions = new Float32Array(particleCount * 3);
-  const colors = new Float32Array(particleCount * 3);
+// Crear hologramas reales (proyecciones de luz)
+const createHologramProjection = (scene: THREE.Scene) => {
+  const holoGroup = new THREE.Group();
 
-  for (let i = 0; i < particleCount * 3; i += 3) {
-    positions[i] = (Math.random() - 0.5) * 20;
-    positions[i + 1] = Math.random() * 8 + 5;
-    positions[i + 2] = (Math.random() - 0.5) * 20;
-
-    const hue = Math.random();
-    const color = new THREE.Color().setHSL(hue, 0.8, 0.6);
-    colors[i] = color.r;
-    colors[i + 1] = color.g;
-    colors[i + 2] = color.b;
-  }
-
-  particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-  const particlesMaterial = new THREE.PointsMaterial({
-    size: 0.15,
-    vertexColors: true,
+  // Proyección de luz cilíndrica
+  const cylinderGeometry = new THREE.CylinderGeometry(3, 3, 8, 32, 32);
+  const cylinderMaterial = new THREE.MeshPhongMaterial({
+    color: 0x00ffcc,
+    emissive: 0x00ffcc,
+    emissiveIntensity: 0.3,
+    wireframe: false,
     transparent: true,
-    opacity: 0.6,
-    sizeAttenuation: true
+    opacity: 0.15,
+    side: THREE.DoubleSide
   });
+  const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+  cylinder.position.y = 5;
+  holoGroup.add(cylinder);
 
-  const particles = new THREE.Points(particlesGeometry, particlesMaterial);
-  scene.add(particles);
+  // Anillo de luz
+  const torusGeometry = new THREE.TorusGeometry(3.5, 0.2, 16, 100);
+  const torusMaterial = new THREE.MeshPhongMaterial({
+    color: 0x0055ff,
+    emissive: 0x0055ff,
+    emissiveIntensity: 0.5,
+    transparent: true,
+    opacity: 0.8
+  });
+  const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+  torus.position.y = 5;
+  holoGroup.add(torus);
 
-  return { particles, positions: positions as Float32Array };
+  // Luz puntual para iluminar el holograma
+  const holoLight = new THREE.PointLight(0x00ffcc, 80);
+  holoLight.position.set(0, 6, 0);
+  holoGroup.add(holoLight);
+
+  scene.add(holoGroup);
+  return holoGroup;
 };
 
 export default function Home() {
@@ -145,7 +160,7 @@ export default function Home() {
   const controlsRef = useRef<OrbitControls | null>(null);
   const model1Ref = useRef<THREE.Group | null>(null);
   const model2Ref = useRef<THREE.Group | null>(null);
-  const particlesRef = useRef<any>(null);
+  const holoRef = useRef<THREE.Group | null>(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -170,6 +185,8 @@ export default function Home() {
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
     mountRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
@@ -182,24 +199,29 @@ export default function Home() {
     controls.enablePan = true;
     controlsRef.current = controls;
 
-    // Iluminación mejorada
-    const ambientLight = new THREE.AmbientLight('#ffffff', 1.3);
+    // Iluminación premium
+    const ambientLight = new THREE.AmbientLight('#ffffff', 1.4);
     scene.add(ambientLight);
 
-    const spotLight = new THREE.SpotLight('#ffffff', 120);
-    spotLight.position.set(15, 25, 15);
+    const spotLight = new THREE.SpotLight('#ffffff', 150);
+    spotLight.position.set(20, 30, 20);
     spotLight.castShadow = true;
     spotLight.shadow.mapSize.width = 2048;
     spotLight.shadow.mapSize.height = 2048;
+    spotLight.shadow.camera.far = 100;
     scene.add(spotLight);
 
-    const pointLight = new THREE.PointLight('#00ffcc', 50);
-    pointLight.position.set(-10, 15, 10);
-    scene.add(pointLight);
+    const pointLight1 = new THREE.PointLight('#00ffcc', 60);
+    pointLight1.position.set(-15, 12, 10);
+    scene.add(pointLight1);
 
-    // Crear hologramas flotantes
-    const holoData = createHologramParticles(scene);
-    particlesRef.current = holoData;
+    const pointLight2 = new THREE.PointLight('#0055ff', 50);
+    pointLight2.position.set(15, 12, -10);
+    scene.add(pointLight2);
+
+    // Crear hologramas
+    const holo = createHologramProjection(scene);
+    holoRef.current = holo;
 
     const loader = new GLTFLoader();
 
@@ -209,6 +231,9 @@ export default function Home() {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
+          if (child.material) {
+            child.material.side = THREE.FrontSide;
+          }
         }
       });
       const box = new THREE.Box3().setFromObject(model);
@@ -228,6 +253,9 @@ export default function Home() {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
+          if (child.material) {
+            child.material.side = THREE.FrontSide;
+          }
         }
       });
       const box = new THREE.Box3().setFromObject(model);
@@ -246,16 +274,10 @@ export default function Home() {
       animationFrameId = requestAnimationFrame(animate);
       if (controlsRef.current) controlsRef.current.update();
 
-      // Animar partículas de hologramas
-      if (particlesRef.current) {
-        const positions = particlesRef.current.positions;
-        for (let i = 1; i < positions.length; i += 3) {
-          positions[i] += Math.sin(Date.now() * 0.0001 + i) * 0.02;
-          if (positions[i] > 13) positions[i] = 5;
-          if (positions[i] < 5) positions[i] = 13;
-        }
-        particlesRef.current.particles.geometry.attributes.position.needsUpdate = true;
-        particlesRef.current.particles.rotation.z += 0.0005;
+      // Animar hologramas
+      if (holoRef.current) {
+        holoRef.current.rotation.z += 0.002;
+        holoRef.current.children[1].rotation.x += 0.003;
       }
 
       if (showAnnotations && cameraRef.current && rendererRef.current) {
@@ -435,29 +457,6 @@ export default function Home() {
               </div>
             </div>
           ))}
-
-        <div className="absolute top-4 sm:top-8 right-4 sm:right-8 flex flex-col gap-4 pointer-events-none">
-          <div className="bg-black/40 backdrop-blur-md border border-white/5 p-3 sm:p-4 rounded-2xl">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#00ffcc] animate-pulse"></div>
-              <span className="text-[8px] sm:text-[9px] font-black text-white uppercase tracking-[0.2em]">Estado</span>
-            </div>
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              <div className="flex flex-col">
-                <span className="text-[7px] sm:text-[8px] text-neutral-600 uppercase font-bold">Batería</span>
-                <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-white font-mono">
-                  <Battery size={10} className="text-[#00ffcc]" /> 84%
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[7px] sm:text-[8px] text-neutral-600 uppercase font-bold">Flujo</span>
-                <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-white font-mono">
-                  <Wind size={10} className="text-[#0055ff]" /> 1.2m/s
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Mobile Menu Button */}
         <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden absolute top-4 left-4 z-20 p-2 bg-black/40 border border-white/10 rounded-lg text-white">
