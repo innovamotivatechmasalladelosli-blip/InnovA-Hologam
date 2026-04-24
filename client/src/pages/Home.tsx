@@ -154,27 +154,38 @@ const createTextLabel = (text: string, color: string) => {
   const context = canvas.getContext('2d');
   if (!context) return null;
   
-  canvas.width = 512;
-  canvas.height = 128;
+  // Canvas más compacto
+  canvas.width = 400;
+  canvas.height = 80;
   
-  context.fillStyle = 'rgba(0, 0, 0, 0.8)';
-  context.roundRect(0, 0, 512, 128, 20);
+  // Fondo semi-transparente elegante
+  context.fillStyle = 'rgba(5, 7, 10, 0.6)';
+  context.roundRect(0, 0, 400, 80, 15);
   context.fill();
   
+  // Borde sutil
   context.strokeStyle = color;
-  context.lineWidth = 4;
+  context.lineWidth = 2;
   context.stroke();
   
-  context.font = 'bold 40px Arial';
+  // Texto más pequeño y limpio
+  context.font = 'bold 28px Inter, system-ui, sans-serif';
   context.fillStyle = 'white';
   context.textAlign = 'center';
   context.textBaseline = 'middle';
-  context.fillText(text, 256, 64);
+  context.fillText(text, 200, 40);
   
   const texture = new THREE.CanvasTexture(canvas);
-  const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
+  const spriteMaterial = new THREE.SpriteMaterial({ 
+    map: texture, 
+    transparent: true, 
+    depthTest: false,
+    opacity: 0.9 
+  });
   const sprite = new THREE.Sprite(spriteMaterial);
-  sprite.scale.set(4, 1, 1);
+  
+  // Escala más pequeña para no tapar el modelo
+  sprite.scale.set(2.5, 0.5, 1);
   return sprite;
 };
 
@@ -219,6 +230,8 @@ export default function Home() {
   
 
   const [showAnnotations, setShowAnnotations] = useState(true);
+  const showAnnotationsRef = useRef(true);
+  useEffect(() => { showAnnotationsRef.current = showAnnotations; }, [showAnnotations]);
   const [currentModelIndex, setCurrentModelIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<'overview' | 'manual'>('overview');
   const [isMobile, setIsMobile] = useState(false);
@@ -313,7 +326,7 @@ export default function Home() {
       if (holoRef.current) holoRef.current.rotation.y += 0.003;
 
       if (annotationsGroupRef.current) {
-        annotationsGroupRef.current.visible = showAnnotations;
+        annotationsGroupRef.current.visible = showAnnotationsRef.current;
       }
 
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
@@ -476,16 +489,7 @@ export default function Home() {
       <div className="flex-1 relative bg-[#020408]">
         <div ref={mountRef} className="w-full h-full" />
 
-        {showAnnotations &&
-          (currentModelIndex === 0 ? ANNOTATION_POINTS.exterior : ANNOTATION_POINTS.interior).map((el) => (
-            <div key={el.id} id={`annotation-${el.id}`} className="fixed inset-0 pointer-events-none z-[9999] annotation-layer">
-              <div className="relative">
-                <div className="w-3 h-3 rounded-full border-2 animate-pulse absolute -inset-0" style={{ borderColor: el.color, boxShadow: `0 0 10px ${el.color}` }}></div>
-                <div className="w-3 h-3 rounded-full border-2 relative z-10 bg-[#020408]" style={{ borderColor: el.color }}></div>
-                <div className="absolute left-5 top-1/2 -translate-y-1/2 bg-black/80 backdrop-blur-md border border-white/10 px-2 py-1 rounded text-[8px] font-bold text-white uppercase tracking-tighter whitespace-nowrap z-20" style={{ pointerEvents: 'auto' }}>{el.title}</div>
-              </div>
-            </div>
-          ))}
+        {/* Anotaciones 3D nativas - sin etiquetas HTML conflictivas */}
 
         {/* Mobile Menu Button */}
         <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden absolute top-4 left-4 z-20 p-2 bg-black/40 border border-white/10 rounded-lg text-white">
