@@ -14,12 +14,12 @@ const COMPONENTS = {
     subtitle: "Proyector Volumétrico Acústico Avanzado",
     desc: "Sistema de proyección holográfica de última generación basado en interferencia acústica y láser RGB. Dispositivo compacto y modular con arquitectura de ciclo cerrado.",
     features: [
-      { id: 1, name: "Matriz Láser RGB", pos: [3, 4.5, -2], desc: "Emisores láser RGB de 200mW totales. Ilumina partículas en puntos específicos del espacio 3D." },
-      { id: 2, name: "Emisores Ultrasónicos Superiores", pos: [2.5, 3.8, 0], desc: "Matriz de transductores a 40kHz. Genera ondas estacionarias para posicionar partículas (voxels)." },
-      { id: 3, name: "Cámara de Proyección", pos: [0, 2.5, 0], desc: "Volumen transparente donde se forman las imágenes holográficas. Zona de operación principal." },
-      { id: 4, name: "Ventilación y Flujo de Aire", pos: [-3, 2, 0], desc: "Sistema de circulación controlada. Estabiliza partículas y mantiene uniformidad de la niebla." },
-      { id: 5, name: "Sensores Ambientales", pos: [0, 1.8, -4], desc: "Temperatura, humedad, presión. Monitoreo continuo del ambiente para ajuste automático." },
-      { id: 6, name: "Zona de Formación de Niebla", pos: [-2.8, -1.5, 0], desc: "Cámara inferior donde se generan microgotas ultrasónicas (1-10 micras)." }
+      { id: 1, name: "Matriz Láser RGB", pos: [3.5, 4.8, -1.5], desc: "Emisores láser RGB de 200mW totales (50mW rojo, 100mW verde, 50mW azul). Ilumina partículas en puntos específicos del espacio 3D para crear las imágenes holográficas visibles." },
+      { id: 2, name: "Emisores Ultrasónicos Superiores", pos: [2.8, 4.2, 1], desc: "Matriz de transductores a 40kHz. Genera ondas estacionarias para posicionar partículas (voxels) en el espacio 3D con precisión milimétrica." },
+      { id: 3, name: "Cámara de Proyección", pos: [0, 3, 0], desc: "Volumen transparente donde se forman las imágenes holográficas. Zona de operación principal con paredes de vidrio óptico de precisión." },
+      { id: 4, name: "Ventilación y Flujo de Aire", pos: [-3.5, 2.5, 0], desc: "Sistema de circulación controlada. Estabiliza partículas y mantiene uniformidad de la niebla para evitar desplazamientos no deseados." },
+      { id: 5, name: "Sensores Ambientales", pos: [0, 1.8, -4], desc: "Monitorean temperatura, humedad relativa, presión atmosférica. Retroalimentación continua para ajuste automático del sistema." },
+      { id: 6, name: "Zona de Formación de Niebla", pos: [-2.8, -1.5, 0], desc: "Cámara inferior donde se generan microgotas ultrasónicas de 1-10 micras. Base del ciclo cerrado de agua." }
     ]
   },
   interior: {
@@ -27,24 +27,24 @@ const COMPONENTS = {
     subtitle: "Sistema de 4 Bloques Funcionales",
     desc: "Ingeniería de precisión con ciclo cerrado de agua, manipulación acústica de partículas, control en tiempo real y distribución de energía regulada.",
     features: [
-      { id: 7, name: "Depósito de Agua", pos: [-3.5, -3.8, 0], desc: "Tanque de gran capacidad con materiales anti-corrosión. Almacena agua destilada para evitar residuos." },
-      { id: 8, name: "Bomba de Agua Silenciosa", pos: [-2.2, -3.2, 0], desc: "Microbomba DC de presión controlada. Impulsa flujo constante hacia nebulizadores." },
-      { id: 9, name: "Filtro Multi-etapa", pos: [-1, -3, 0], desc: "Carbón activado + microfiltro + UV opcional. Purifica agua antes de nebulización." },
-      { id: 10, name: "Nebulizadores Ultrasónicos", pos: [0.2, -2.8, 0], desc: "Transductores a 1.7MHz. Rompen agua en microgotas de 1-10 micras." },
-      { id: 11, name: "Cámara de Mezcla", pos: [1.5, -2.2, 0], desc: "Uniformiza la niebla antes de ascender. Garantiza densidad homogénea de partículas." },
-      { id: 12, name: "Retorno de Agua Condensada", pos: [2.5, -1.8, 0], desc: "Drenaje de vapor condensado. Cierra el ciclo retornando al depósito." },
-      { id: 13, name: "Detector de Nivel Mínimo", pos: [3.2, -1.2, 0], desc: "Sensor capacitivo. Alerta cuando el agua está por debajo del umbral de operación." },
+      { id: 7, name: "Depósito de Agua", pos: [-3.5, -3.8, 0], desc: "Tanque de gran capacidad con materiales anti-corrosión. Almacena agua destilada (importante para evitar residuos minerales)." },
+      { id: 8, name: "Bomba de Agua Silenciosa", pos: [-2.2, -3.2, 0], desc: "Microbomba DC de presión controlada. Impulsa flujo constante hacia nebulizadores sin vibraciones." },
+      { id: 9, name: "Filtro Multi-etapa", pos: [-1, -3, 0], desc: "Carbón activado + microfiltro + UV opcional. Purifica agua eliminando partículas dañinas." },
+      { id: 10, name: "Nebulizadores Ultrasónicos", pos: [0.2, -2.8, 0], desc: "Transductores a 1.7MHz. Rompen agua en microgotas de 1-10 micras para la formación de niebla." },
+      { id: 11, name: "Cámara de Mezcla", pos: [1.5, -2.2, 0], desc: "Uniformiza la niebla antes de ascender. Garantiza densidad homogénea de partículas en la zona de proyección." },
+      { id: 12, name: "Retorno de Agua Condensada", pos: [2.5, -1.8, 0], desc: "Drenaje de vapor condensado en las paredes. Cierra el ciclo retornando al depósito." },
+      { id: 13, name: "Detector de Nivel Mínimo", pos: [3.2, -1.2, 0], desc: "Sensor capacitivo. Alerta cuando el agua está por debajo del umbral de operación segura." },
       { id: 14, name: "Válvula Antirretorno", pos: [3.8, -0.2, 0], desc: "Impide reflujo de agua hacia la bomba. Mantiene presión y eficiencia del sistema." },
-      { id: 15, name: "Placa Principal (MCU)", pos: [0.2, 0.8, 3.5], desc: "Controlador central ARM Cortex-A72. Ejecuta algoritmos de control en tiempo real (<2ms)." },
-      { id: 16, name: "Controladores Específicos", pos: [1.5, 1.3, 3.5], desc: "Drivers para ultrasonido, láser, bomba y ventiladores. Sincronización de fase y frecuencia." },
-      { id: 17, name: "Módulo de Comunicación", pos: [2.8, 1.8, 3.5], desc: "Wi-Fi / Bluetooth. Interfaz remota y monitoreo desde dispositivos externos." },
+      { id: 15, name: "Placa Principal (MCU)", pos: [0.2, 0.8, 3.5], desc: "Controlador central ARM Cortex-A72. Ejecuta algoritmos de control en tiempo real con latencia <2ms." },
+      { id: 16, name: "Controladores Específicos", pos: [1.5, 1.3, 3.5], desc: "Drivers para ultrasonido, láser, bomba y ventiladores. Sincronización precisa de fase y frecuencia." },
+      { id: 17, name: "Módulo de Comunicación", pos: [2.8, 1.8, 3.5], desc: "Wi-Fi 6 / Bluetooth 5.0. Interfaz remota y monitoreo en tiempo real desde dispositivos externos." },
       { id: 18, name: "Sensores de Precisión", pos: [0.2, 2.3, 3.5], desc: "Detectores ópticos de partículas. Retroalimentación para ajuste dinámico de campos acústicos." },
-      { id: 19, name: "Drivers Láser y Ultrasonido", pos: [1.5, 2.8, 3.5], desc: "Amplificadores de potencia. Generan voltajes específicos para cada componente." },
-      { id: 20, name: "Sistema de Gestión (BMS)", pos: [-1.2, 1.3, 3.5], desc: "Protección, balanceo de celdas y regulación. Distribuye energía de forma segura." },
-      { id: 21, name: "Convertidor DC-DC", pos: [-2.2, 1.8, 3.5], desc: "Transforma 24V en 12V, 5V y 3.3V. Alimenta subsistemas específicos." },
-      { id: 22, name: "Batería de Alto Rendimiento", pos: [-3.2, 2.3, 3.5], desc: "Li-ion 24V con capacidad extendida. Proporciona ~4-6 horas de operación continua." },
-      { id: 23, name: "Puerto USB-C PD", pos: [-3.8, 2.8, 3.5], desc: "Carga rápida Power Delivery. Recarga completa en ~90 minutos." },
-      { id: 24, name: "Distribución de Energía", pos: [-2.8, 3.3, 3.5], desc: "Matriz de distribución regulada. Garantiza voltajes estables a todos los subsistemas." }
+      { id: 19, name: "Drivers Láser y Ultrasonido", pos: [1.5, 2.8, 3.5], desc: "Amplificadores de potencia de alta eficiencia. Generan voltajes específicos para cada componente." },
+      { id: 20, name: "Sistema de Gestión (BMS)", pos: [-1.2, 1.3, 3.5], desc: "Protección de celdas, balanceo y regulación. Distribuye energía de forma segura y eficiente." },
+      { id: 21, name: "Convertidor DC-DC", pos: [-2.2, 1.8, 3.5], desc: "Transforma 24V en 12V (bomba/ventiladores), 5V (lógica), 3.3V (sensores) y voltajes específicos." },
+      { id: 22, name: "Batería de Alto Rendimiento", pos: [-3.2, 2.3, 3.5], desc: "Li-ion 24V con capacidad extendida. Proporciona 4-6 horas de operación continua a máxima potencia." },
+      { id: 23, name: "Puerto USB-C PD", pos: [-3.8, 2.8, 3.5], desc: "Carga rápida Power Delivery 65W. Recarga completa en aproximadamente 90 minutos." },
+      { id: 24, name: "Distribución de Energía", pos: [-2.8, 3.3, 3.5], desc: "Matriz de distribución regulada (Power Rail). Garantiza voltajes estables a todos los subsistemas." }
     ]
   }
 };
