@@ -178,10 +178,37 @@ const createTextLabel = (text: string, color: string) => {
   return sprite;
 };
 
+
+const createSimpleAnnotations = (scene: THREE.Scene, modelIndex: number) => {
+  // Limpiar anotaciones previas
+  scene.children = scene.children.filter(child => !(child as any).isAnnotation);
+  
+  const points = modelIndex === 0 ? COMPONENTS.exterior.features : COMPONENTS.interior.features;
+  
+  points.forEach(point => {
+    // CUBO ROJO GIGANTE (imposible de perder)
+    const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.9 });
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.set(point.pos[0], point.pos[1], point.pos[2]);
+    (cube as any).isAnnotation = true;
+    scene.add(cube);
+  });
+};
+
+
 export default function Home() {
   const mountRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Diagnóstico: Alerta de confirmación de versión
+  React.useEffect(() => {
+    setTimeout(() => {
+      alert('✓ VERSIÓN ACTUALIZADA CARGADA\n\nSi ves este mensaje, el código nuevo se está ejecutando.\n\nLos puntos de información deberían estar visibles en el modelo 3D.\n\nSi no ves puntos, intenta:\n1. Recarga completa (Ctrl+F5 o Cmd+Shift+R)\n2. Limpia el caché del navegador\n3. Abre en modo incógnito');
+    }, 1000);
+  }, []);
+
   const [showAnnotations, setShowAnnotations] = useState(true);
   const [currentModelIndex, setCurrentModelIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<'overview' | 'manual'>('overview');
@@ -337,7 +364,7 @@ export default function Home() {
       </div>
 
       {/* 3D Canvas */}
-      <div className="flex-1 relative bg-[#020408]">
+      <div className="flex-1 relative bg-[#001a4d]">
         <div ref={mountRef} className="w-full h-full" />
 
         {showAnnotations &&
