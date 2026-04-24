@@ -286,8 +286,8 @@ const ExpandableSection = ({ title, items, color }: { title: string, items: any,
   const [isOpen, setIsOpen] = useState(false);
   
   return (
-    <div className="mb-4 border-b border-white/5 pb-4">
-      <button 
+    <div className="mb-6">
+      <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between text-left group"
       >
@@ -484,6 +484,7 @@ export default function Home() {
         model.visible = false;
         scene.add(model);
         model2Ref.current = model;
+        console.log("Modelo 2 cargado:", model);
     });
 
     engineRef.current = { scene, camera, controls, renderer };
@@ -522,44 +523,51 @@ export default function Home() {
         controls.update();
         
         // Manejar transición de modelos
-        if (isTransitioning) {
+        if (isTransitioning && engineRef.current.gltfModel && model2Ref.current) {
             const elapsed = Date.now() - transitionStartTimeRef.current;
             const transitionDuration = 2000; // 2 segundos
             const progress = Math.min(elapsed / transitionDuration, 1);
             setTransitionProgress(progress);
 
-            const models = [engineRef.current.gltfModel, model2Ref.current].filter(Boolean);
-            const currentModel = models[1 - currentModelIndex];
-            const nextModel = models[currentModelIndex];
-
-            if (currentModel && nextModel) {
-                // Fade out modelo actual
-                currentModel.traverse((child: any) => {
+            if (currentModelIndex === 1) {
+                // Transición al modelo interior
+                engineRef.current.gltfModel.traverse((child: any) => {
                     if (child instanceof THREE.Mesh && child.material) {
                         child.material.transparent = true;
                         child.material.opacity = 1 - progress;
                     }
                 });
 
-                // Fade in modelo siguiente
-                nextModel.visible = true;
-                nextModel.traverse((child: any) => {
+                model2Ref.current.visible = true;
+                model2Ref.current.traverse((child: any) => {
                     if (child instanceof THREE.Mesh && child.material) {
                         child.material.transparent = true;
                         child.material.opacity = progress;
                     }
                 });
 
-                // Aplicar efecto de rayos X si vamos al modelo interior
-                if (currentModelIndex === 1) {
-                    applyXrayEffect(nextModel, progress);
-                }
+                applyXrayEffect(model2Ref.current, progress);
+            } else {
+                // Transición al modelo exterior
+                model2Ref.current.traverse((child: any) => {
+                    if (child instanceof THREE.Mesh && child.material) {
+                        child.material.transparent = true;
+                        child.material.opacity = 1 - progress;
+                    }
+                });
+
+                engineRef.current.gltfModel.traverse((child: any) => {
+                    if (child instanceof THREE.Mesh && child.material) {
+                        child.material.transparent = true;
+                        child.material.opacity = progress;
+                    }
+                });
             }
 
             if (progress === 1) {
                 setIsTransitioning(false);
-                if (engineRef.current.gltfModel) engineRef.current.gltfModel.visible = (currentModelIndex === 0);
-                if (model2Ref.current) model2Ref.current.visible = (currentModelIndex === 1);
+                engineRef.current.gltfModel.visible = (currentModelIndex === 0);
+                model2Ref.current.visible = (currentModelIndex === 1);
             }
         }
         
@@ -612,7 +620,7 @@ export default function Home() {
         }
         renderer.dispose();
     };
-  }, []);
+  }, [isTransitioning, currentModelIndex]);
 
   const ActiveIcon = activeElement.icon;
 
@@ -623,7 +631,7 @@ export default function Home() {
         <div className="absolute inset-0 z-50 bg-[#05070a] flex flex-col items-center justify-center">
           <div className="w-16 h-16 border-4 border-[#1a2535] border-t-[#00ffcc] rounded-full animate-spin mb-4"></div>
           <h2 className="text-xl font-bold tracking-widest text-white">INICIALIZANDO MOTOR 3D</h2>
-          <p className="text-[#00bbff] text-sm mt-2 font-mono uppercase">Cargando Modelo y Shaders...</p>
+          <p className="text-[#00bbff] text-sm mt-2 font-mono uppercase">Cargando Modelos y Shaders...</p>
           {loadingError && <p className="text-red-400 mt-4 text-xs max-w-sm text-center">Aviso: Error al cargar el modelo. Usando respaldo procedimental.</p>}
         </div>
       )}
@@ -767,7 +775,7 @@ export default function Home() {
                 }`}
                 title={currentModelIndex === 0 ? "Ver Interior (Rayos X)" : "Ver Exterior"}
               >
-                <Radio size={16} className={currentModelIndex === 1 ? "text-[#00ffcc]" : ""} />
+                <Radio size={16} />
               </button>
               <button className="p-2 rounded-lg bg-white/5 border border-white/10 text-neutral-500 hover:text-white transition-all">
                 <Maximize size={16} />
