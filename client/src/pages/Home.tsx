@@ -411,7 +411,7 @@ export default function Home() {
           )}
         </div>
 
-        {/* Footer Controls - Solo en Desktop */}
+        {/* Footer Controls - Desktop y Tablet */}
         {!isMobile && (
           <div className="p-4 sm:p-6 bg-white/5 border-t border-white/10">
             <div className="flex items-center justify-between mb-4">
@@ -462,7 +462,7 @@ export default function Home() {
               <div className="relative">
                 <div className="w-3 h-3 rounded-full border-2 animate-pulse absolute -inset-0" style={{ borderColor: el.color, boxShadow: `0 0 10px ${el.color}` }}></div>
                 <div className="w-3 h-3 rounded-full border-2 relative z-10 bg-[#020408]" style={{ borderColor: el.color }}></div>
-                <div className="absolute left-5 top-1/2 -translate-y-1/2 bg-black/80 backdrop-blur-md border border-white/10 px-2 py-1 rounded text-[8px] font-bold text-white uppercase tracking-tighter whitespace-nowrap">{el.title}</div>
+                <div className="absolute left-5 top-1/2 -translate-y-1/2 bg-black/80 backdrop-blur-md border border-white/10 px-2 py-1 rounded text-[8px] font-bold text-white uppercase tracking-tighter whitespace-nowrap z-20" style={{ pointerEvents: 'auto' }}>{el.title}</div>
               </div>
             </div>
           ))}
@@ -472,7 +472,7 @@ export default function Home() {
           <Menu size={24} />
         </button>
 
-        {/* Controles Flotantes en Móvil/Tableta */}
+        {/* Controles Flotantes en Móvil */}
         {isMobile && (
           <div className="absolute bottom-4 left-4 right-4 z-20 flex gap-2">
             <button
