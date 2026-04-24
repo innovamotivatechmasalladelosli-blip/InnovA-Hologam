@@ -112,38 +112,49 @@ const ANNOTATION_POINTS = {
     { id: 8, title: '8. Bomba de Agua Silenciosa', pos: [-2, -3.5, 0], color: '#00ffaa' },
     { id: 9, title: '9. Filtro Multi-etapa', pos: [-0.5, -3.5, 0], color: '#ffff00' },
     { id: 10, title: '10. Nebulizadores Ultrasónicos', pos: [1, -3.5, 0], color: '#ff00ff' },
-    { id: 11, title: '11. Cámara de Mezcla', pos: [2.5, -3, 0], color: '#00ffff' },
-    { id: 12, title: '12. Retorno de Agua Condensada', pos: [3, -2, 0], color: '#88ff00' },
-    { id: 13, title: '13. Detector de Nivel Mínimo', pos: [3.5, -1, 0], color: '#ff6600' },
-    { id: 14, title: '14. Válvula Antirretorno', pos: [3.8, 0, 0], color: '#00ff00' },
-    { id: 15, title: '15. Placa Principal (MCU)', pos: [0, 0.5, 2], color: '#ff0088' },
-    { id: 16, title: '16. Controladores Específicos', pos: [1.5, 1, 2], color: '#0055ff' },
-    { id: 17, title: '17. Módulo de Comunicación', pos: [3, 1.5, 2], color: '#00ffcc' },
-    { id: 18, title: '18. Sensores de Precisión', pos: [0, 2, 2], color: '#ffaa00' },
-    { id: 19, title: '19. Drivers Láser y Ultrasonido', pos: [1.5, 2.5, 2], color: '#ff00ff' },
-    { id: 20, title: '20. Sistema de Gestión (BMS)', pos: [-1.5, 1, 2], color: '#00ff88' },
-    { id: 21, title: '21. Convertidor DC-DC', pos: [-3, 1.5, 2], color: '#ff8800' },
-    { id: 22, title: '22. Batería de Alto Rendimiento', pos: [-3.5, 2.5, 2], color: '#88ff00' },
-    { id: 23, title: '23. Puerto USB-C PD', pos: [-3.8, 3.5, 2], color: '#ff0055' },
-    { id: 24, title: '24. Distribución de Energía', pos: [-2, 4, 2], color: '#00ffff' }
+    { id: 11, title: '11. Cámara de Mezcla', pos: [2.5, -3.5, 0], color: '#00ffff' },
+    { id: 12, title: '12. Retorno de Agua Condensada', pos: [3.5, -3, 0], color: '#88ff00' },
+    { id: 13, title: '13. Detector de Nivel Mínimo', pos: [3.5, -2, 0], color: '#ff4400' },
+    { id: 14, title: '14. Válvula Antirretorno', pos: [3.5, -1, 0], color: '#ffcc00' },
+    { id: 15, title: '15. Placa Principal (MCU)', pos: [0, 0, 3.5], color: '#ffffff' },
+    { id: 16, title: '16. Controladores Específicos', pos: [1, 0.5, 3.5], color: '#00ffcc' },
+    { id: 17, title: '17. Módulo de Comunicación', pos: [2, 1, 3.5], color: '#0055ff' },
+    { id: 18, title: '18. Sensores de Precisión', pos: [0, 1.5, 3.5], color: '#ff0055' },
+    { id: 19, title: '19. Drivers Láser y Ultrasonido', pos: [1, 2, 3.5], color: '#ffaa00' },
+    { id: 20, title: '20. Sistema de Gestión (BMS)', pos: [-1, 0.5, 3.5], color: '#00ff88' },
+    { id: 21, title: '21. Convertidor DC-DC', pos: [-2, 1, 3.5], color: '#ff88ff' },
+    { id: 22, title: '22. Batería de Alto Rendimiento', pos: [-3, 1.5, 3.5], color: '#0088ff' },
+    { id: 23, title: '23. Puerto USB-C PD', pos: [-3.5, 2.5, 3.5], color: '#00ffaa' },
+    { id: 24, title: '24. Distribución de Energía', pos: [-2, 3, 3.5], color: '#ffff00' }
   ]
 };
 
 const createHologramProjection = (scene: THREE.Scene) => {
   const holoGroup = new THREE.Group();
-
-  const ringLight = new THREE.PointLight(0x0055ff, 100);
-  ringLight.position.set(0, 5.5, 0);
-  holoGroup.add(ringLight);
-
-  const cyanLight = new THREE.PointLight(0x00ffcc, 80);
-  cyanLight.position.set(0, 6, 0);
-  holoGroup.add(cyanLight);
-
-  const volumeLight = new THREE.PointLight(0xff00ff, 40);
-  volumeLight.position.set(2, 5.5, 2);
-  holoGroup.add(volumeLight);
-
+  const geometry = new THREE.CylinderGeometry(2, 2, 6, 32, 1, true);
+  const material = new THREE.MeshBasicMaterial({
+    color: 0x00ffcc,
+    transparent: true,
+    opacity: 0.1,
+    side: THREE.DoubleSide,
+    wireframe: true
+  });
+  const cylinder = new THREE.Mesh(geometry, material);
+  holoGroup.add(cylinder);
+  
+  for (let i = 0; i < 100; i++) {
+    const pGeo = new THREE.SphereGeometry(0.02, 8, 8);
+    const pMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc, transparent: true, opacity: Math.random() });
+    const p = new THREE.Mesh(pGeo, pMat);
+    p.position.set(
+      (Math.random() - 0.5) * 3.5,
+      (Math.random() - 0.5) * 5.5,
+      (Math.random() - 0.5) * 3.5
+    );
+    holoGroup.add(p);
+  }
+  
+  holoGroup.position.y = 1.5;
   scene.add(holoGroup);
   return holoGroup;
 };
@@ -154,21 +165,17 @@ const createTextLabel = (text: string, color: string) => {
   const context = canvas.getContext('2d');
   if (!context) return null;
   
-  // Canvas más compacto
   canvas.width = 400;
   canvas.height = 80;
   
-  // Fondo semi-transparente elegante
   context.fillStyle = 'rgba(5, 7, 10, 0.6)';
   context.roundRect(0, 0, 400, 80, 15);
   context.fill();
   
-  // Borde sutil
   context.strokeStyle = color;
   context.lineWidth = 2;
   context.stroke();
   
-  // Texto más pequeño y limpio
   context.font = 'bold 28px Inter, system-ui, sans-serif';
   context.fillStyle = 'white';
   context.textAlign = 'center';
@@ -183,32 +190,29 @@ const createTextLabel = (text: string, color: string) => {
     opacity: 0.9 
   });
   const sprite = new THREE.Sprite(spriteMaterial);
-  
-  // Escala más pequeña para no tapar el modelo
   sprite.scale.set(2.5, 0.5, 1);
   return sprite;
 };
 
 
 
-const createElegantAnnotations = (group: THREE.Group, modelIndex: number) => {
+const createElegantAnnotations = (group: THREE.Group, modelIndex: number, onPointClick?: (id: number) => void) => {
   group.clear();
   const points = modelIndex === 0 ? ANNOTATION_POINTS.exterior : ANNOTATION_POINTS.interior;
   
   points.forEach(point => {
-    // Esfera central
     const geo = new THREE.SphereGeometry(0.12, 16, 16);
     const mat = new THREE.MeshBasicMaterial({ color: point.color });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.position.set(point.pos[0], point.pos[1], point.pos[2]);
+    (mesh as any).componentId = point.id;
+    (mesh as any).isClickable = true;
     
-    // Halo brillante
     const haloGeo = new THREE.SphereGeometry(0.2, 16, 16);
     const haloMat = new THREE.MeshBasicMaterial({ color: point.color, transparent: true, opacity: 0.3 });
     const halo = new THREE.Mesh(haloGeo, haloMat);
     mesh.add(halo);
     
-    // Etiqueta de texto
     const label = createTextLabel(point.title, point.color);
     if (label) {
       label.position.set(0, 0.5, 0);
@@ -226,14 +230,12 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Diagnóstico: Alerta de confirmación de versión
-  
-
   const [showAnnotations, setShowAnnotations] = useState(true);
   const showAnnotationsRef = useRef(true);
   useEffect(() => { showAnnotationsRef.current = showAnnotations; }, [showAnnotations]);
   const [currentModelIndex, setCurrentModelIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<'overview' | 'manual'>('overview');
+  const [selectedComponentId, setSelectedComponentId] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -245,51 +247,80 @@ export default function Home() {
   const holoRef = useRef<THREE.Group | null>(null);
   const annotationsGroupRef = useRef<THREE.Group>(new THREE.Group());
 
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (!mountRef.current) return;
 
-    // Escena
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#05070a');
     sceneRef.current = scene;
+    scene.background = new THREE.Color(0x020408);
 
-    // Cámara
     const camera = new THREE.PerspectiveCamera(45, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
     camera.position.set(15, 10, 15);
     cameraRef.current = camera;
 
-    // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.setPixelRatio(window.devicePixelRatio);
     mountRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Controles
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    const onCanvasClick = (event: MouseEvent) => {
+      if (!mountRef.current) return;
+      const rect = mountRef.current.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, cameraRef.current!);
+      const intersects = raycaster.intersectObjects(annotationsGroupRef.current.children, true);
+
+      for (let i = 0; i < intersects.length; i++) {
+        const obj = intersects[i].object;
+        let parent: any = obj;
+        while (parent && !parent.componentId) {
+          parent = parent.parent;
+        }
+        if (parent && parent.componentId) {
+          setSelectedComponentId(parent.componentId);
+          setActiveTab('overview');
+          const element = document.getElementById(`component-${parent.componentId}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          break;
+        }
+      }
+    };
+
+    if (mountRef.current) {
+      mountRef.current.addEventListener('click', onCanvasClick);
+    }
+
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controlsRef.current = controls;
 
-    // Luces
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
-    dirLight.position.set(10, 20, 10);
-    scene.add(dirLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(5, 10, 7.5);
+    scene.add(directionalLight);
 
-    // Holograma y Anotaciones
     const holo = createHologramProjection(scene);
     holoRef.current = holo;
     scene.add(annotationsGroupRef.current);
 
-    // Cargar modelos
     const loader = new GLTFLoader();
-    
-    // IMPORTANTE: Rutas relativas para GitHub Pages
     const baseUrl = import.meta.env.BASE_URL || '/InnovA-Hologam/';
     
     loader.load(`${baseUrl}machine_model.glb`, (gltf) => {
@@ -318,17 +349,14 @@ export default function Home() {
       scene.add(model);
     });
 
-    // Animación
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       if (controlsRef.current) controlsRef.current.update();
       if (holoRef.current) holoRef.current.rotation.y += 0.003;
-
       if (annotationsGroupRef.current) {
         annotationsGroupRef.current.visible = showAnnotationsRef.current;
       }
-
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
         rendererRef.current.render(sceneRef.current, cameraRef.current);
       }
@@ -336,6 +364,9 @@ export default function Home() {
     animate();
 
     return () => {
+      if (mountRef.current) {
+        mountRef.current.removeEventListener('click', onCanvasClick);
+      }
       cancelAnimationFrame(animationFrameId);
       if (mountRef.current && renderer.domElement.parentNode === mountRef.current) {
         mountRef.current.removeChild(renderer.domElement);
@@ -344,39 +375,24 @@ export default function Home() {
     };
   }, []);
 
-
-    useEffect(() => {
+  useEffect(() => {
     if (model1Ref.current) model1Ref.current.visible = currentModelIndex === 0;
     if (model2Ref.current) model2Ref.current.visible = currentModelIndex === 1;
-    
-    // Recrear anotaciones 3D para el nuevo modelo
-    const group = annotationsGroupRef.current;
-    group.clear();
-    const points = currentModelIndex === 0 ? ANNOTATION_POINTS.exterior : ANNOTATION_POINTS.interior;
-    points.forEach(point => {
-      const geo = new THREE.SphereGeometry(0.15, 16, 16);
-      const mat = new THREE.MeshBasicMaterial({ color: point.color, transparent: true, opacity: 0.8 });
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(point.pos[0], point.pos[1], point.pos[2]);
-      const label = createTextLabel(point.title, point.color);
-      if (label) { label.position.set(0, 0.6, 0); mesh.add(label); }
-      group.add(mesh);
-    });
+    createElegantAnnotations(annotationsGroupRef.current, currentModelIndex);
   }, [currentModelIndex]);
 
   const data = currentModelIndex === 0 ? COMPONENTS.exterior : COMPONENTS.interior;
   const manual = currentModelIndex === 0 ? MANUAL_TECNICO.exterior : MANUAL_TECNICO.interior;
 
   return (
-    <div className="relative w-full h-screen bg-[#020408] overflow-hidden font-sans text-neutral-200 select-none flex flex-col lg:flex-row">
+    <div className="flex flex-col lg:flex-row h-screen bg-[#05070a] overflow-hidden font-sans text-white">
       {!isLoaded && (
-        <div className="absolute inset-0 z-50 bg-[#020408] flex flex-col items-center justify-center">
+        <div className="fixed inset-0 z-[100] bg-[#05070a] flex flex-col items-center justify-center">
           <div className="w-12 h-12 border-2 border-white/10 border-t-[#00ffcc] rounded-full animate-spin mb-4"></div>
           <p className="text-[#00ffcc] text-[10px] font-bold uppercase tracking-[0.3em]">Sincronizando InnovA+</p>
         </div>
       )}
 
-      {/* Sidebar - Responsivo */}
       <div
         className={`
         fixed lg:relative top-0 right-0 lg:left-0 w-full lg:w-[520px] h-screen
@@ -397,36 +413,39 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Tabs */}
         <div className="flex border-b border-white/5 px-4 sm:px-6 lg:px-6">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`flex-1 py-3 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all border-b-2 ${activeTab === 'overview' ? 'border-[#00ffcc] text-[#00ffcc]' : 'border-transparent text-neutral-500 hover:text-neutral-300'}`}
+            className={`px-4 py-4 text-[10px] font-black uppercase tracking-widest transition-all relative ${activeTab === 'overview' ? 'text-white' : 'text-neutral-600 hover:text-neutral-400'}`}
           >
             Componentes
+            {activeTab === 'overview' && <div className="absolute bottom-0 left-0 w-full h-1 bg-[#00ffcc]" />}
           </button>
           <button
             onClick={() => setActiveTab('manual')}
-            className={`flex-1 py-3 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all border-b-2 flex items-center justify-center gap-1 ${activeTab === 'manual' ? 'border-[#0055ff] text-[#0055ff]' : 'border-transparent text-neutral-500 hover:text-neutral-300'}`}
+            className={`px-4 py-4 text-[10px] font-black uppercase tracking-widest transition-all relative ${activeTab === 'manual' ? 'text-white' : 'text-neutral-600 hover:text-neutral-400'}`}
           >
-            <BookOpen size={12} /> Manual
+            Manual
+            {activeTab === 'manual' && <div className="absolute bottom-0 left-0 w-full h-1 bg-[#0055ff]" />}
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 custom-scrollbar">
           {activeTab === 'overview' ? (
             <>
-              <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed mb-6">{data.desc}</p>
+              <p className="text-[10px] sm:text-xs text-neutral-400 leading-relaxed mb-6 sm:mb-8 font-medium italic border-l-2 border-[#00ffcc] pl-4">{data.desc}</p>
               <div className="space-y-3 sm:space-y-4">
                 {data.features.map((f) => (
-                  <div key={f.id} className="bg-white/5 border border-white/10 rounded-lg p-3 sm:p-4 hover:border-white/20 transition-all group">
-                    <div className="flex items-start gap-3">
-                      <div className="text-[9px] sm:text-[10px] font-black text-[#00ffcc] bg-[#00ffcc]/10 px-2 py-1 rounded flex-shrink-0">{f.id}</div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-xs sm:text-sm font-bold text-white mb-1 break-words">{f.name}</h4>
-                        <p className="text-[9px] sm:text-xs text-neutral-400 leading-snug">{f.desc}</p>
-                      </div>
+                  <div 
+                    key={f.id} 
+                    id={`component-${f.id}`}
+                    className={`bg-white/5 border rounded-lg p-3 sm:p-4 transition-all group ${selectedComponentId === f.id ? 'border-[#00ffcc] bg-[#00ffcc]/5 ring-1 ring-[#00ffcc]' : 'border-white/10 hover:border-white/20'}`}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-[#00ffcc]/10 flex items-center justify-center text-[#00ffcc] text-[10px] font-black">{f.id}</div>
+                      <h3 className="text-xs sm:text-sm font-bold text-white group-hover:text-[#00ffcc] transition-colors">{f.name}</h3>
                     </div>
+                    <p className="text-[9px] sm:text-xs text-neutral-500 leading-relaxed">{f.desc}</p>
                   </div>
                 ))}
               </div>
@@ -443,89 +462,75 @@ export default function Home() {
             </div>
           )}
         </div>
-
-        {/* Footer Controls - Desktop y Tablet */}
-        {!isMobile && (
-          <div className="p-4 sm:p-6 bg-white/5 border-t border-white/10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex flex-col">
-                <span className="text-[7px] sm:text-[8px] uppercase tracking-widest text-neutral-600 font-black">Modo de Vista</span>
-                <span className="text-xs sm:text-sm font-bold text-white">{currentModelIndex === 0 ? "EXTERIOR" : "INTERIOR"}</span>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setShowAnnotations(!showAnnotations)}
-                className={`flex-1 p-2 sm:p-3 rounded-lg border-2 transition-all font-bold text-[8px] sm:text-xs uppercase tracking-widest flex flex-col items-center justify-center ${showAnnotations ? 'bg-[#00ffcc] border-[#00ffcc] text-black' : 'bg-white/5 border-white/10 text-neutral-400'}`}
-              >
-                {showAnnotations ? <Eye size={14} /> : <EyeOff size={14} />}
-                <span className="hidden sm:inline">Anotaciones</span>
-              </button>
-              <button
-                onClick={() => setCurrentModelIndex(currentModelIndex === 0 ? 1 : 0)}
-                className={`flex-1 p-2 sm:p-3 rounded-lg border-2 transition-all font-bold text-[8px] sm:text-xs uppercase tracking-widest flex flex-col items-center justify-center ${currentModelIndex === 1 ? 'bg-[#0055ff] border-[#0055ff] text-white' : 'bg-white/5 border-white/10 text-neutral-400'}`}
-              >
-                <RefreshCw size={14} />
-                <span className="hidden sm:inline">{currentModelIndex === 0 ? "Interior" : "Exterior"}</span>
-              </button>
-              <button
-                onClick={() => {
-                  if (controlsRef.current) {
-                    controlsRef.current.reset();
-                    cameraRef.current?.position.set(15, 10, 15);
-                  }
-                }}
-                className="flex-1 p-2 sm:p-3 rounded-lg bg-white/5 border-2 border-white/10 text-neutral-400 hover:border-white/30 hover:text-white transition-all font-bold text-[8px] sm:text-xs uppercase tracking-widest flex flex-col items-center justify-center"
-              >
-                <Maximize size={14} />
-                <span className="hidden sm:inline">Reset</span>
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* 3D Canvas */}
       <div className="flex-1 relative bg-[#020408]">
         <div ref={mountRef} className="w-full h-full" />
+        
+        <div className="absolute top-4 right-4 z-20 flex gap-2 bg-black/40 backdrop-blur-md border border-white/10 rounded-lg p-2 lg:hidden">
+          <button
+            onClick={() => setShowAnnotations(!showAnnotations)}
+            className={`p-2 rounded-lg border-2 transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center ${showAnnotations ? 'bg-[#00ffcc] border-[#00ffcc] text-black' : 'bg-white/5 border-white/10 text-neutral-400'}`}
+            title="Mostrar/Ocultar puntos de información"
+          >
+            {showAnnotations ? <Eye size={16} /> : <EyeOff size={16} />}
+          </button>
+          <button
+            onClick={() => setCurrentModelIndex(currentModelIndex === 0 ? 1 : 0)}
+            className={`p-2 rounded-lg border-2 transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center ${currentModelIndex === 1 ? 'bg-[#0055ff] border-[#0055ff] text-white' : 'bg-white/5 border-white/10 text-neutral-400'}`}
+            title="Cambiar entre vista exterior e interior"
+          >
+            <Zap size={16} />
+          </button>
+          <button
+            onClick={() => {
+              if (controlsRef.current) {
+                controlsRef.current.reset();
+                cameraRef.current?.position.set(15, 10, 15);
+              }
+            }}
+            className="p-2 rounded-lg bg-white/5 border-2 border-white/10 text-neutral-400 hover:border-white/30 hover:text-white transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center"
+            title="Resetear vista"
+          >
+            <Maximize size={16} />
+          </button>
+        </div>
 
-        {/* Anotaciones 3D nativas - sin etiquetas HTML conflictivas */}
+        <div className="hidden lg:flex absolute top-4 right-4 z-20 gap-2 bg-black/40 backdrop-blur-md border border-white/10 rounded-lg p-3">
+          <button
+            onClick={() => setShowAnnotations(!showAnnotations)}
+            className={`px-3 py-2 rounded-lg border-2 transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 ${showAnnotations ? 'bg-[#00ffcc] border-[#00ffcc] text-black' : 'bg-white/5 border-white/10 text-neutral-400'}`}
+            title="Mostrar/Ocultar puntos de información"
+          >
+            {showAnnotations ? <Eye size={16} /> : <EyeOff size={16} />}
+            <span>Puntos INFO</span>
+          </button>
+          <button
+            onClick={() => setCurrentModelIndex(currentModelIndex === 0 ? 1 : 0)}
+            className={`px-3 py-2 rounded-lg border-2 transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 ${currentModelIndex === 1 ? 'bg-[#0055ff] border-[#0055ff] text-white' : 'bg-white/5 border-white/10 text-neutral-400'}`}
+            title="Cambiar entre vista exterior e interior"
+          >
+            <Zap size={16} />
+            <span>{currentModelIndex === 0 ? "Interior" : "Exterior"}</span>
+          </button>
+          <button
+            onClick={() => {
+              if (controlsRef.current) {
+                controlsRef.current.reset();
+                cameraRef.current?.position.set(15, 10, 15);
+              }
+            }}
+            className="px-3 py-2 rounded-lg bg-white/5 border-2 border-white/10 text-neutral-400 hover:border-white/30 hover:text-white transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2"
+            title="Resetear vista"
+          >
+            <Maximize size={16} />
+            <span>Reset</span>
+          </button>
+        </div>
 
-        {/* Mobile Menu Button */}
         <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden absolute top-4 left-4 z-20 p-2 bg-black/40 border border-white/10 rounded-lg text-white">
           <Menu size={24} />
         </button>
-
-        {/* Controles Flotantes en Móvil */}
-        {isMobile && (
-          <div className="absolute bottom-4 left-4 right-4 z-20 flex gap-2">
-            <button
-              onClick={() => setShowAnnotations(!showAnnotations)}
-              className={`flex-1 p-3 rounded-lg border-2 transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 ${showAnnotations ? 'bg-[#00ffcc] border-[#00ffcc] text-black' : 'bg-white/5 border-white/10 text-neutral-400'}`}
-            >
-              {showAnnotations ? <Eye size={16} /> : <EyeOff size={16} />}
-              Puntos INFO
-            </button>
-            <button
-              onClick={() => setCurrentModelIndex(currentModelIndex === 0 ? 1 : 0)}
-              className={`flex-1 p-3 rounded-lg border-2 transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 ${currentModelIndex === 1 ? 'bg-[#0055ff] border-[#0055ff] text-white' : 'bg-white/5 border-white/10 text-neutral-400'}`}
-            >
-              <Zap size={16} />
-              {currentModelIndex === 0 ? "Interior" : "Exterior"}
-            </button>
-            <button
-              onClick={() => {
-                if (controlsRef.current) {
-                  controlsRef.current.reset();
-                  cameraRef.current?.position.set(15, 10, 15);
-                }
-              }}
-              className="p-3 rounded-lg bg-white/5 border-2 border-white/10 text-neutral-400 hover:border-white/30 hover:text-white transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center"
-            >
-              <Maximize size={16} />
-            </button>
-          </div>
-        )}
       </div>
 
       <style dangerouslySetInnerHTML={{
