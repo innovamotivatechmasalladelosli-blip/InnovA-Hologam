@@ -98,11 +98,42 @@ const MANUAL_TECNICO = {
   }
 };
 
+const ANNOTATION_POINTS = {
+  exterior: [
+    { id: 1, title: 'Matriz Láser RGB', pos: [3.5, 4.8, -1.5], color: '#ff0055' },
+    { id: 2, title: 'Emisores Ultrasónicos Superiores', pos: [2.8, 4.2, 1], color: '#00ffcc' },
+    { id: 3, title: 'Cámara de Proyección', pos: [0, 3, 0], color: '#0055ff' },
+    { id: 4, title: 'Ventilación y Flujo de Aire', pos: [-3.5, 2.5, 0], color: '#ffaa00' },
+    { id: 5, title: 'Sensores Ambientales', pos: [0, 1.8, -4], color: '#00ff88' },
+    { id: 6, title: 'Zona de Formación de Niebla', pos: [-2.8, -1.5, 0], color: '#ff88ff' }
+  ],
+  interior: [
+    { id: 7, title: 'Depósito de Agua', pos: [-3.5, -3.8, 0], color: '#0088ff' },
+    { id: 8, title: 'Bomba de Agua Silenciosa', pos: [-2.2, -3.2, 0], color: '#00ffaa' },
+    { id: 9, title: 'Filtro Multi-etapa', pos: [-1, -3, 0], color: '#ffff00' },
+    { id: 10, title: 'Nebulizadores Ultrasónicos', pos: [0.2, -2.8, 0], color: '#ff00ff' },
+    { id: 11, title: 'Cámara de Mezcla', pos: [1.5, -2.2, 0], color: '#00ffff' },
+    { id: 12, title: 'Retorno de Agua Condensada', pos: [2.5, -1.8, 0], color: '#88ff00' },
+    { id: 13, title: 'Detector de Nivel Mínimo', pos: [3.2, -1.2, 0], color: '#ff6600' },
+    { id: 14, title: 'Válvula Antirretorno', pos: [3.8, -0.2, 0], color: '#00ff00' },
+    { id: 15, title: 'Placa Principal (MCU)', pos: [0.2, 0.8, 3.5], color: '#ff0088' },
+    { id: 16, title: 'Controladores Específicos', pos: [1.5, 1.3, 3.5], color: '#0055ff' },
+    { id: 17, title: 'Módulo de Comunicación', pos: [2.8, 1.8, 3.5], color: '#00ffcc' },
+    { id: 18, title: 'Sensores de Precisión', pos: [0.2, 2.3, 3.5], color: '#ffaa00' },
+    { id: 19, title: 'Drivers Láser y Ultrasonido', pos: [1.5, 2.8, 3.5], color: '#ff00ff' },
+    { id: 20, title: 'Sistema de Gestión (BMS)', pos: [-1.2, 1.3, 3.5], color: '#00ff88' },
+    { id: 21, title: 'Convertidor DC-DC', pos: [-2.2, 1.8, 3.5], color: '#ff8800' },
+    { id: 22, title: 'Batería de Alto Rendimiento', pos: [-3.2, 2.3, 3.5], color: '#88ff00' },
+    { id: 23, title: 'Puerto USB-C PD', pos: [-3.8, 2.8, 3.5], color: '#ff0055' },
+    { id: 24, title: 'Distribución de Energía', pos: [-2.8, 3.3, 3.5], color: '#00ffff' }
+  ]
+};
+
 const KEY_ELEMENTS = [
-  { id: 'laser', title: 'Matriz Láser', pos: [3, 4.5, -2], color: '#ff0055' },
-  { id: 'ultrasonic', title: 'Ultrasonido', pos: [2.5, 3.8, 0], color: '#00ffcc' },
-  { id: 'chamber', title: 'Cámara', pos: [0, 2.5, 0], color: '#0055ff' },
-  { id: 'ventilation', title: 'Ventilación', pos: [-3, 2, 0], color: '#ffaa00' }
+  { id: 'laser', title: 'Matriz Láser', pos: [3.5, 4.8, -1.5], color: '#ff0055' },
+  { id: 'ultrasonic', title: 'Ultrasonido', pos: [2.8, 4.2, 1], color: '#00ffcc' },
+  { id: 'chamber', title: 'Cámara', pos: [0, 3, 0], color: '#0055ff' },
+  { id: 'ventilation', title: 'Ventilación', pos: [-3.5, 2.5, 0], color: '#ffaa00' }
 ];
 
 // Crear hologramas reales (proyecciones de luz)
@@ -262,7 +293,8 @@ export default function Home() {
       }
 
       if (showAnnotations && cameraRef.current && rendererRef.current) {
-        KEY_ELEMENTS.forEach((el) => {
+        const currentAnnotations = currentModelIndex === 0 ? ANNOTATION_POINTS.exterior : ANNOTATION_POINTS.interior;
+        currentAnnotations.forEach((el) => {
           const vec = new THREE.Vector3(el.pos[0], el.pos[1], el.pos[2]);
           vec.project(cameraRef.current!);
           const x = (vec.x * 0.5 + 0.5) * rendererRef.current!.domElement.clientWidth;
@@ -429,7 +461,7 @@ export default function Home() {
         <div ref={mountRef} className="w-full h-full" />
 
         {showAnnotations &&
-          KEY_ELEMENTS.map((el) => (
+          (currentModelIndex === 0 ? ANNOTATION_POINTS.exterior : ANNOTATION_POINTS.interior).map((el) => (
             <div key={el.id} id={`annotation-${el.id}`} className="absolute top-0 left-0 pointer-events-none transition-opacity duration-300" style={{ opacity: 0 }}>
               <div className="relative">
                 <div className="w-3 h-3 rounded-full border-2 animate-ping absolute -inset-0" style={{ borderColor: el.color }}></div>
