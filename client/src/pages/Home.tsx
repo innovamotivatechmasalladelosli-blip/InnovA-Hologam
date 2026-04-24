@@ -116,16 +116,16 @@ const ANNOTATION_POINTS = {
     { id: 12, title: 'Retorno de Agua Condensada', pos: [2.5, -1.8, 0], color: '#88ff00' },
     { id: 13, title: 'Detector de Nivel Mínimo', pos: [3.2, -1.2, 0], color: '#ff6600' },
     { id: 14, title: 'Válvula Antirretorno', pos: [3.8, -0.2, 0], color: '#00ff00' },
-    { id: 15, title: 'Placa Principal (MCU)', pos: [0.2, 0.8, 3.5], color: '#ff0088' },
-    { id: 16, title: 'Controladores Específicos', pos: [1.5, 1.3, 3.5], color: '#0055ff' },
-    { id: 17, title: 'Módulo de Comunicación', pos: [2.8, 1.8, 3.5], color: '#00ffcc' },
-    { id: 18, title: 'Sensores de Precisión', pos: [0.2, 2.3, 3.5], color: '#ffaa00' },
-    { id: 19, title: 'Drivers Láser y Ultrasonido', pos: [1.5, 2.8, 3.5], color: '#ff00ff' },
-    { id: 20, title: 'Sistema de Gestión (BMS)', pos: [-1.2, 1.3, 3.5], color: '#00ff88' },
-    { id: 21, title: 'Convertidor DC-DC', pos: [-2.2, 1.8, 3.5], color: '#ff8800' },
-    { id: 22, title: 'Batería de Alto Rendimiento', pos: [-3.2, 2.3, 3.5], color: '#88ff00' },
-    { id: 23, title: 'Puerto USB-C PD', pos: [-3.8, 2.8, 3.5], color: '#ff0055' },
-    { id: 24, title: 'Distribución de Energía', pos: [-2.8, 3.3, 3.5], color: '#00ffff' }
+    { id: 15, title: 'Placa Principal (MCU)', pos: [0.2, 0.8, 2.5], color: '#ff0088' },
+    { id: 16, title: 'Controladores Específicos', pos: [1.5, 1.3, 2.5], color: '#0055ff' },
+    { id: 17, title: 'Módulo de Comunicación', pos: [2.8, 1.8, 2.5], color: '#00ffcc' },
+    { id: 18, title: 'Sensores de Precisión', pos: [0.2, 2.3, 2.5], color: '#ffaa00' },
+    { id: 19, title: 'Drivers Láser y Ultrasonido', pos: [1.5, 2.8, 2.5], color: '#ff00ff' },
+    { id: 20, title: 'Sistema de Gestión (BMS)', pos: [-1.2, 1.3, 2.5], color: '#00ff88' },
+    { id: 21, title: 'Convertidor DC-DC', pos: [-2.2, 1.8, 2.5], color: '#ff8800' },
+    { id: 22, title: 'Batería de Alto Rendimiento', pos: [-3.2, 2.3, 2.5], color: '#88ff00' },
+    { id: 23, title: 'Puerto USB-C PD', pos: [-3.8, 2.8, 2.5], color: '#ff0055' },
+    { id: 24, title: 'Distribución de Energía', pos: [-2.8, 3.3, 2.5], color: '#00ffff' }
   ]
 };
 
@@ -288,6 +288,13 @@ export default function Home() {
 
       if (showAnnotations && cameraRef.current && rendererRef.current) {
         const currentAnnotations = currentModelIndex === 0 ? ANNOTATION_POINTS.exterior : ANNOTATION_POINTS.interior;
+        
+        // Ocultar todos primero para evitar fantasmas
+        [...ANNOTATION_POINTS.exterior, ...ANNOTATION_POINTS.interior].forEach(el => {
+          const dom = document.getElementById(`annotation-${el.id}`);
+          if (dom) dom.style.display = 'none';
+        });
+
         currentAnnotations.forEach((el) => {
           const vec = new THREE.Vector3(el.pos[0], el.pos[1], el.pos[2]);
           vec.project(cameraRef.current!);
@@ -299,6 +306,12 @@ export default function Home() {
             dom.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
             dom.style.opacity = '1';
           }
+        });
+      } else {
+        // Ocultar todos si showAnnotations es false
+        [...ANNOTATION_POINTS.exterior, ...ANNOTATION_POINTS.interior].forEach(el => {
+          const dom = document.getElementById(`annotation-${el.id}`);
+          if (dom) dom.style.display = 'none';
         });
       }
 
