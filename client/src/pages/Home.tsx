@@ -109,38 +109,20 @@ const KEY_ELEMENTS = [
 const createHologramProjection = (scene: THREE.Scene) => {
   const holoGroup = new THREE.Group();
 
-  // Proyección de luz cilíndrica
-  const cylinderGeometry = new THREE.CylinderGeometry(3, 3, 8, 32, 32);
-  const cylinderMaterial = new THREE.MeshPhongMaterial({
-    color: 0x00ffcc,
-    emissive: 0x00ffcc,
-    emissiveIntensity: 0.3,
-    wireframe: false,
-    transparent: true,
-    opacity: 0.15,
-    side: THREE.DoubleSide
-  });
-  const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
-  cylinder.position.y = 5;
-  holoGroup.add(cylinder);
+  // Anillo de luz (sin geometría sólida, solo luz)
+  const ringLight = new THREE.PointLight(0x0055ff, 100);
+  ringLight.position.set(0, 5.5, 0);
+  holoGroup.add(ringLight);
 
-  // Anillo de luz
-  const torusGeometry = new THREE.TorusGeometry(3.5, 0.2, 16, 100);
-  const torusMaterial = new THREE.MeshPhongMaterial({
-    color: 0x0055ff,
-    emissive: 0x0055ff,
-    emissiveIntensity: 0.5,
-    transparent: true,
-    opacity: 0.8
-  });
-  const torus = new THREE.Mesh(torusGeometry, torusMaterial);
-  torus.position.y = 5;
-  holoGroup.add(torus);
+  // Luz cian flotante
+  const cyanLight = new THREE.PointLight(0x00ffcc, 80);
+  cyanLight.position.set(0, 6, 0);
+  holoGroup.add(cyanLight);
 
-  // Luz puntual para iluminar el holograma
-  const holoLight = new THREE.PointLight(0x00ffcc, 80);
-  holoLight.position.set(0, 6, 0);
-  holoGroup.add(holoLight);
+  // Luz secundaria para efecto volumétrico
+  const volumeLight = new THREE.PointLight(0xff00ff, 40);
+  volumeLight.position.set(2, 5.5, 2);
+  holoGroup.add(volumeLight);
 
   scene.add(holoGroup);
   return holoGroup;
@@ -274,10 +256,9 @@ export default function Home() {
       animationFrameId = requestAnimationFrame(animate);
       if (controlsRef.current) controlsRef.current.update();
 
-      // Animar hologramas
+      // Animar hologramas (solo rotación del grupo de luces)
       if (holoRef.current) {
-        holoRef.current.rotation.z += 0.002;
-        holoRef.current.children[1].rotation.x += 0.003;
+        holoRef.current.rotation.y += 0.003;
       }
 
       if (showAnnotations && cameraRef.current && rendererRef.current) {
