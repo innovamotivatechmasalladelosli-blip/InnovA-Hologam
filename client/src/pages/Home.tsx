@@ -1,70 +1,124 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Info, Cpu, Droplets, Radio, Zap, Menu, X, Eye, EyeOff, Maximize, Layers, ChevronDown, RefreshCw, Battery, Wind, Activity } from 'lucide-react';
+import { Info, Cpu, Droplets, Radio, Zap, Menu, X, Eye, EyeOff, Maximize, Layers, ChevronDown, RefreshCw, Battery, Wind, Activity, BookOpen, Wifi } from 'lucide-react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 // ==========================================
-// DATOS TÉCNICOS EXTRAÍDOS DEL DOCUMENTO
+// COMPONENTES DETALLADOS (24 PUNTOS TÉCNICOS)
 // ==========================================
 
-const EXTERIOR_INFO = {
-  title: "InnovA+ Hologram",
-  subtitle: "Proyector Volumétrico Avanzado",
-  desc: "Dispositivo de proyección holográfica basado en física real. La base sólida contiene los sistemas principales, mientras que la parte superior es una cámara transparente donde ocurre la magia de la proyección.",
-  features: [
-    { icon: Radio, title: "Cámara de Proyección", desc: "Zona transparente superior donde se forman las imágenes 3D." },
-    { icon: Activity, title: "Pantalla de Control", desc: "Interfaz frontal intuitiva para monitoreo y configuración." },
-    { icon: Droplets, title: "Entrada de Agua", desc: "Acceso lateral para recarga sencilla del sistema de niebla." },
-    { icon: Zap, title: "Sistema de Proyección", desc: "Integración de emisores ultrasónicos y láseres RGB." }
-  ],
-  specs: {
-    "Identidad": "Logo InnovA+ Centrado",
-    "Diseño": "Moderno y Limpio",
-    "Interfaz": "Panel Táctil Frontal",
-    "Recarga": "Lateral Estética"
+const COMPONENTS = {
+  exterior: {
+    title: "InnovA+ Hologram",
+    subtitle: "Proyector Volumétrico Acústico Avanzado",
+    desc: "Sistema de proyección holográfica de última generación basado en interferencia acústica y láser RGB. Dispositivo compacto y modular con arquitectura de ciclo cerrado.",
+    features: [
+      { id: 1, name: "Matriz Láser RGB", pos: [3, 4.5, -2], desc: "Emisores láser RGB de 200mW totales. Ilumina partículas en puntos específicos del espacio 3D." },
+      { id: 2, name: "Emisores Ultrasónicos Superiores", pos: [2.5, 3.8, 0], desc: "Matriz de transductores a 40kHz. Genera ondas estacionarias para posicionar partículas (voxels)." },
+      { id: 3, name: "Cámara de Proyección", pos: [0, 2.5, 0], desc: "Volumen transparente donde se forman las imágenes holográficas. Zona de operación principal." },
+      { id: 4, name: "Ventilación y Flujo de Aire", pos: [-3, 2, 0], desc: "Sistema de circulación controlada. Estabiliza partículas y mantiene uniformidad de la niebla." },
+      { id: 5, name: "Sensores Ambientales", pos: [0, 1.5, -3.5], desc: "Temperatura, humedad, presión. Monitoreo continuo del ambiente para ajuste automático." },
+      { id: 6, name: "Zona de Formación de Niebla", pos: [-2.5, -1, 0], desc: "Cámara inferior donde se generan microgotas ultrasónicas (1-10 micras)." }
+    ]
+  },
+  interior: {
+    title: "Arquitectura Interna",
+    subtitle: "Sistema de 4 Bloques Funcionales",
+    desc: "Ingeniería de precisión con ciclo cerrado de agua, manipulación acústica de partículas, control en tiempo real y distribución de energía regulada.",
+    features: [
+      { id: 7, name: "Depósito de Agua", pos: [-3, -3.5, 0], desc: "Tanque de gran capacidad con materiales anti-corrosión. Almacena agua destilada para evitar residuos." },
+      { id: 8, name: "Bomba de Agua Silenciosa", pos: [-2, -3, 0], desc: "Microbomba DC de presión controlada. Impulsa flujo constante hacia nebulizadores." },
+      { id: 9, name: "Filtro Multi-etapa", pos: [-1, -2.8, 0], desc: "Carbón activado + microfiltro + UV opcional. Purifica agua antes de nebulización." },
+      { id: 10, name: "Nebulizadores Ultrasónicos Inferiores", pos: [0, -2.5, 0], desc: "Transductores a 1.7MHz. Rompen agua en microgotas de 1-10 micras." },
+      { id: 11, name: "Cámara de Mezcla y Estabilización", pos: [1, -2, 0], desc: "Uniformiza la niebla antes de ascender. Garantiza densidad homogénea de partículas." },
+      { id: 12, name: "Retorno de Agua Condensada", pos: [2, -1.5, 0], desc: "Drenaje de vapor condensado. Cierra el ciclo retornando al depósito." },
+      { id: 13, name: "Detector de Nivel Mínimo", pos: [2.5, -1, 0], desc: "Sensor capacitivo. Alerta cuando el agua está por debajo del umbral de operación." },
+      { id: 14, name: "Válvula Antirretorno", pos: [3, -0.5, 0], desc: "Impide reflujo de agua hacia la bomba. Mantiene presión y eficiencia del sistema." },
+      { id: 15, name: "Placa Principal (MCU)", pos: [0, 0.5, 3], desc: "Controlador central ARM Cortex-A72. Ejecuta algoritmos de control en tiempo real (<2ms)." },
+      { id: 16, name: "Controladores Específicos", pos: [1, 1, 3], desc: "Drivers para ultrasonido, láser, bomba y ventiladores. Sincronización de fase y frecuencia." },
+      { id: 17, name: "Módulo de Comunicación", pos: [2, 1.5, 3], desc: "Wi-Fi / Bluetooth. Interfaz remota y monitoreo desde dispositivos externos." },
+      { id: 18, name: "Sensores de Precisión y Posición", pos: [0, 2, 3], desc: "Detectores ópticos de partículas. Retroalimentación para ajuste dinámico de campos acústicos." },
+      { id: 19, name: "Drivers Láser y Ultrasonido", pos: [1, 2.5, 3], desc: "Amplificadores de potencia. Generan voltajes específicos para cada componente." },
+      { id: 20, name: "Sistema de Gestión de Energía (BMS)", pos: [-1, 1, 3], desc: "Protección, balanceo de celdas y regulación. Distribuye energía de forma segura." },
+      { id: 21, name: "Convertidor DC-DC", pos: [-2, 1.5, 3], desc: "Transforma 24V en 12V, 5V y 3.3V. Alimenta subsistemas específicos." },
+      { id: 22, name: "Batería de Alto Rendimiento", pos: [-3, 2, 3], desc: "Li-ion 24V con capacidad extendida. Proporciona ~4-6 horas de operación continua." },
+      { id: 23, name: "Puerto USB-C PD", pos: [-3.5, 2.5, 3], desc: "Carga rápida Power Delivery. Recarga completa en ~90 minutos." },
+      { id: 24, name: "Distribución de Energía (Power Rail)", pos: [-2.5, 3, 3], desc: "Matriz de distribución regulada. Garantiza voltajes estables a todos los subsistemas." }
+    ]
   }
 };
 
-const INTERIOR_INFO = {
-  title: "Arquitectura Interna",
-  subtitle: "Ingeniería de Precisión",
-  desc: "Sistema organizado por capas funcionales para optimizar el rendimiento. Incluye ciclos cerrados de agua, manipulación acústica y control por IA en tiempo real.",
-  features: [
-    { icon: Droplets, title: "Ciclo de Agua", desc: "Depósito, microbomba y filtrado multi-etapa (Carbón + UV)." },
-    { icon: Radio, title: "Manipulación Acústica", desc: "Ondas estacionarias de 40kHz para posicionar voxels físicos." },
-    { icon: Zap, title: "Iluminación RGB", desc: "Escaneo láser sincronizado con la posición de las partículas." },
-    { icon: Cpu, title: "Cerebro DSP", desc: "Controlador central con latencia ultra-baja (~80-200ms)." }
-  ],
-  specs: {
-    "Nebulización": "1.7 MHz (1-10 micras)",
-    "Procesamiento": "MCU Tiempo Real",
-    "Energía": "Batería Li-ion 24V",
-    "Latencia": "80ms - 200ms"
+const MANUAL_TECNICO = {
+  exterior: {
+    title: "Manual Técnico - Vista Exterior",
+    sections: [
+      {
+        heading: "Descripción General",
+        content: "El InnovA+ es un proyector holográfico volumétrico de última generación que utiliza interferencia acústica para posicionar partículas en el espacio 3D. La estructura externa alberga la cámara de proyección transparente donde se forman las imágenes, mientras que la base contiene todos los sistemas de generación y control."
+      },
+      {
+        heading: "Componentes Visibles",
+        content: "En la parte frontal se encuentra la pantalla de control táctil que permite interactuar con el sistema de forma intuitiva. En el lateral hay una entrada de agua para recargar el depósito sin afectar la estética. En la parte superior se integran los emisores ultrasónicos y láseres RGB, organizados de forma precisa para mantener un diseño limpio y eficiente. El logo de InnovA+ está centrado para reforzar la identidad del dispositivo."
+      },
+      {
+        heading: "Especificaciones de Rendimiento",
+        content: "Resolución: Limitada por densidad de partículas (típicamente sub-milimétrica). Brillo: Depende del láser (200mW) y densidad de aerosol. Precisión de posicionamiento: Milimétrica en los tres ejes. Latencia total del sistema: 80-200ms, suficiente para animaciones fluidas simples."
+      }
+    ]
+  },
+  interior: {
+    title: "Manual Técnico - Arquitectura Interna",
+    sections: [
+      {
+        heading: "Bloque 1: Sistema de Agua (Ciclo Cerrado)",
+        content: "El depósito inferior almacena agua destilada (importante para evitar residuos minerales). Una microbomba DC impulsa el agua a través de un filtro multi-etapa (carbón + microfiltro + UV opcional) que elimina partículas dañinas. El agua llega a los nebulizadores ultrasónicos a 1.7MHz que la rompen en microgotas de 1-10 micras. Estas microgotas pasan por una cámara de mezcla que uniformiza la niebla antes de ascender hacia la zona de proyección. El exceso de humedad se condensa en las paredes y regresa al depósito, formando un ciclo cerrado eficiente."
+      },
+      {
+        heading: "Bloque 2: Sistema de Manipulación (Acústica + Láser)",
+        content: "Los emisores ultrasónicos inferiores a 1.7MHz generan las microgotas. Los emisores superiores a 40kHz crean ondas estacionarias que posicionan estas partículas en puntos específicos del espacio (voxels físicos). Los láseres RGB (200mW totales: 50mW rojo, 100mW verde, 50mW azul) iluminan estas partículas en tiempo real, haciendo visibles las formas creadas. La sincronización entre ultrasonido y láser es crítica: el ultrasonido posiciona, el agua proporciona materia, el láser proporciona visibilidad."
+      },
+      {
+        heading: "Bloque 3: Sistema de Control (Cerebro DSP)",
+        content: "El controlador central (MCU ARM Cortex-A72) ejecuta algoritmos de control en tiempo real con latencia <2ms. Recibe datos de sensores (temperatura, humedad, nivel de agua, flujo, calidad del aire, vibración) y ajusta continuamente: intensidad del ultrasonido, potencia del láser, flujo de agua, velocidad de ventiladores. Este loop de control se repite muchas veces por segundo, permitiendo compensar perturbaciones como corrientes de aire o cambios de temperatura. El módulo de comunicación (Wi-Fi/Bluetooth) permite monitoreo remoto e interfaz intuitiva."
+      },
+      {
+        heading: "Bloque 4: Sistema de Energía (Distribución Regulada)",
+        content: "Una batería Li-ion de 24V proporciona la energía principal. El BMS (Battery Management System) protege las celdas, balancea voltajes y monitorea salud. Convertidores DC-DC transforman 24V en 12V (bomba/ventiladores), 5V (lógica), 3.3V (sensores) y voltajes específicos para ultrasonido y láser. Un puerto USB-C con Power Delivery permite carga rápida. La distribución de energía (Power Rail) garantiza voltajes estables a todos los subsistemas, evitando fluctuaciones que afecten la precisión."
+      },
+      {
+        heading: "Análisis de Latencia",
+        content: "Control electrónico (MCU + sensores): ~10-30ms. Física (formación de niebla + movimiento de partículas): ~50-150ms. Latencia total estimada: 80-200ms. Esto significa que puedes animar objetos y reaccionar a eventos, pero no es instantáneo como una pantalla tradicional. Aún así, es suficiente para animaciones fluidas simples y visualización de datos estáticos o lentamente variables."
+      },
+      {
+        heading: "Estabilidad y Factores Críticos",
+        content: "Flujo de aire interno: Debe ser uniforme para evitar desplazamientos de partículas. Temperatura: Cambios afectan la viscosidad del aire y la eficiencia de nebulización. Vibraciones: Pueden desestabilizar las ondas acústicas. Densidad de partículas: Determina brillo y resolución. Por eso el sistema incluye ventilación controlada, sensores ambientales y algoritmos adaptativos."
+      }
+    ]
   }
 };
 
 const KEY_ELEMENTS = [
-  { id: 'holograma', title: 'Holograma', pos: [0, 2.5, 0], color: '#00ffcc' },
-  { id: 'laser', title: 'Matriz Láser', pos: [0, 4.2, 0], color: '#ff0055' },
-  { id: 'aerosol', title: 'Nebulizador', pos: [-2.5, -1.5, 0], color: '#00bbff' },
-  { id: 'procesador', title: 'Cerebro DSP', pos: [0, -2.5, 0], color: '#aa00ff' }
+  { id: 'laser', title: 'Matriz Láser', pos: [3, 4.5, -2], color: '#ff0055' },
+  { id: 'ultrasonic', title: 'Ultrasonido', pos: [2.5, 3.8, 0], color: '#00ffcc' },
+  { id: 'chamber', title: 'Cámara', pos: [0, 2.5, 0], color: '#0055ff' },
+  { id: 'ventilation', title: 'Ventilación', pos: [-3, 2, 0], color: '#ffaa00' }
 ];
 
 const ExpandableSection = ({ title, items, color }: { title: string, items: any, color: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <div className="mb-4">
-      <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between text-left group py-2 border-b border-white/5">
-        <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] group-hover:text-neutral-300 transition-colors">{title}</h3>
-        <ChevronDown size={14} className={`text-neutral-600 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+      <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between text-left group py-2 border-b border-white/5 hover:border-white/10 transition">
+        <h3 className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.2em] group-hover:text-neutral-300">{title}</h3>
+        <ChevronDown size={14} className={`text-neutral-600 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
-        <div className="mt-3 grid grid-cols-2 gap-3 animate-in fade-in slide-in-from-top-1 duration-300">
+        <div className="mt-3 space-y-3 animate-in fade-in slide-in-from-top-1 duration-300">
           {Object.entries(items).map(([key, value]: [string, any]) => (
             <div key={key} className="flex flex-col">
-              <span className="text-[8px] text-neutral-600 uppercase font-bold">{key}</span>
-              <span className="text-xs text-neutral-300 font-medium">{value}</span>
+              <span className="text-[8px] text-neutral-600 uppercase font-bold mb-0.5">{key}</span>
+              <span className="text-xs text-neutral-300 leading-snug">{value}</span>
             </div>
           ))}
         </div>
@@ -79,6 +133,7 @@ export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showAnnotations, setShowAnnotations] = useState(true);
   const [currentModelIndex, setCurrentModelIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState<'overview' | 'manual'>('overview');
 
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -118,7 +173,6 @@ export default function Home() {
 
     const loader = new GLTFLoader();
     
-    // Cargar Exterior
     loader.load('./machine_model.glb', (gltf) => {
       const model = gltf.scene;
       const box = new THREE.Box3().setFromObject(model);
@@ -132,7 +186,6 @@ export default function Home() {
       setIsLoaded(true);
     });
 
-    // Cargar Interior
     loader.load('./new_interior_model.glb', (gltf) => {
       const model = gltf.scene;
       const box = new THREE.Box3().setFromObject(model);
@@ -193,7 +246,8 @@ export default function Home() {
     if (model2Ref.current) model2Ref.current.visible = (currentModelIndex === 1);
   }, [currentModelIndex]);
 
-  const info = currentModelIndex === 0 ? EXTERIOR_INFO : INTERIOR_INFO;
+  const data = currentModelIndex === 0 ? COMPONENTS.exterior : COMPONENTS.interior;
+  const manual = currentModelIndex === 0 ? MANUAL_TECNICO.exterior : MANUAL_TECNICO.interior;
 
   return (
     <div className="relative w-full h-screen bg-[#020408] overflow-hidden font-sans text-neutral-200 select-none flex flex-col md:flex-row">
@@ -207,122 +261,131 @@ export default function Home() {
 
       {/* Sidebar */}
       <div className={`
-        fixed md:relative top-0 right-0 md:left-0 w-full md:w-[480px] h-[80vh] md:h-full mt-[20vh] md:mt-0
-        bg-[#05070a]/90 backdrop-blur-3xl border-l md:border-l-0 md:border-r border-white/10 
-        z-30 flex flex-col shadow-2xl transition-transform duration-500
-        ${isMobileMenuOpen ? 'translate-y-0' : 'translate-y-full md:translate-y-0'}
+        fixed md:relative top-0 right-0 md:left-0 w-full md:w-[520px] h-screen md:h-full
+        bg-[#05070a]/95 backdrop-blur-3xl border-l md:border-l-0 md:border-r border-white/10 
+        z-30 flex flex-col shadow-2xl transition-all duration-500
+        ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
       `}>
-        <div className="p-8 border-b border-white/5">
-          <h1 className="text-2xl font-black text-white tracking-tighter mb-1">
-            {info.title}<span className="text-[#0055ff]">+</span>
-          </h1>
-          <p className="text-[10px] text-[#00ffcc] font-bold uppercase tracking-widest">{info.subtitle}</p>
+        <div className="p-6 md:p-8 border-b border-white/5 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tighter mb-1">
+              {data.title}<span className="text-[#0055ff]">+</span>
+            </h1>
+            <p className="text-[9px] md:text-[10px] text-[#00ffcc] font-bold uppercase tracking-widest">{data.subtitle}</p>
+          </div>
+          <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden p-2 text-white">
+            <X size={24} />
+          </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-          <p className="text-sm text-neutral-400 leading-relaxed mb-8">{info.desc}</p>
+        {/* Tabs */}
+        <div className="flex border-b border-white/5 px-4 md:px-6">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-all border-b-2 ${activeTab === 'overview' ? 'border-[#00ffcc] text-[#00ffcc]' : 'border-transparent text-neutral-500 hover:text-neutral-300'}`}
+          >
+            Componentes
+          </button>
+          <button
+            onClick={() => setActiveTab('manual')}
+            className={`flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-all border-b-2 flex items-center justify-center gap-1 ${activeTab === 'manual' ? 'border-[#0055ff] text-[#0055ff]' : 'border-transparent text-neutral-500 hover:text-neutral-300'}`}
+          >
+            <BookOpen size={12} /> Manual
+          </button>
+        </div>
 
-          <div className="space-y-6 mb-8">
-            {info.features.map((f, i) => (
-              <div key={i} className="flex gap-4 group">
-                <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-[#00ffcc] group-hover:bg-[#00ffcc]/10 transition-colors">
-                  <f.icon size={18} />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white mb-1">{f.title}</h4>
-                  <p className="text-[11px] text-neutral-500 leading-snug">{f.desc}</p>
-                </div>
+        <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
+          {activeTab === 'overview' ? (
+            <>
+              <p className="text-xs md:text-sm text-neutral-400 leading-relaxed mb-6">{data.desc}</p>
+              <div className="space-y-4">
+                {data.features.map((f) => (
+                  <div key={f.id} className="bg-white/5 border border-white/10 rounded-lg p-4 hover:border-white/20 transition-all group">
+                    <div className="flex items-start gap-3">
+                      <div className="text-[10px] font-black text-[#00ffcc] bg-[#00ffcc]/10 px-2 py-1 rounded">{f.id}</div>
+                      <div className="flex-1">
+                        <h4 className="text-xs md:text-sm font-bold text-white mb-1">{f.name}</h4>
+                        <p className="text-[10px] md:text-xs text-neutral-400 leading-snug">{f.desc}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-
-          <ExpandableSection title="📋 Ficha Técnica" items={info.specs} color="#00ffcc" />
-          
-          {currentModelIndex === 1 && (
-            <div className="mt-6 p-4 rounded-xl bg-[#0055ff]/5 border border-[#0055ff]/20">
-              <div className="flex items-center gap-2 mb-2">
-                <Activity size={14} className="text-[#0055ff]" />
-                <span className="text-[10px] font-bold text-white uppercase tracking-widest">Estado del Loop</span>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-[9px] text-neutral-500">
-                  <span>Latencia de Control</span>
-                  <span className="text-white">~15ms</span>
+            </>
+          ) : (
+            <div className="space-y-6">
+              <h2 className="text-lg font-black text-white mb-4">{manual.title}</h2>
+              {manual.sections.map((section, i) => (
+                <div key={i} className="bg-white/5 border border-white/10 rounded-lg p-4">
+                  <h3 className="text-sm font-bold text-[#00ffcc] mb-2">{section.heading}</h3>
+                  <p className="text-xs text-neutral-400 leading-relaxed">{section.content}</p>
                 </div>
-                <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#0055ff] w-[15%]"></div>
-                </div>
-              </div>
+              ))}
             </div>
           )}
         </div>
 
-        {/* Footer Controls - HIGHER VISIBILITY */}
+        {/* Footer Controls */}
         <div className="p-6 bg-white/5 border-t border-white/10">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex flex-col">
-              <span className="text-[9px] uppercase tracking-widest text-neutral-500 font-black mb-1">Modo de Vista</span>
-              <span className="text-xs font-bold text-white">{currentModelIndex === 0 ? "Exterior" : "Interior"}</span>
+              <span className="text-[8px] uppercase tracking-widest text-neutral-600 font-black">Modo de Vista</span>
+              <span className="text-xs font-bold text-white">{currentModelIndex === 0 ? "EXTERIOR" : "INTERIOR"}</span>
             </div>
-            <div className="flex gap-3">
-              <button 
-                onClick={() => setShowAnnotations(!showAnnotations)}
-                className={`p-3 rounded-xl border-2 transition-all shadow-lg ${showAnnotations ? 'bg-[#00ffcc] border-[#00ffcc] text-black' : 'bg-white/5 border-white/10 text-neutral-400 hover:border-white/30'}`}
-                title="Anotaciones"
-              >
-                {showAnnotations ? <Eye size={20} /> : <EyeOff size={20} />}
-              </button>
-              <button 
-                onClick={() => setCurrentModelIndex(currentModelIndex === 0 ? 1 : 0)}
-                className={`p-3 rounded-xl border-2 transition-all shadow-lg ${currentModelIndex === 1 ? 'bg-[#0055ff] border-[#0055ff] text-white' : 'bg-white/5 border-white/10 text-neutral-400 hover:border-white/30'}`}
-                title="Cambiar Modelo"
-              >
-                <RefreshCw size={20} className={currentModelIndex === 1 ? "animate-spin-slow" : ""} />
-              </button>
-              <button 
-                onClick={() => {
-                  if (controlsRef.current) {
-                    controlsRef.current.reset();
-                    cameraRef.current?.position.set(15, 10, 15);
-                  }
-                }}
-                className="p-3 rounded-xl bg-white/5 border-2 border-white/10 text-neutral-400 hover:border-white/30 hover:text-white transition-all shadow-lg"
-                title="Reset Cámara"
-              >
-                <Maximize size={20} />
-              </button>
-            </div>
+          </div>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setShowAnnotations(!showAnnotations)}
+              className={`flex-1 p-3 rounded-lg border-2 transition-all font-bold text-xs uppercase tracking-widest ${showAnnotations ? 'bg-[#00ffcc] border-[#00ffcc] text-black' : 'bg-white/5 border-white/10 text-neutral-400'}`}
+              title="Anotaciones"
+            >
+              {showAnnotations ? <Eye size={16} className="mx-auto mb-1" /> : <EyeOff size={16} className="mx-auto mb-1" />}
+              Anotaciones
+            </button>
+            <button 
+              onClick={() => setCurrentModelIndex(currentModelIndex === 0 ? 1 : 0)}
+              className={`flex-1 p-3 rounded-lg border-2 transition-all font-bold text-xs uppercase tracking-widest ${currentModelIndex === 1 ? 'bg-[#0055ff] border-[#0055ff] text-white' : 'bg-white/5 border-white/10 text-neutral-400'}`}
+              title="Cambiar Modelo"
+            >
+              <RefreshCw size={16} className="mx-auto mb-1" />
+              {currentModelIndex === 0 ? "Ver Interior" : "Ver Exterior"}
+            </button>
+            <button 
+              onClick={() => {
+                if (controlsRef.current) {
+                  controlsRef.current.reset();
+                  cameraRef.current?.position.set(15, 10, 15);
+                }
+              }}
+              className="flex-1 p-3 rounded-lg bg-white/5 border-2 border-white/10 text-neutral-400 hover:border-white/30 hover:text-white transition-all font-bold text-xs uppercase tracking-widest"
+              title="Reset Cámara"
+            >
+              <Maximize size={16} className="mx-auto mb-1" />
+              Reset
+            </button>
           </div>
         </div>
       </div>
 
-      {/* 3D Canvas Area */}
+      {/* 3D Canvas */}
       <div className="flex-1 relative bg-[#020408]">
         <div ref={mountRef} className="w-full h-full" />
         
         {showAnnotations && KEY_ELEMENTS.map((el) => (
-          <div
-            key={el.id}
-            id={`annotation-${el.id}`}
-            className="absolute top-0 left-0 pointer-events-none transition-opacity duration-300"
-            style={{ opacity: 0 }}
-          >
+          <div key={el.id} id={`annotation-${el.id}`} className="absolute top-0 left-0 pointer-events-none transition-opacity duration-300" style={{ opacity: 0 }}>
             <div className="relative">
               <div className="w-3 h-3 rounded-full border-2 animate-ping absolute -inset-0" style={{ borderColor: el.color }}></div>
               <div className="w-3 h-3 rounded-full border-2 relative z-10 bg-[#020408]" style={{ borderColor: el.color }}></div>
-              <div className="absolute left-5 top-1/2 -translate-y-1/2 bg-black/80 backdrop-blur-md border border-white/10 px-2 py-1 rounded text-[9px] font-bold text-white uppercase tracking-tighter whitespace-nowrap">
-                {el.title}
-              </div>
+              <div className="absolute left-5 top-1/2 -translate-y-1/2 bg-black/80 backdrop-blur-md border border-white/10 px-2 py-1 rounded text-[8px] font-bold text-white uppercase tracking-tighter whitespace-nowrap">{el.title}</div>
             </div>
           </div>
         ))}
 
-        {/* Floating HUD */}
         <div className="absolute top-8 right-8 flex flex-col gap-4 pointer-events-none">
           <div className="bg-black/40 backdrop-blur-md border border-white/5 p-4 rounded-2xl">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-1.5 h-1.5 rounded-full bg-[#00ffcc] animate-pulse"></div>
-              <span className="text-[9px] font-black text-white uppercase tracking-[0.2em]">Estado del Sistema</span>
+              <span className="text-[9px] font-black text-white uppercase tracking-[0.2em]">Estado</span>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col">
@@ -332,7 +395,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex flex-col">
-                <span className="text-[8px] text-neutral-600 uppercase font-bold">Flujo Aire</span>
+                <span className="text-[8px] text-neutral-600 uppercase font-bold">Flujo</span>
                 <div className="flex items-center gap-1 text-[10px] text-white font-mono">
                   <Wind size={10} className="text-[#0055ff]" /> 1.2m/s
                 </div>
@@ -340,13 +403,17 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Mobile Menu Button */}
+        <button onClick={() => setIsMobileMenuOpen(true)} className="md:hidden absolute top-4 left-4 z-20 p-2 bg-black/40 border border-white/10 rounded-lg text-white">
+          <Menu size={24} />
+        </button>
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
         .custom-scrollbar::-webkit-scrollbar { width: 3px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
-        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .animate-spin-slow { animation: spin-slow 8s linear infinite; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.1); }
       `}} />
     </div>
   );
