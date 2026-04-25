@@ -43,7 +43,7 @@ const COMPONENTS = {
       { id: 20, name: "Sistema de Gestión (BMS)", pos: [-1.2, 1.3, 3.5], desc: "Protección de celdas, balanceo y regulación. Distribuye energía de forma segura y eficiente." },
       { id: 21, name: "Convertidor DC-DC", pos: [-2.2, 1.8, 3.5], desc: "Transforma 24V en 12V (bomba/ventiladores), 5V (lógica), 3.3V (sensores) y voltajes específicos." },
       { id: 22, name: "Batería de Alto Rendimiento", pos: [-3.2, 2.3, 3.5], desc: "Li-ion 24V con capacidad extendida. Proporciona 4-6 horas de operación continua a máxima potencia." },
-      { id: 23, name: "Puerto USB-C PD", pos: [-3.8, 2.8, 3.5], desc: "Carga rápida Power Delivery 65W. Recarga completa en aproximadamente 90 minutos." },
+      { id: 23, name: "Puerto USB-C PD", pos: [0, -3.5, -3.2], desc: "Carga rápida Power Delivery 65W. Recarga completa en aproximadamente 90 minutos. Ubicado en la pantalla frontal para acceso directo." },
       { id: 24, name: "Distribución de Energía", pos: [-2.8, 3.3, 3.5], desc: "Matriz de distribución regulada (Power Rail). Garantiza voltajes estables a todos los subsistemas." }
     ]
   }
@@ -124,27 +124,50 @@ const ANNOTATION_POINTS = {
     { id: 20, title: '20. Sistema de Gestión (BMS)', pos: [-1, 0.5, 3.5], color: '#00ff88' },
     { id: 21, title: '21. Convertidor DC-DC', pos: [-2, 1, 3.5], color: '#ff88ff' },
     { id: 22, title: '22. Batería de Alto Rendimiento', pos: [-3, 1.5, 3.5], color: '#0088ff' },
-    { id: 23, title: '23. Puerto USB-C PD', pos: [-3.5, 2.5, 3.5], color: '#00ffaa' },
+    { id: 23, title: '23. Puerto USB-C PD', pos: [0, -3.5, -3.2], color: '#00ffaa' },
     { id: 24, title: '24. Distribución de Energía', pos: [-2, 3, 3.5], color: '#ffff00' }
   ]
 };
 
 const createHologramProjection = (scene: THREE.Scene) => {
   const holoGroup = new THREE.Group();
+  
+  // Cilindro principal con efecto láser
   const geometry = new THREE.CylinderGeometry(2, 2, 6, 32, 1, true);
   const material = new THREE.MeshBasicMaterial({
     color: 0x00ffcc,
     transparent: true,
-    opacity: 0.1,
+    opacity: 0.15,
     side: THREE.DoubleSide,
     wireframe: true
   });
   const cylinder = new THREE.Mesh(geometry, material);
   holoGroup.add(cylinder);
   
-  for (let i = 0; i < 100; i++) {
+  // Efecto de rayos láser RGB
+  const laserColors = [0xff0055, 0x00ff00, 0x0055ff];
+  laserColors.forEach((color, idx) => {
+    const laserGeo = new THREE.CylinderGeometry(0.08, 0.08, 6, 16);
+    const laserMat = new THREE.MeshBasicMaterial({ 
+      color: color, 
+      transparent: true, 
+      opacity: 0.4,
+      emissive: color
+    });
+    const laser = new THREE.Mesh(laserGeo, laserMat);
+    laser.position.x = (idx - 1) * 0.3;
+    holoGroup.add(laser);
+  });
+  
+  // Partículas de niebla holográfica
+  for (let i = 0; i < 150; i++) {
     const pGeo = new THREE.SphereGeometry(0.02, 8, 8);
-    const pMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc, transparent: true, opacity: Math.random() });
+    const pMat = new THREE.MeshBasicMaterial({ 
+      color: 0x00ffcc, 
+      transparent: true, 
+      opacity: 0.3 + Math.random() * 0.4,
+      emissive: 0x00ffcc
+    });
     const p = new THREE.Mesh(pGeo, pMat);
     p.position.set(
       (Math.random() - 0.5) * 3.5,
