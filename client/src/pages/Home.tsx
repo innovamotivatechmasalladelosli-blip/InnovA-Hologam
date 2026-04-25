@@ -276,6 +276,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'overview' | 'manual'>('overview');
   const [selectedComponentId, setSelectedComponentId] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [showGuide, setShowGuide] = useState(true);
 
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -592,6 +593,87 @@ export default function Home() {
           <Menu size={24} />
         </button>
       </div>
+
+      {showGuide && (
+        <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#0a0c10] border border-white/10 rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div className="p-6 sm:p-8 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-[#00ffcc]/10 to-transparent">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tighter mb-1">Manual de Usuario</h2>
+                <p className="text-[10px] text-[#00ffcc] font-bold uppercase tracking-widest">Guía rápida de InnovA+</p>
+              </div>
+              <button 
+                onClick={() => setShowGuide(false)}
+                className="p-2 hover:bg-white/5 rounded-full transition-colors text-neutral-400 hover:text-white"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="p-6 sm:p-8 space-y-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 text-[#00ffcc]">
+                    <Eye size={20} />
+                    <h3 className="font-bold text-sm uppercase tracking-wider">Visualización 3D</h3>
+                  </div>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    Interactúa con el modelo usando el ratón o gestos táctiles. Puedes rotar, hacer zoom y explorar cada detalle del proyector.
+                  </p>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 text-[#0055ff]">
+                    <Zap size={20} />
+                    <h3 className="font-bold text-sm uppercase tracking-wider">Vista Interior</h3>
+                  </div>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    Usa el botón de rayo para alternar entre la vista exterior y la arquitectura interna del sistema.
+                  </p>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 text-[#ff0055]">
+                    <BookOpen size={20} />
+                    <h3 className="font-bold text-sm uppercase tracking-wider">Puntos INFO</h3>
+                  </div>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    Haz clic en los puntos de colores sobre el modelo para ver información detallada de cada componente en el panel lateral.
+                  </p>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 text-[#ffaa00]">
+                    <RefreshCw size={20} />
+                    <h3 className="font-bold text-sm uppercase tracking-wider">Reset de Vista</h3>
+                  </div>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    Si te pierdes, usa el botón de reset para volver a la posición inicial de la cámara.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
+                <h4 className="text-xs font-bold text-white uppercase tracking-widest">Componentes Clave</h4>
+                <ul className="text-[11px] text-neutral-500 space-y-1 list-disc pl-4">
+                  <li><span className="text-white">Pantalla Frontal:</span> Interfaz táctil y puerto USB-C.</li>
+                  <li><span className="text-white">Depósito de Agua:</span> Ubicado en la base para el ciclo de niebla.</li>
+                  <li><span className="text-white">Matriz Láser:</span> Genera la luz para los hologramas.</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="p-6 sm:p-8 bg-white/5 flex justify-end">
+              <button 
+                onClick={() => setShowGuide(false)}
+                className="px-8 py-3 bg-[#00ffcc] text-black font-black text-xs uppercase tracking-[0.2em] rounded-lg hover:scale-105 transition-transform shadow-[0_0_20px_rgba(0,255,204,0.3)]"
+              >
+                Comenzar Exploración
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style dangerouslySetInnerHTML={{
         __html: `
