@@ -43,8 +43,8 @@ const COMPONENTS = {
       { id: 20, name: "Sistema de Gestión (BMS)", pos: [-1.2, 1.3, 3.5], desc: "Protección de celdas, balanceo y regulación. Distribuye energía de forma segura y eficiente." },
       { id: 21, name: "Convertidor DC-DC", pos: [-2.2, 1.8, 3.5], desc: "Transforma 24V en 12V (bomba/ventiladores), 5V (lógica), 3.3V (sensores) y voltajes específicos." },
       { id: 22, name: "Batería de Alto Rendimiento", pos: [-3.2, 2.3, 3.5], desc: "Li-ion 24V con capacidad extendida. Proporciona 4-6 horas de operación continua a máxima potencia." },
-      { id: 23, name: "Puerto USB-C PD", pos: [0, -2.5, 3.8], desc: "Carga rápida Power Delivery 65W. Recarga completa en aproximadamente 90 minutos. Ubicado en la pantalla frontal central." },
-      { id: 25, name: "Pantalla de Control Táctil", pos: [0, -1.8, 3.8], desc: "Interfaz principal de usuario para monitoreo y configuración del sistema en tiempo real." },
+      { id: 23, name: "Puerto USB-C PD", pos: [0, -1.8, 4.2], desc: "Carga rápida Power Delivery 65W. Recarga completa en aproximadamente 90 minutos. Ubicado en la pantalla frontal central." },
+      { id: 25, name: "Pantalla de Control Táctil", pos: [0, -1.8, 4.2], desc: "Interfaz principal de usuario para monitoreo y configuración del sistema en tiempo real." },
       { id: 26, name: "Depósito de Agua (Caja de Agua)", pos: [-3.2, -3.8, 0], desc: "Contenedor donde se añade el agua destilada necesaria para el proceso de generación de hologramas. El agua es succionada por la bomba para iniciar el ciclo." },
       { id: 24, name: "Distribución de Energía", pos: [-2.8, 3.3, 3.5], desc: "Matriz de distribución regulada (Power Rail). Garantiza voltajes estables a todos los subsistemas." }
     ]
@@ -128,13 +128,13 @@ const ANNOTATION_POINTS = {
     { id: 4, title: '4. Ventilación y Flujo de Aire', pos: [-2.5, 2.0, 0], color: '#ffaa00' },
     { id: 5, title: '5. Sensores Ambientales', pos: [0, -2.0, 2.5], color: '#00ff88' },
     { id: 6, title: '6. Zona de Formación de Niebla', pos: [0, -3.5, 0], color: '#ff88ff' },
-    { id: 23, title: '23. Puerto USB-C PD', pos: [0, -2.5, 3.5], color: '#00ffaa' },
-    { id: 25, title: '25. Pantalla de Control', pos: [0, -1.8, 3.5], color: '#ffffff' },
+    { id: 23, title: '23. Puerto USB-C PD', pos: [0, -1.8, 3.8], color: '#00ffaa' },
+    { id: 25, title: '25. Pantalla de Control', pos: [0, -1.8, 3.8], color: '#ffffff' },
     { id: 26, title: '26. Depósito de Agua', pos: [-3.2, -3.8, 0], color: '#0088ff' }
   ]
 };
 
-const createHologramProjection = (scene: THREE.Scene) => {
+const createHologramProjection = (scene: THREE.Scene, modelIndex: number) => {
   const holoGroup = new THREE.Group();
   
   // Cilindro principal con efecto láser
@@ -149,24 +149,48 @@ const createHologramProjection = (scene: THREE.Scene) => {
   const cylinder = new THREE.Mesh(geometry, material);
   holoGroup.add(cylinder);
   
-  // Los rayos láser de colores han sido eliminados a petición del usuario para una visualización más limpia.
-  
-  // Partículas de niebla holográfica
-  for (let i = 0; i < 150; i++) {
-    const pGeo = new THREE.SphereGeometry(0.02, 8, 8);
-    const pMat = new THREE.MeshBasicMaterial({ 
-      color: 0x00ffcc, 
-      transparent: true, 
-      opacity: 0.3 + Math.random() * 0.4,
-      emissive: 0x00ffcc
-    });
-    const p = new THREE.Mesh(pGeo, pMat);
-    p.position.set(
-      (Math.random() - 0.5) * 3.5,
-      (Math.random() - 0.5) * 5.5,
-      (Math.random() - 0.5) * 3.5
-    );
-    holoGroup.add(p);
+  if (modelIndex === 0) {
+    // Matriz de láseres (puntos de luz) para el Modelo 1
+    // Distribuidos uniformemente sin amontonar
+    const rows = 6;
+    const cols = 6;
+    const spacing = 0.6;
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        const pGeo = new THREE.SphereGeometry(0.04, 8, 8);
+        const pMat = new THREE.MeshBasicMaterial({ 
+          color: 0x00ffcc, 
+          transparent: true, 
+          opacity: 0.8,
+          emissive: 0x00ffcc
+        });
+        const p = new THREE.Mesh(pGeo, pMat);
+        p.position.set(
+          (i - (rows - 1) / 2) * spacing,
+          (Math.random() - 0.5) * 4,
+          (j - (cols - 1) / 2) * spacing
+        );
+        holoGroup.add(p);
+      }
+    }
+  } else {
+    // Partículas de niebla holográfica para el Modelo 2 (configuración original)
+    for (let i = 0; i < 150; i++) {
+      const pGeo = new THREE.SphereGeometry(0.02, 8, 8);
+      const pMat = new THREE.MeshBasicMaterial({ 
+        color: 0x00ffcc, 
+        transparent: true, 
+        opacity: 0.3 + Math.random() * 0.4,
+        emissive: 0x00ffcc
+      });
+      const p = new THREE.Mesh(pGeo, pMat);
+      p.position.set(
+        (Math.random() - 0.5) * 3.5,
+        (Math.random() - 0.5) * 5.5,
+        (Math.random() - 0.5) * 3.5
+      );
+      holoGroup.add(p);
+    }
   }
   
   holoGroup.position.y = 0.5;
@@ -344,7 +368,7 @@ export default function Home() {
     directionalLight.position.set(5, 10, 7.5);
     scene.add(directionalLight);
 
-    const holo = createHologramProjection(scene);
+    const holo = createHologramProjection(scene, 0);
     holoRef.current = holo;
     scene.add(annotationsGroupRef.current);
 
@@ -406,6 +430,14 @@ export default function Home() {
   useEffect(() => {
     if (model1Ref.current) model1Ref.current.visible = currentModelIndex === 0;
     if (model2Ref.current) model2Ref.current.visible = currentModelIndex === 1;
+    
+    // Actualizar la proyección holográfica según el modelo
+    if (sceneRef.current && holoRef.current) {
+      sceneRef.current.remove(holoRef.current);
+      const newHolo = createHologramProjection(sceneRef.current, currentModelIndex);
+      holoRef.current = newHolo;
+    }
+    
     createElegantAnnotations(annotationsGroupRef.current, currentModelIndex);
   }, [currentModelIndex]);
 
@@ -432,7 +464,7 @@ export default function Home() {
         <div className="p-4 sm:p-6 lg:p-8 border-b border-white/5 flex items-center justify-between">
           <div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tighter mb-1">
-              {data.title}<span className="text-[#0055ff]">+</span>
+              {data.title}
             </h1>
             <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-[#00ffcc] font-bold uppercase tracking-widest">{data.subtitle}</p>
           </div>
