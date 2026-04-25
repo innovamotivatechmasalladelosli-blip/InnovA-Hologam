@@ -43,7 +43,7 @@ const COMPONENTS = {
       { id: 20, name: "Sistema de Gestión (BMS)", pos: [-1.2, 1.3, 3.5], desc: "Protección de celdas, balanceo y regulación. Distribuye energía de forma segura y eficiente." },
       { id: 21, name: "Convertidor DC-DC", pos: [-2.2, 1.8, 3.5], desc: "Transforma 24V en 12V (bomba/ventiladores), 5V (lógica), 3.3V (sensores) y voltajes específicos." },
       { id: 22, name: "Batería de Alto Rendimiento", pos: [-3.2, 2.3, 3.5], desc: "Li-ion 24V con capacidad extendida. Proporciona 4-6 horas de operación continua a máxima potencia." },
-      { id: 23, name: "Puerto USB-C PD", pos: [0, -3.5, -3.2], desc: "Carga rápida Power Delivery 65W. Recarga completa en aproximadamente 90 minutos. Ubicado en la pantalla frontal para acceso directo." },
+      { id: 23, name: "Puerto USB-C PD", pos: [0, -2.5, -3.8], desc: "Carga rápida Power Delivery 65W. Recarga completa en aproximadamente 90 minutos. Ubicado en la pantalla frontal central." },
       { id: 24, name: "Distribución de Energía", pos: [-2.8, 3.3, 3.5], desc: "Matriz de distribución regulada (Power Rail). Garantiza voltajes estables a todos los subsistemas." }
     ]
   }
@@ -124,7 +124,7 @@ const ANNOTATION_POINTS = {
     { id: 20, title: '20. Sistema de Gestión (BMS)', pos: [-1, 0.5, 3.5], color: '#00ff88' },
     { id: 21, title: '21. Convertidor DC-DC', pos: [-2, 1, 3.5], color: '#ff88ff' },
     { id: 22, title: '22. Batería de Alto Rendimiento', pos: [-3, 1.5, 3.5], color: '#0088ff' },
-    { id: 23, title: '23. Puerto USB-C PD', pos: [0, -3.5, -3.2], color: '#00ffaa' },
+    { id: 23, title: '23. Puerto USB-C PD', pos: [0, -2.5, -3.8], color: '#00ffaa' },
     { id: 24, title: '24. Distribución de Energía', pos: [-2, 3, 3.5], color: '#ffff00' }
   ]
 };
@@ -147,7 +147,7 @@ const createHologramProjection = (scene: THREE.Scene) => {
   // Efecto de rayos láser RGB
   const laserColors = [0xff0055, 0x00ff00, 0x0055ff];
   laserColors.forEach((color, idx) => {
-    const laserGeo = new THREE.CylinderGeometry(0.08, 0.08, 6, 16);
+    const laserGeo = new THREE.CylinderGeometry(0.08, 0.08, 3.5, 16);
     const laserMat = new THREE.MeshBasicMaterial({ 
       color: color, 
       transparent: true, 
@@ -297,11 +297,23 @@ export default function Home() {
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
-    const onCanvasClick = (event: MouseEvent) => {
+    // Soporte para eventos táctiles en móvil
+    const onCanvasInteraction = (event: MouseEvent | TouchEvent) => {
       if (!mountRef.current) return;
       const rect = mountRef.current.getBoundingClientRect();
-      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      
+      let clientX, clientY;
+      if (event instanceof TouchEvent) {
+        if (event.touches.length === 0) return;
+        clientX = event.touches[0].clientX;
+        clientY = event.touches[0].clientY;
+      } else {
+        clientX = (event as MouseEvent).clientX;
+        clientY = (event as MouseEvent).clientY;
+      }
+      
+      mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
 
       raycaster.setFromCamera(mouse, cameraRef.current!);
       const intersects = raycaster.intersectObjects(annotationsGroupRef.current.children, true);
@@ -325,7 +337,8 @@ export default function Home() {
     };
 
     if (mountRef.current) {
-      mountRef.current.addEventListener('click', onCanvasClick);
+      mountRef.current.addEventListener('click', onCanvasInteraction as EventListener);
+      mountRef.current.addEventListener('touchend', onCanvasInteraction as EventListener);
     }
 
     const controls = new OrbitControls(camera, renderer.domElement);
