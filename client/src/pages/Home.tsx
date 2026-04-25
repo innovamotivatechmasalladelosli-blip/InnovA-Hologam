@@ -440,7 +440,7 @@ export default function Home() {
         <div className="p-4 sm:p-6 lg:p-8 border-b border-white/5 flex items-center justify-between">
           <div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tighter mb-1">
-              {data.title}<span className="text-[#00ffcc]"> v1777079230</span>
+              {data.title}<span className="text-[#00ffcc]"> vFINAL_OK</span>
             </h1>
             <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-[#00ffcc] font-bold uppercase tracking-widest">{data.subtitle}</p>
           </div>
