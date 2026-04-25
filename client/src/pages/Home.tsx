@@ -344,6 +344,10 @@ export default function Home() {
         if (parent && parent.componentId) {
           setSelectedComponentId(parent.componentId);
           setActiveTab('overview');
+          // Abrir el menú en móvil automáticamente
+          if (window.innerWidth < 1024) {
+            setIsMobileMenuOpen(true);
+          }
           const element = document.getElementById(`component-${parent.componentId}`);
           if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -418,7 +422,8 @@ export default function Home() {
 
     return () => {
       if (mountRef.current) {
-        mountRef.current.removeEventListener('click', onCanvasClick);
+        mountRef.current.removeEventListener('click', onCanvasInteraction as EventListener);
+        mountRef.current.removeEventListener('touchend', onCanvasInteraction as EventListener);
       }
       cancelAnimationFrame(animationFrameId);
       if (mountRef.current && renderer.domElement.parentNode === mountRef.current) {
@@ -653,13 +658,15 @@ export default function Home() {
                 </div>
               </div>
               
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
-                <h4 className="text-xs font-bold text-white uppercase tracking-widest">Componentes Clave</h4>
-                <ul className="text-[11px] text-neutral-500 space-y-1 list-disc pl-4">
-                  <li><span className="text-white">Pantalla Frontal:</span> Interfaz táctil y puerto USB-C.</li>
-                  <li><span className="text-white">Depósito de Agua:</span> Ubicado en la base para el ciclo de niebla.</li>
-                  <li><span className="text-white">Matriz Láser:</span> Genera la luz para los hologramas.</li>
-                </ul>
+              <div className="space-y-4">
+                <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
+                  <h4 className="text-xs font-bold text-[#00ffcc] uppercase tracking-widest">📋 Sección Componentes</h4>
+                  <p className="text-[11px] text-neutral-400 leading-relaxed">En esta sección encontrarás una lista detallada de todos los componentes del dispositivo InnovA+. Cada componente incluye su nombre, ubicación en el modelo 3D y una descripción técnica completa de su función dentro del sistema. Puedes hacer clic en cualquier componente para resaltarlo en el modelo 3D y ver su información específica.</p>
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
+                  <h4 className="text-xs font-bold text-[#0055ff] uppercase tracking-widest">📖 Sección Manual</h4>
+                  <p className="text-[11px] text-neutral-400 leading-relaxed">El manual técnico proporciona información detallada sobre la arquitectura interna del sistema, dividida en bloques funcionales. Aquí aprenderás cómo funciona cada subsistema, desde el ciclo cerrado de agua hasta el control electrónico, la manipulación acústica de partículas y la distribución de energía. Ideal para entender el funcionamiento completo del dispositivo.</p>
+                </div>
               </div>
             </div>
             
