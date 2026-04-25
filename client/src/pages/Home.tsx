@@ -100,32 +100,32 @@ const MANUAL_TECNICO = {
 
 const ANNOTATION_POINTS = {
   exterior: [
-    { id: 1, title: '1. Matriz Láser RGB', pos: [0, 4.5, 0], color: '#00ffcc' },
-    { id: 2, title: '2. Emisores Ultrasónicos Superiores', pos: [0, 4.2, 1.5], color: '#00ffcc' },
-    { id: 3, title: '3. Cámara de Proyección', pos: [0, 1.5, 0], color: '#00ffcc' },
-    { id: 4, title: '4. Ventilación y Flujo de Aire', pos: [-3, 2.5, 0], color: '#00ffcc' },
-    { id: 5, title: '5. Sensores Ambientales', pos: [0, -2.5, 3], color: '#00ffcc' },
-    { id: 6, title: '6. Zona de Formación de Niebla', pos: [0, -4.2, 0], color: '#00ffcc' }
+    { id: 1, title: '1. Matriz Láser RGB', pos: [0, 4.0, 0], color: '#ff0055' },
+    { id: 2, title: '2. Emisores Ultrasónicos Superiores', pos: [0, 3.8, 1.2], color: '#00ffcc' },
+    { id: 3, title: '3. Cámara de Proyección', pos: [0, 1.0, 0], color: '#0055ff' },
+    { id: 4, title: '4. Ventilación y Flujo de Aire', pos: [-2.5, 2.0, 0], color: '#ffaa00' },
+    { id: 5, title: '5. Sensores Ambientales', pos: [0, -2.0, 2.5], color: '#00ff88' },
+    { id: 6, title: '6. Zona de Formación de Niebla', pos: [0, -3.5, 0], color: '#ff88ff' }
   ],
   interior: [
-    { id: 7, title: '7. Depósito de Agua', pos: [-3, -4, 0], color: '#00ffcc' },
-    { id: 8, title: '8. Bomba de Agua Silenciosa', pos: [-2, -3.5, 0], color: '#00ffcc' },
-    { id: 9, title: '9. Filtro Multi-etapa', pos: [-0.5, -3.5, 0], color: '#00ffcc' },
-    { id: 10, title: '10. Nebulizadores Ultrasónicos', pos: [1, -3.5, 0], color: '#00ffcc' },
-    { id: 11, title: '11. Cámara de Mezcla', pos: [2.5, -3.5, 0], color: '#00ffcc' },
-    { id: 12, title: '12. Retorno de Agua Condensada', pos: [3.5, -3, 0], color: '#00ffcc' },
-    { id: 13, title: '13. Detector de Nivel Mínimo', pos: [3.5, -2, 0], color: '#00ffcc' },
-    { id: 14, title: '14. Válvula Antirretorno', pos: [3.5, -1, 0], color: '#00ffcc' },
-    { id: 15, title: '15. Placa Principal (MCU)', pos: [0, 0, 3.5], color: '#00ffcc' },
-    { id: 16, title: '16. Controladores Específicos', pos: [1, 0.5, 3.5], color: '#00ffcc' },
-    { id: 17, title: '17. Módulo de Comunicación', pos: [2, 1, 3.5], color: '#00ffcc' },
-    { id: 18, title: '18. Sensores de Precisión', pos: [0, 1.5, 3.5], color: '#00ffcc' },
-    { id: 19, title: '19. Drivers Láser y Ultrasonido', pos: [1, 2, 3.5], color: '#00ffcc' },
-    { id: 20, title: '20. Sistema de Gestión (BMS)', pos: [-1, 0.5, 3.5], color: '#00ffcc' },
-    { id: 21, title: '21. Convertidor DC-DC', pos: [-2, 1, 3.5], color: '#00ffcc' },
-    { id: 22, title: '22. Batería de Alto Rendimiento', pos: [-3, 1.5, 3.5], color: '#00ffcc' },
-    { id: 23, title: '23. Puerto USB-C PD', pos: [0, -2.5, -3.8], color: '#00ffcc' },
-    { id: 24, title: '24. Distribución de Energía', pos: [-2, 3, 3.5], color: '#00ffcc' }
+    { id: 7, title: '7. Depósito de Agua', pos: [-2.5, -3.5, 0], color: '#0088ff' },
+    { id: 8, title: '8. Bomba de Agua Silenciosa', pos: [-1.5, -3.0, 0], color: '#00ffaa' },
+    { id: 9, title: '9. Filtro Multi-etapa', pos: [-0.5, -3.0, 0], color: '#ffff00' },
+    { id: 10, title: '10. Nebulizadores Ultrasónicos', pos: [0.5, -3.0, 0], color: '#ff00ff' },
+    { id: 11, title: '11. Cámara de Mezcla', pos: [1.5, -3.0, 0], color: '#00ffff' },
+    { id: 12, title: '12. Retorno de Agua Condensada', pos: [2.5, -2.5, 0], color: '#88ff00' },
+    { id: 13, title: '13. Detector de Nivel Mínimo', pos: [2.8, -1.5, 0], color: '#ff4400' },
+    { id: 14, title: '14. Válvula Antirretorno', pos: [3.0, -0.5, 0], color: '#ffcc00' },
+    { id: 15, title: '15. Placa Principal (MCU)', pos: [0, 0, 2.8], color: '#ffffff' },
+    { id: 16, title: '16. Controladores Específicos', pos: [0.8, 0.4, 2.8], color: '#00ffcc' },
+    { id: 17, title: '17. Módulo de Comunicación', pos: [1.6, 0.8, 2.8], color: '#0055ff' },
+    { id: 18, title: '18. Sensores de Precisión', pos: [0, 1.2, 2.8], color: '#ff0055' },
+    { id: 19, title: '19. Drivers Láser y Ultrasonido', pos: [0.8, 1.6, 2.8], color: '#ffaa00' },
+    { id: 20, title: '20. Sistema de Gestión (BMS)', pos: [-0.8, 0.4, 2.8], color: '#00ff88' },
+    { id: 21, title: '21. Convertidor DC-DC', pos: [-1.6, 0.8, 2.8], color: '#ff88ff' },
+    { id: 22, title: '22. Batería de Alto Rendimiento', pos: [-2.4, 1.2, 2.8], color: '#0088ff' },
+    { id: 23, title: '23. Puerto USB-C PD', pos: [0, -2.2, -3.5], color: '#00ffaa' },
+    { id: 24, title: '24. Distribución de Energía', pos: [-1.6, 2.4, 2.8], color: '#ffff00' }
   ]
 };
 
@@ -147,7 +147,7 @@ const createHologramProjection = (scene: THREE.Scene) => {
   // Efecto de rayos láser RGB
   const laserColors = [0xff0055, 0x00ff00, 0x0055ff];
   laserColors.forEach((color, idx) => {
-    const laserGeo = new THREE.CylinderGeometry(0.08, 0.08, 3.5, 16);
+    const laserGeo = new THREE.CylinderGeometry(0.08, 0.08, 2.5, 16);
     const laserMat = new THREE.MeshBasicMaterial({ 
       color: color, 
       transparent: true, 
@@ -440,7 +440,7 @@ export default function Home() {
         <div className="p-4 sm:p-6 lg:p-8 border-b border-white/5 flex items-center justify-between">
           <div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tighter mb-1">
-              {data.title}<span className="text-[#00ffcc]"> vFINAL_OK</span>
+              {data.title}<span className="text-[#0055ff]">+</span>
             </h1>
             <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-[#00ffcc] font-bold uppercase tracking-widest">{data.subtitle}</p>
           </div>
