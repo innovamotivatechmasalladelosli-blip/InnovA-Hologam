@@ -43,9 +43,9 @@ const COMPONENTS = {
       { id: 20, name: "Sistema de Gestión (BMS)", pos: [-1.2, 1.3, 3.5], desc: "Protección de celdas, balanceo y regulación. Distribuye energía de forma segura y eficiente." },
       { id: 21, name: "Convertidor DC-DC", pos: [-2.2, 1.8, 3.5], desc: "Transforma 24V en 12V (bomba/ventiladores), 5V (lógica), 3.3V (sensores) y voltajes específicos." },
       { id: 22, name: "Batería de Alto Rendimiento", pos: [-3.2, 2.3, 3.5], desc: "Li-ion 24V con capacidad extendida. Proporciona 4-6 horas de operación continua a máxima potencia." },
-      { id: 23, name: "Puerto USB-C PD", pos: [0, -2.2, 3.8], desc: "Carga rápida Power Delivery 65W. Recarga completa en aproximadamente 90 minutos. Ubicado en la pantalla frontal central." },
-      { id: 25, name: "Pantalla de Control Táctil", pos: [0, -1.5, 3.8], desc: "Interfaz principal de usuario para monitoreo y configuración del sistema en tiempo real." },
-      { id: 26, name: "Depósito de Agua (Caja de Agua)", pos: [-2.8, -3.5, 0], desc: "Contenedor donde se añade el agua destilada necesaria para el proceso de generación de hologramas. El agua es succionada por la bomba para iniciar el ciclo." },
+      { id: 23, name: "Puerto USB-C PD", pos: [0, -2.5, 3.8], desc: "Carga rápida Power Delivery 65W. Recarga completa en aproximadamente 90 minutos. Ubicado en la pantalla frontal central." },
+      { id: 25, name: "Pantalla de Control Táctil", pos: [0, -1.8, 3.8], desc: "Interfaz principal de usuario para monitoreo y configuración del sistema en tiempo real." },
+      { id: 26, name: "Depósito de Agua (Caja de Agua)", pos: [-3.2, -3.8, 0], desc: "Contenedor donde se añade el agua destilada necesaria para el proceso de generación de hologramas. El agua es succionada por la bomba para iniciar el ciclo." },
       { id: 24, name: "Distribución de Energía", pos: [-2.8, 3.3, 3.5], desc: "Matriz de distribución regulada (Power Rail). Garantiza voltajes estables a todos los subsistemas." }
     ]
   }
@@ -128,9 +128,9 @@ const ANNOTATION_POINTS = {
     { id: 4, title: '4. Ventilación y Flujo de Aire', pos: [-2.5, 2.0, 0], color: '#ffaa00' },
     { id: 5, title: '5. Sensores Ambientales', pos: [0, -2.0, 2.5], color: '#00ff88' },
     { id: 6, title: '6. Zona de Formación de Niebla', pos: [0, -3.5, 0], color: '#ff88ff' },
-    { id: 23, title: '23. Puerto USB-C PD', pos: [0, -2.2, 3.5], color: '#00ffaa' },
-    { id: 25, title: '25. Pantalla de Control', pos: [0, -1.5, 3.5], color: '#ffffff' },
-    { id: 26, title: '26. Depósito de Agua', pos: [-2.8, -3.5, 0], color: '#0088ff' }
+    { id: 23, title: '23. Puerto USB-C PD', pos: [0, -2.5, 3.5], color: '#00ffaa' },
+    { id: 25, title: '25. Pantalla de Control', pos: [0, -1.8, 3.5], color: '#ffffff' },
+    { id: 26, title: '26. Depósito de Agua', pos: [-3.2, -3.8, 0], color: '#0088ff' }
   ]
 };
 
@@ -149,20 +149,7 @@ const createHologramProjection = (scene: THREE.Scene) => {
   const cylinder = new THREE.Mesh(geometry, material);
   holoGroup.add(cylinder);
   
-  // Efecto de rayos láser RGB
-  const laserColors = [0xff0055, 0x00ff00, 0x0055ff];
-  laserColors.forEach((color, idx) => {
-    const laserGeo = new THREE.CylinderGeometry(0.08, 0.08, 2.5, 16);
-    const laserMat = new THREE.MeshBasicMaterial({ 
-      color: color, 
-      transparent: true, 
-      opacity: 0.4,
-      emissive: color
-    });
-    const laser = new THREE.Mesh(laserGeo, laserMat);
-    laser.position.x = (idx - 1) * 0.3;
-    holoGroup.add(laser);
-  });
+  // Los rayos láser de colores han sido eliminados a petición del usuario para una visualización más limpia.
   
   // Partículas de niebla holográfica
   for (let i = 0; i < 150; i++) {
